@@ -11,6 +11,7 @@ import { AssetDetailPage } from "../pages/assets/AssetDetailPage";
 import { ThemesPage } from "../pages/themes/ThemesPage";
 import { InteractionsPage } from "../pages/operations/InteractionsPage";
 import { GamesPage } from "../pages/operations/GamesPage";
+import { PublishPage } from "../pages/PublishPage";
 
 export const router = createBrowserRouter([
   {
@@ -24,7 +25,7 @@ export const router = createBrowserRouter([
       { path: "/operations/activities", element: <PlaceholderPage title="活动管理" description="景区活动创建与发布能力将在后续阶段接入。"/> },
       { path: "/operations/games", element: <GamesPage/> },
       { path: "/operations/interactions", element: <InteractionsPage/> },
-      { path: "/operations/publish", element: <PlaceholderPage title="预览并发布" description="共享配置预览与发布页面将在后续业务阶段接入。"/> },
+      { path: "/operations/publish", element: <PublishPage/> },
     ],
   },
   {
