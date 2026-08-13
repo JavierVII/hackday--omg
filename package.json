@@ -1,0 +1,10 @@
+{
+  "name": "hackday-omg",
+  "private": true,
+  "workspaces": ["admin", "contracts"],
+  "scripts": {
+    "dev": "npm run dev --workspace @hackday/admin",
+    "build": "npm run build --workspace @hackday/admin",
+    "typecheck": "npm run typecheck --workspace @hackday/admin"
+  }
+}
