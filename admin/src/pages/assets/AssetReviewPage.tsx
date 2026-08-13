@@ -1,0 +1,25 @@
+import { useEffect, useState } from "react";
+import type { Asset3D } from "@hackday/contracts";
+import { Box, CheckCircle2, Move3d, Save } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { AssetHeader } from "../../components/assets/AssetHeader";
+import { AssetStepper } from "../../components/assets/AssetStepper";
+import { Button, Card, Loading, StatusBadge } from "../../components/ui";
+import { assetService } from "../../services/assets/assetService";
+import { useToast } from "../../store/ToastProvider";
+
+export function AssetReviewPage() {
+  const { id = "" } = useParams(); const navigate = useNavigate(); const { showToast } = useToast(); const [asset, setAsset] = useState<Asset3D>(); const [saving, setSaving] = useState(false);
+  useEffect(() => { assetService.get(id).then(setAsset).catch(() => navigate("/assets", { replace: true })); }, [id, navigate]);
+  if (!asset) return <div className="page detail-page"><AssetHeader title="审核上线"/><Loading/></div>;
+  const save = async () => { setSaving(true); await assetService.saveDraft(id, { description: asset.description }); setSaving(false); showToast("草稿已保存"); };
+  const publish = async () => { setSaving(true); try { await assetService.publish(id); showToast("3D资产已发布"); navigate("/assets"); } catch (error) { showToast(error instanceof Error ? error.message : "发布失败", "info"); setSaving(false); } };
+  return <div className="page detail-page"><AssetHeader title="审核上线"/><AssetStepper current={3}/>
+    <Card className="model-preview"><div className="model-grid"/><div className="model-object"><Box size={64}/><span/></div><p><Move3d size={15}/>拖动查看模型（演示预览）</p></Card>
+    <Card className="review-info"><div className="review-title"><div><small>杭州西湖风景名胜区</small><h2>{asset.name}</h2></div><StatusBadge tone={asset.status === "published" ? "success" : "warning"}>{asset.status === "published" ? "已上线" : "待审核"}</StatusBadge></div>
+      <dl><div><dt>所属景点</dt><dd>{asset.scenicSpotName}</dd></div><div><dt>重建状态</dt><dd><CheckCircle2 size={14}/>AI 重建完成</dd></div><div><dt>创建时间</dt><dd>{new Date(asset.createdAt).toLocaleString("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}</dd></div></dl>
+      <label>资产描述<textarea rows={4} value={asset.description ?? ""} onChange={(e) => setAsset({ ...asset, description: e.target.value })}/></label>
+    </Card>
+    <div className="review-actions"><Button className="secondary-button" onClick={save} disabled={saving}><Save size={17}/>保存草稿</Button><Button onClick={publish} disabled={saving || asset.status === "published"}>{asset.status === "published" ? "已发布上线" : "发布上线"}</Button></div>
+  </div>;
+}

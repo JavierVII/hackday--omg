@@ -1,6 +1,7 @@
 import { Box, Clock3, Gamepad2, Palette, Plus, Sparkles, Upload, Users } from "lucide-react";
 import { Button, Card, StatusBadge } from "../components/ui";
 import { useToast } from "../store/ToastProvider";
+import { useNavigate } from "react-router-dom";
 
 const metrics = [
   { label: "今日云游人次", value: "2,847", trend: "+12.5%", icon: Users },
@@ -10,14 +11,15 @@ const metrics = [
 ];
 
 const actions = [
-  { label: "上传视频", caption: "新建3D资产", icon: Upload },
-  { label: "节日装扮", caption: "配置景区视觉", icon: Palette },
-  { label: "活动管理", caption: "创建景区活动", icon: Sparkles },
-  { label: "小游戏", caption: "配置互动游戏", icon: Gamepad2 },
+  { label: "上传视频", caption: "新建3D资产", icon: Upload, to: "/assets/new" },
+  { label: "节日装扮", caption: "配置景区视觉", icon: Palette, to: "/themes" },
+  { label: "活动管理", caption: "创建景区活动", icon: Sparkles, to: "/operations/activities" },
+  { label: "小游戏", caption: "配置互动游戏", icon: Gamepad2, to: "/operations/games" },
 ];
 
 export function DashboardPage() {
   const { showToast } = useToast();
+  const navigate = useNavigate();
   return <div className="page dashboard-page">
     <section className="hero-heading"><p>杭州西湖景区</p><h1>运营工作台</h1><span>实时掌握数字景区运营状态</span></section>
     <section className="metric-grid">
@@ -27,7 +29,7 @@ export function DashboardPage() {
       </Card>)}
     </section>
     <section className="section-block"><div className="section-title"><h2>快捷操作</h2></div>
-      <div className="quick-grid">{actions.map(({ label, caption, icon: Icon }) => <button key={label} className="quick-action" onClick={() => showToast(`${label}功能入口已就绪`, "info")}>
+      <div className="quick-grid">{actions.map(({ label, caption, icon: Icon, to }) => <button key={label} className="quick-action" onClick={() => navigate(to)}>
         <span className="quick-icon"><Icon size={21}/></span><strong>{label}</strong><small>{caption}</small>
       </button>)}</div>
     </section>

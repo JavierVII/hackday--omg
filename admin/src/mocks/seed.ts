@@ -1,9 +1,21 @@
 import type { Asset3D, ThemeConfig } from "@hackday/contracts";
 
 const now = "2026-08-13T09:00:00.000Z";
+const asset = (id: string, name: string, scenicSpotName: string, status: Asset3D["status"], viewCount: number, accent: string): Asset3D => ({
+  id, name, scenicAreaId: "hangzhou-west-lake", scenicSpotName, status, viewCount,
+  description: `${name}数字景点资产，以沉浸式方式呈现杭州西湖的自然与人文风貌。`,
+  coverImage: { id: `${id}-cover`, type: "image", url: accent },
+  reconstructionProgress: status === "published" ? 100 : status === "reconstructing" ? 45 : undefined,
+  createdAt: now, updatedAt: now, publishedAt: status === "published" ? now : undefined,
+});
+
 export const seedAssets: Asset3D[] = [
-  { id: "asset-leifeng", name: "雷峰塔", scenicAreaId: "hangzhou-west-lake", scenicSpotName: "雷峰夕照", status: "published", viewCount: 1284, createdAt: now, updatedAt: now, publishedAt: now },
-  { id: "asset-sudi", name: "苏堤春晓", scenicAreaId: "hangzhou-west-lake", scenicSpotName: "苏堤", status: "pending_review", viewCount: 0, createdAt: now, updatedAt: now },
+  asset("asset-leifeng", "雷峰塔", "雷峰夕照", "published", 1284, "#bd7b3c"),
+  asset("asset-santan", "三潭印月", "三潭印月", "published", 856, "#317f69"),
+  asset("asset-duanqiao", "断桥残雪", "断桥残雪", "draft", 0, "#7194a1"),
+  asset("asset-sudi", "苏堤春晓", "苏堤", "pending_review", 0, "#5d9160"),
+  asset("asset-quyuan", "曲院风荷", "曲院风荷", "reconstructing", 0, "#a66076"),
+  asset("asset-pinghu", "平湖秋月", "平湖秋月", "failed", 0, "#6d6999"),
 ];
 
 export const seedThemes: ThemeConfig[] = [
