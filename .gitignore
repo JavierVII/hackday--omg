@@ -2,4 +2,6 @@ node_modules/
 dist/
 .vite/
 *.local
-
+backend/data/config.json
+backend/data/config.json.tmp
+backend/data/*.pid

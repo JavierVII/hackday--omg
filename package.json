@@ -1,10 +1,12 @@
 {
   "name": "hackday-omg",
   "private": true,
-  "workspaces": ["admin", "contracts"],
+  "workspaces": ["admin", "backend", "contracts"],
   "scripts": {
     "dev": "npm run dev --workspace @hackday/admin",
     "build": "npm run build --workspace @hackday/admin",
-    "typecheck": "npm run typecheck --workspace @hackday/admin"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "backend:dev": "npm run dev --workspace @hackday/backend",
+    "backend:start": "npm run start --workspace @hackday/backend"
   }
 }

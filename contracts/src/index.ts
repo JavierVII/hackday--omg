@@ -93,3 +93,42 @@ export interface ScenicAppConfig {
   version: number;
   updatedAt: ISODateString;
 }
+
+export const WEST_LAKE_IDS = {
+  scenicArea: "hangzhou-west-lake",
+  scenes: { brokenBridge: "scene-broken-bridge", leifengPagoda: "scene-leifeng-pagoda", reserved: "scene-west-lake-reserved" },
+  themes: { default: "theme-default-west-lake", midAutumn: "theme-mid-autumn-gathering", nationalDay: "theme-national-day" },
+  spots: { brokenBridge: "spot-broken-bridge", leifengPagoda: "spot-leifeng-pagoda" },
+  interactions: { story: "interaction-broken-bridge-story", riddle: "interaction-mid-autumn-riddle", teleport: "interaction-scene-teleport" },
+  miniGames: { riddle: "minigame-lantern-riddle" },
+  rewards: { moonBridgeCard: "reward-moonlit-broken-bridge" },
+} as const;
+
+export interface ScenicArea { id: EntityId; name: string; description: string }
+export interface Scene { id: EntityId; scenicAreaId: EntityId; name: string; slug: string; enabled: boolean; sortOrder: number }
+export interface Theme { id: EntityId; name: string; description: string; sceneIds: EntityId[]; tokens: { sky: string; water: string; accent: string; atmosphere: string } }
+export interface Spot { id: EntityId; sceneId: EntityId; name: string; description: string; position: { x: number; y: number; z: number } }
+export type InteractionPointType = "story" | "mini_game" | "teleport";
+export interface InteractionPoint { id: EntityId; sceneId: EntityId; spotId?: EntityId; name: string; type: InteractionPointType; enabled: boolean; position: { x: number; y: number; z: number }; miniGameId?: EntityId; targetSceneId?: EntityId }
+export interface MiniGame { id: EntityId; name: string; type: "lantern_riddle"; description: string; rewardId?: EntityId }
+export interface Reward { id: EntityId; name: string; description: string; type: "collectible_card"; imageKey: string }
+export interface UserProgress { completedInteractionIds: EntityId[]; unlockedRewardIds: EntityId[] }
+export interface ScenicExperienceConfig {
+  scenicArea: ScenicArea;
+  scenes: Scene[];
+  themes: Theme[];
+  spots: Spot[];
+  interactionPoints: InteractionPoint[];
+  miniGames: MiniGame[];
+  rewards: Reward[];
+  activeThemeId: EntityId;
+  version: number;
+  updatedAt: ISODateString;
+}
+
+export interface AdminConfigState {
+  draftConfig: ScenicExperienceConfig;
+  publishedConfig: ScenicExperienceConfig;
+  hasUnpublishedChanges: boolean;
+  status: "saved" | "unpublished_changes" | "published";
+}
