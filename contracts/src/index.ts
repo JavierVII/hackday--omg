@@ -106,11 +106,23 @@ export const WEST_LAKE_IDS = {
 
 export interface ScenicArea { id: EntityId; name: string; description: string }
 export interface Scene { id: EntityId; scenicAreaId: EntityId; name: string; slug: string; enabled: boolean; sortOrder: number }
-export interface Theme { id: EntityId; name: string; description: string; sceneIds: EntityId[]; tokens: { sky: string; water: string; accent: string; atmosphere: string } }
+export interface Theme {
+  id: EntityId;
+  name: string;
+  description: string;
+  sceneIds: EntityId[];
+  tokens: { sky: string; water: string; accent: string; atmosphere: string };
+  isBuiltIn?: boolean;
+  baseThemeId?: EntityId;
+  coverKey?: string;
+  environment?: { period: string; lighting: string; decoration: string };
+}
 export interface Spot { id: EntityId; sceneId: EntityId; name: string; description: string; position: { x: number; y: number; z: number } }
 export type InteractionPointType = "story" | "mini_game" | "teleport";
-export interface InteractionPoint { id: EntityId; sceneId: EntityId; spotId?: EntityId; name: string; type: InteractionPointType; enabled: boolean; position: { x: number; y: number; z: number }; miniGameId?: EntityId; targetSceneId?: EntityId }
-export interface MiniGame { id: EntityId; name: string; type: "lantern_riddle"; description: string; rewardId?: EntityId }
+export interface InteractionPoint { id: EntityId; sceneId: EntityId; spotId?: EntityId; name: string; type: InteractionPointType; enabled: boolean; position: { x: number; y: number; z: number }; miniGameId?: EntityId; rewardId?: EntityId; targetSceneId?: EntityId }
+export type MiniGameType = "lantern_riddle" | "puzzle" | "treasure_hunt" | "poetry_challenge";
+export interface RiddleGameConfig { question: string; options: string[]; correctOptionIndex: number; successMessage: string; failureMessage: string }
+export interface MiniGame { id: EntityId; name: string; type: MiniGameType; description: string; rewardId?: EntityId; status?: "active" | "placeholder"; riddle?: RiddleGameConfig; coverKey?: string }
 export interface Reward { id: EntityId; name: string; description: string; type: "collectible_card"; imageKey: string }
 export interface UserProgress { completedInteractionIds: EntityId[]; unlockedRewardIds: EntityId[] }
 export interface ScenicExperienceConfig {
@@ -122,6 +134,7 @@ export interface ScenicExperienceConfig {
   miniGames: MiniGame[];
   rewards: Reward[];
   activeThemeId: EntityId;
+  availableThemeIds: EntityId[];
   version: number;
   updatedAt: ISODateString;
 }
