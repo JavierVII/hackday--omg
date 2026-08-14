@@ -33,7 +33,7 @@
 .app-home__header {
   position: relative;
   flex: none;
-  padding: 14px 22px 24px;
+  padding: 14px 20px 24px;
   color: var(--paper-white);
   background: linear-gradient(158deg, var(--ink-green-800) 0%, var(--ink-green-900) 52%, var(--ink-green-950) 100%);
 }
@@ -52,25 +52,7 @@
 }
 
 .app-status {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   margin-bottom: 14px;
-}
-
-.app-status__time {
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-}
-
-.app-status__indicators {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  opacity: 0.88;
 }
 
 .app-brand-row {
@@ -127,26 +109,27 @@
   position: relative;
   z-index: 1;
   display: flex;
-  height: 46px;
-  gap: 2px;
+  height: 48px;
+  gap: 10px;
   align-items: center;
   margin-top: 20px;
-  padding: 0 13px;
+  padding: 0 16px;
   color: var(--ink-green-700);
-  background: rgb(250 246 238 / 94%);
-  border: 1px solid rgb(250 246 238 / 40%);
+  background: rgb(250 246 238 / 98%);
+  border: 1px solid rgb(250 246 238 / 54%);
   border-radius: 14px;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 8px 24px rgb(15 39 33 / 16%);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .app-search input {
   width: 100%;
   min-width: 0;
   height: 100%;
-  padding: 0 10px;
+  padding: 0;
   color: var(--ink-green-900);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 14px;
   background: transparent;
   border: 0;
   outline: 0;
@@ -157,20 +140,15 @@
 }
 
 .app-search:focus-within {
-  border-color: var(--sunset-gold);
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
+  border-color: rgb(160 196 180 / 82%);
+  outline: 0;
+  box-shadow:
+    0 0 0 3px rgb(122 169 149 / 22%),
+    0 10px 26px rgb(15 39 33 / 18%);
 }
 
-.app-search kbd {
-  flex: none;
-  padding: 3px 6px;
-  color: var(--ink-green-600);
-  font-family: inherit;
-  font-size: 10px;
-  background: var(--paper-warm);
-  border: 1px solid var(--hairline-ink);
-  border-radius: 5px;
+.app-search input:focus-visible {
+  outline: 0;
 }
 
 /* —— 内容区 —— */
@@ -216,7 +194,7 @@
    按钮永远落在卡片内，结构上不会再溢出底边。 */
 .cloud-tour-card {
   position: relative;
-  min-height: 208px;
+  min-height: 236px;
   overflow: hidden;
   background: linear-gradient(150deg, var(--paper-white) 0%, var(--paper-warm) 100%);
   border: 1px solid var(--hairline-ink);
@@ -600,33 +578,36 @@
   background: transparent;
   border: 0;
   text-decoration: none;
+  transition: color 180ms ease;
 }
 
 .app-bottom-nav__item.is-active {
   color: var(--ink-green-900);
-}
-
-.app-bottom-nav__item.is-active::before {
-  position: absolute;
-  top: -10px;
-  width: 30px;
-  height: 3px;
-  content: "";
-  background: var(--sunset-gold-deep);
-  border-radius: 0 0 3px 3px;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .app-bottom-nav__icon {
   display: grid;
-  width: 26px;
+  width: 28px;
   aspect-ratio: 1;
   place-items: center;
   line-height: 1;
+  border-radius: 10px;
+  transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.app-bottom-nav__item.is-active .app-bottom-nav__icon {
+  background: rgb(42 102 80 / 12%);
+  box-shadow:
+    0 9px 16px -8px rgb(15 39 33 / 58%),
+    inset 0 0 0 1px rgb(42 102 80 / 10%);
+  transform: translateY(-3px) scale(1.16);
 }
 
 /* —— 焦点与辅助 —— */
 
-.app-home :is(a, button, input):focus-visible {
+.app-home :is(a, button):focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
@@ -700,6 +681,11 @@
   .scenic-area-card,
   .discovery-card,
   .festival-banner {
+    transition: none;
+  }
+
+  .app-bottom-nav__item,
+  .app-bottom-nav__icon {
     transition: none;
   }
 

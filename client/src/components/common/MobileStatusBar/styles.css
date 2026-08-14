@@ -1,0 +1,22 @@
+.mobile-status-bar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  min-height: 22px;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--paper-white);
+}
+
+.mobile-status-bar__time {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.mobile-status-bar__indicators {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  opacity: 0.88;
+}

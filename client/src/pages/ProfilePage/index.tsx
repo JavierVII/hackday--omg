@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router";
 
+import { MobileStatusBar } from "../../components/common/MobileStatusBar";
 import { westLakePortraits } from "../../lib/assets";
 
 import "./styles.css";
@@ -53,10 +54,7 @@ export function ProfilePage() {
     <main className="app-home-stage profile-stage">
       <section className="app-home profile-page" aria-label="我的">
         <header className="profile-hero">
-          <div className="profile-status" aria-label="当前时间 9 点 24 分">
-            <time>9:24</time>
-            <span>灵境奇旅</span>
-          </div>
+          <MobileStatusBar className="profile-status" />
 
           <div className="profile-hero__heading">
             <div>

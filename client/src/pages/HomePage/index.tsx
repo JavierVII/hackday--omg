@@ -1,6 +1,5 @@
 import {
   ArrowRight,
-  BatteryMedium,
   ChevronRight,
   Compass,
   Home,
@@ -8,15 +7,14 @@ import {
   MapPin,
   Moon,
   Search,
-  SignalHigh,
   Sparkles,
   User,
   Users,
-  Wifi,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Link } from "react-router";
 
+import { MobileStatusBar } from "../../components/common/MobileStatusBar";
 import {
   palaceMuseumPhotos,
   pingyaoPhotos,
@@ -97,14 +95,7 @@ export function HomePage() {
         <header className="app-home__header">
           <div className="app-home__glow" aria-hidden="true" />
 
-          <div className="app-status" aria-label="当前时间 9 点 24 分">
-            <time className="app-status__time">9:24</time>
-            <span className="app-status__indicators" aria-hidden="true">
-              <SignalHigh size={14} strokeWidth={2.2} />
-              <Wifi size={14} strokeWidth={2.2} />
-              <BatteryMedium size={16} strokeWidth={2.2} />
-            </span>
-          </div>
+          <MobileStatusBar className="app-status" />
 
           <div className="app-brand-row">
             <p className="app-brand">灵境奇旅</p>
@@ -121,7 +112,6 @@ export function HomePage() {
             <Search size={16} strokeWidth={2} aria-hidden="true" />
             <span className="sr-only">搜索景区、场景、主题或路线</span>
             <input type="search" placeholder="搜索景区、场景、主题、路线…" />
-            <kbd>⌘ K</kbd>
           </label>
         </header>
 

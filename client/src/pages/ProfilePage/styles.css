@@ -24,23 +24,6 @@
   pointer-events: none;
 }
 
-.profile-status {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: rgb(250 246 238 / 74%);
-  font-size: 12px;
-}
-
-.profile-status time {
-  color: var(--paper-white);
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-}
-
 .profile-hero__heading {
   position: relative;
   z-index: 1;

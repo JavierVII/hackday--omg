@@ -26,23 +26,6 @@
   pointer-events: none;
 }
 
-.space-status {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: rgb(250 246 238 / 72%);
-  font-size: 12px;
-}
-
-.space-status time {
-  color: var(--paper-white);
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-}
-
 .space-title-row {
   position: relative;
   z-index: 1;

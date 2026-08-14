@@ -18,6 +18,7 @@ import {
 import { useState } from "react";
 import { Link } from "react-router";
 
+import { MobileStatusBar } from "../../components/common/MobileStatusBar";
 import { westLakePortraits } from "../../lib/assets";
 
 import "./styles.css";
@@ -203,10 +204,7 @@ export function PersonalSpacePage() {
     <main className="app-home-stage space-stage">
       <section className="app-home space-page" aria-label="个人空间">
         <header className="space-header">
-          <div className="space-status" aria-label="当前时间 9 点 24 分">
-            <time>9:24</time>
-            <span>灵境奇旅</span>
-          </div>
+          <MobileStatusBar className="space-status" />
 
           <div className="space-title-row">
             <div>

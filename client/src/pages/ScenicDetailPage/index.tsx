@@ -3,7 +3,6 @@ import { Link } from "react-router";
 import {
   ArrowLeft,
   ArrowRight,
-  BatteryMedium,
   Box,
   ChevronRight,
   Clock3,
@@ -12,12 +11,11 @@ import {
   Navigation,
   Route,
   Share2,
-  SignalHigh,
   Star,
-  Wifi,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import { MobileStatusBar } from "../../components/common/MobileStatusBar";
 import { westLakeHero, westLakeLandscapes, westLakePortraits, type Photo } from "../../lib/assets";
 
 import "./styles.css";
@@ -121,14 +119,7 @@ export function ScenicDetailPage() {
             />
             <span className="scenic-cover__scrim" aria-hidden="true" />
 
-            <div className="scenic-status" aria-label="当前时间 9 点 24 分">
-              <time>9:24</time>
-              <span className="scenic-status__icons" aria-hidden="true">
-                <SignalHigh size={14} strokeWidth={2.2} />
-                <Wifi size={14} strokeWidth={2.2} />
-                <BatteryMedium size={16} strokeWidth={2.2} />
-              </span>
-            </div>
+            <MobileStatusBar className="scenic-status" />
 
             <div className="scenic-cover__toolbar">
               <Link className="scenic-icon-button" to="/home" aria-label="返回游客端首页">
