@@ -14,6 +14,60 @@ body {
   min-height: 100vh;
 }
 
+/* 桌面演示画布：实景图保持低对比度，缓慢漂移以增加空间层次。 */
+.demo-app-stage {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.demo-app-stage::before,
+.demo-app-stage::after {
+  position: fixed;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+}
+
+.demo-app-stage::before {
+  z-index: -2;
+  inset: -4vmax;
+  background: url("/assets/background.png") center 54% / cover no-repeat;
+  filter: saturate(0.9) contrast(0.98) brightness(1.04);
+  opacity: 0.82;
+  transform: translate3d(-0.6%, -0.4%, 0) scale(1.05);
+  animation: demo-background-drift 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.demo-app-stage::after {
+  z-index: -1;
+  background:
+    radial-gradient(circle at 14% 22%, rgb(232 167 101 / 12%), transparent 34%),
+    linear-gradient(112deg, rgb(8 31 24 / 44%) 0%, rgb(8 31 24 / 20%) 48%, rgb(8 31 24 / 46%) 100%);
+}
+
+@keyframes demo-background-drift {
+  0% {
+    transform: translate3d(-0.6%, -0.4%, 0) scale(1.05);
+  }
+
+  50% {
+    transform: translate3d(0.35%, 0.25%, 0) scale(1.075);
+  }
+
+  100% {
+    transform: translate3d(0.8%, -0.15%, 0) scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-app-stage::before {
+    animation: none;
+    transform: scale(1.05);
+  }
+}
+
 button,
 input,
 textarea,

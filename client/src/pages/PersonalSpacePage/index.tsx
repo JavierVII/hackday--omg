@@ -201,7 +201,7 @@ export function PersonalSpacePage() {
   const [activeView, setActiveView] = useState<SpaceView>("assets");
 
   return (
-    <main className="app-home-stage space-stage">
+    <main className="app-home-stage demo-app-stage space-stage">
       <section className="app-home space-page" aria-label="个人空间">
         <header className="space-header">
           <MobileStatusBar className="space-status" />

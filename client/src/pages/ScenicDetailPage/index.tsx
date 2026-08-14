@@ -107,7 +107,7 @@ export function ScenicDetailPage() {
   const [isFavorite, setIsFavorite] = useState(false);
 
   return (
-    <main className="scenic-stage scenic-stage--refined">
+    <main className="scenic-stage scenic-stage--refined demo-app-stage">
       <article className="scenic-detail scenic-detail--refined">
         <div className="scenic-detail__scroll scenic-detail__scroll--refined" aria-label="景区详情内容" tabIndex={0}>
           <section className="scenic-cover" aria-labelledby="scenic-title">

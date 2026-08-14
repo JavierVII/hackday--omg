@@ -91,7 +91,7 @@ const bottomNavigation = [
 
 export function HomePage() {
   return (
-    <main className="app-home-stage">
+    <main className="app-home-stage demo-app-stage">
       <Link className="app-home-demo-back" to="/" aria-label="返回进入页">
         <ArrowLeft size={17} strokeWidth={1.9} aria-hidden="true" />
         返回进入页

@@ -51,7 +51,7 @@ const bottomNavigation = [
 
 export function ProfilePage() {
   return (
-    <main className="app-home-stage profile-stage">
+    <main className="app-home-stage demo-app-stage profile-stage">
       <section className="app-home profile-page" aria-label="我的">
         <header className="profile-hero">
           <MobileStatusBar className="profile-status" />
