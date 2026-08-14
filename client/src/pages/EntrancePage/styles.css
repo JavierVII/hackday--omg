@@ -67,25 +67,6 @@
   z-index: 0;
 }
 
-.entrance-page__index {
-  position: absolute;
-  top: clamp(18px, 3.2vw, 42px);
-  left: clamp(18px, 3.8vw, 56px);
-  z-index: 2;
-  display: grid;
-  width: 46px;
-  aspect-ratio: 1;
-  place-items: center;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  background: linear-gradient(145deg, var(--green-bright-glow), var(--green-bright-strong));
-  border: 1px solid rgb(255 255 255 / 70%);
-  border-radius: 50%;
-  box-shadow: 0 14px 34px rgb(27 179 88 / 30%);
-}
-
 .entrance-page__content {
   position: relative;
   z-index: 2;
@@ -96,21 +77,105 @@
 
 .entrance-page__eyebrow {
   margin: 0 0 22px;
+  font-family: var(--font-display);
   color: var(--green-bright-strong);
   font-size: clamp(14px, 1.15vw, 18px);
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-weight: 500;
+  letter-spacing: 0.18em;
 }
 
 .entrance-page__title {
   margin: 0;
-  color: var(--green-deep);
-  font-size: clamp(40px, 4vw, 66px);
-  font-weight: 800;
-  line-height: 1.16;
-  letter-spacing: -0.035em;
-  text-wrap: balance;
-  text-shadow: 0 8px 26px rgb(27 179 88 / 16%);
+  font-family: var(--font-display);
+  font-size: clamp(58px, 7vw, 120px);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: #2b312e;
+  filter: drop-shadow(0 8px 22px rgb(31 41 37 / 18%));
+}
+
+/* 遮罩层：把光环与流光都裁剪在标题区域内，流光不会滑出到预览区 */
+.entrance-page__title-mask {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+/* 品牌名后的柔和光环（马卡龙粉紫晕染） */
+.entrance-page__title-mask::after {
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  width: 118%;
+  aspect-ratio: 2.8;
+  content: "";
+  border-radius: 999px;
+  background: radial-gradient(closest-side, rgb(255 221 226 / 55%), rgb(230 222 248 / 45%) 55%, transparent 78%);
+  filter: blur(20px);
+  transform: translate(-50%, -50%);
+}
+
+/* 流光扫过（半透明白光带，被遮罩裁剪在标题范围内） */
+.entrance-page__title-mask::before {
+  position: absolute;
+  z-index: 1;
+  top: -12%;
+  bottom: -12%;
+  left: -30%;
+  width: 42%;
+  content: "";
+  pointer-events: none;
+  border-radius: 999px;
+  background: linear-gradient(100deg, transparent, rgb(255 255 255 / 62%) 50%, transparent);
+  animation: entrance-title-sheen 5.5s ease-in-out infinite;
+}
+
+/* 逐字入场 */
+.entrance-page__title-char {
+  display: inline-block;
+  opacity: 0;
+  animation: entrance-title-char 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.entrance-page__title-char--2 {
+  animation-delay: 0.12s;
+}
+
+.entrance-page__title-char--3 {
+  animation-delay: 0.24s;
+}
+
+.entrance-page__title-char--4 {
+  animation-delay: 0.36s;
+}
+
+@keyframes entrance-title-sheen {
+  0% {
+    transform: translateX(-130%);
+  }
+  35% {
+    transform: translateX(-130%);
+  }
+  80% {
+    transform: translateX(420%);
+  }
+  100% {
+    transform: translateX(420%);
+  }
+}
+
+@keyframes entrance-title-char {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .entrance-page__description {
@@ -300,7 +365,7 @@
   }
 
   .entrance-page__title {
-    font-size: clamp(38px, 7.5vw, 58px);
+    font-size: clamp(52px, 11vw, 88px);
   }
 
   .entrance-preview {
@@ -323,18 +388,13 @@
     border-radius: 0;
   }
 
-  .entrance-page__index {
-    width: 40px;
-    font-size: 13px;
-  }
-
   .entrance-page__content {
     padding: 100px 22px 56px;
   }
 
   .entrance-page__title {
-    font-size: clamp(34px, 10.8vw, 46px);
-    line-height: 1.2;
+    font-size: clamp(46px, 14vw, 66px);
+    line-height: 1.15;
   }
 
   .entrance-page__description {
@@ -366,6 +426,15 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .entrance-page__title-mask::before,
+  .entrance-page__title-char {
+    animation: none;
+  }
+
+  .entrance-page__title-char {
+    opacity: 1;
+  }
+
   .entrance-page__button {
     transition: none;
   }

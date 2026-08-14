@@ -32,21 +32,20 @@ export function EntrancePage() {
         <ImageTrail items={TRAIL_IMAGES} variant={2} />
       </div>
 
-      <span className="entrance-page__index" aria-hidden="true">
-        01
-      </span>
-
       <section className="entrance-page__content" aria-labelledby="entrance-title">
-        <p className="entrance-page__eyebrow">灵境奇旅 · Web Demo</p>
+        <p className="entrance-page__eyebrow">数字景区 · Web Demo</p>
         <h1 id="entrance-title" className="entrance-page__title">
-          让每一处风景，
-          <br />
-          都成为故事。
+          <span className="entrance-page__title-mask">
+            <span className="entrance-page__title-char entrance-page__title-char--1">灵</span>
+            <span className="entrance-page__title-char entrance-page__title-char--2">境</span>
+            <span className="entrance-page__title-char entrance-page__title-char--3">奇</span>
+            <span className="entrance-page__title-char entrance-page__title-char--4">旅</span>
+          </span>
         </h1>
         <p className="entrance-page__description">
-          进入一个可游、可玩、可变化的数字景区。
+          让每一处风景，都成为故事。
           <br className="entrance-page__desktop-break" />
-          游客在第三人称 3D 世界中探索，运营人员在管理台配置主题与互动。
+          进入一个可游、可玩、可变化的数字景区，游客在第三人称 3D 世界中探索。
         </p>
 
         <div className="entrance-page__actions" aria-label="入口选择">

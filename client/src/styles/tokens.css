@@ -1,6 +1,9 @@
 :root {
   color-scheme: light;
   font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  /* 艺术展示字体（楷/宋体系，无网络依赖，优雅降级） */
+  --font-display: "STKaiti", "KaiTi", "楷体", "Kaiti SC", "Noto Serif SC", "Songti SC", serif;
   color: #17352a;
   background: #f4fbf6;
   font-synthesis: none;
