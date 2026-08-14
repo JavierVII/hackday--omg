@@ -1,441 +1,565 @@
-.entrance-page {
-  --entrance-accent: var(--green-bright);
-  --entrance-accent-strong: var(--green-bright-strong);
-  --entrance-border: rgb(35 194 100 / 34%);
+/* ==========================================================================
+   进入页 —— 「灵境奇旅」
+   视觉母题：透过月洞门望进数字景区。
+   配色取自 public/assets/west_lake 实景照片：宣纸暖白纸面 + 晚霞金橘 + 墨绿文字。
+   ========================================================================== */
+
+.entrance {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(420px, 1.08fr);
+  grid-template-columns: minmax(0, 0.95fr) minmax(400px, 1.05fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 88px);
+  box-sizing: border-box;
   min-height: 100svh;
+  padding: clamp(40px, 6vh, 76px) clamp(24px, 6vw, 96px) clamp(64px, 8vh, 96px);
   overflow: hidden;
-  isolation: isolate;
-  color: var(--green-deep);
-  background:
-    radial-gradient(1200px 800px at 86% 12%, rgb(255 221 226 / 55%), transparent 55%),
-    radial-gradient(1000px 720px at 6% 90%, rgb(230 222 248 / 60%), transparent 55%),
-    radial-gradient(900px 700px at 94% 84%, rgb(255 227 207 / 55%), transparent 50%),
-    linear-gradient(135deg, var(--macaron-cream) 0%, var(--macaron-mint) 38%, var(--macaron-green) 66%, var(--macaron-blush) 100%);
-  border: 1px solid var(--entrance-border);
-  border-radius: 22px 0;
+  background: var(--paper-white);
+  color: var(--ink-green-900);
 }
 
-.entrance-page::before {
+/* —— 背景层 ——————————————————————————————————————————— */
+
+/* 晚霞大气：右上金橘落日、右下珊瑚余晖、左侧雾紫远景 */
+.entrance__sky {
   position: absolute;
   inset: 0;
-  z-index: -2;
-  content: "";
-  opacity: 0.5;
-  background-image:
-    linear-gradient(rgb(35 194 100 / 10%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(35 194 100 / 10%) 1px, transparent 1px);
-  background-size: 52px 52px;
-  mask-image: linear-gradient(90deg, transparent 8%, #000 54%, transparent 96%);
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 78% 12%, rgb(232 167 101 / 34%), transparent 62%),
+    radial-gradient(90% 70% at 96% 72%, rgb(226 121 95 / 20%), transparent 60%),
+    radial-gradient(80% 60% at 4% 88%, rgb(185 194 222 / 34%), transparent 64%),
+    radial-gradient(100% 90% at 20% 0%, rgb(250 246 238 / 90%), transparent 55%),
+    linear-gradient(168deg, var(--paper-white) 0%, var(--paper-warm) 58%, #efe4d4 100%);
 }
 
-.entrance-page::after {
+/* 远山：两层山脊，近处更实、更暗，制造空气透视 */
+.entrance__ridge {
   position: absolute;
-  right: -12vw;
-  bottom: -24vw;
-  z-index: -1;
-  width: 58vw;
-  aspect-ratio: 1;
-  content: "";
-  border: 1px solid rgb(35 194 100 / 24%);
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 72px rgb(35 194 100 / 5%),
-    0 0 0 144px rgb(35 194 100 / 3%);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  width: 100%;
+  height: clamp(140px, 22vh, 240px);
+  pointer-events: none;
 }
 
-.entrance-page__glow {
-  position: absolute;
-  top: 0;
-  left: 48%;
-  width: 1px;
-  height: 100%;
-  background: linear-gradient(transparent, rgb(35 194 100 / 32%), transparent);
+.entrance__ridge-far {
+  fill: var(--mist-violet);
+  opacity: 0.34;
 }
 
-/* 全屏光影追随层：铺满整页、不拦截鼠标事件、位于内容之下 */
-.entrance-page__trail {
+.entrance__ridge-near {
+  fill: var(--mist-blue);
+  opacity: 0.28;
+}
+
+/* 纸纹颗粒：极低不透明度的分形噪声，消除大面积渐变的塑料感 */
+.entrance__grain {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.entrance-page__trail .image-trail {
-  z-index: 0;
+/* 暗角：把注意力压回中央，同时给照片飞过时留出边缘衰减 */
+.entrance__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(120% 96% at 50% 46%, transparent 52%, rgb(15 39 33 / 12%) 100%);
 }
 
-.entrance-page__content {
-  position: relative;
+/* 光影追随层：铺满整页，位于内容之下且不拦事件 */
+.entrance__trail {
+  position: absolute;
+  inset: 0;
   z-index: 2;
-  align-self: center;
-  max-width: 680px;
-  padding: 112px clamp(36px, 6vw, 92px) 96px;
+  pointer-events: none;
 }
 
-.entrance-page__eyebrow {
-  margin: 0 0 22px;
-  font-family: var(--font-display);
-  color: var(--green-bright-strong);
-  font-size: clamp(14px, 1.15vw, 18px);
+/* 覆写共享组件尺寸以匹配竖幅实景照片，不改动 ImageTrail 自身样式 */
+.entrance__trail .image-trail__img {
+  width: clamp(120px, 12vw, 176px);
+  aspect-ratio: 0.75;
+  border-radius: 14px;
+  box-shadow:
+    0 18px 40px -18px rgb(15 39 33 / 45%),
+    0 0 0 1px rgb(250 246 238 / 55%) inset;
+}
+
+/* —— 左栏：标题与入口 ——————————————————————————————————— */
+
+.entrance__intro {
+  position: relative;
+  z-index: 3;
+  max-width: 560px;
+}
+
+.entrance__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 clamp(18px, 3vh, 30px);
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.24em;
+  color: var(--ink-green-700);
+  text-transform: uppercase;
 }
 
-.entrance-page__title {
+.entrance__eyebrow-rule {
+  width: clamp(28px, 5vw, 52px);
+  height: 1px;
+  background: linear-gradient(90deg, var(--sunset-gold-deep), transparent);
+}
+
+.entrance__title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(58px, 7vw, 120px);
-  font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-  color: #2b312e;
-  filter: drop-shadow(0 8px 22px rgb(31 41 37 / 18%));
+  font-size: clamp(62px, 7.4vw, 132px);
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: 0.04em;
 }
 
-/* 遮罩层：把光环与流光都裁剪在标题区域内，流光不会滑出到预览区 */
-.entrance-page__title-mask {
-  position: relative;
-  display: inline-block;
+/* 遮罩容器让每个字从下方推入，overflow 裁掉入场前的溢出 */
+.entrance__title-mask {
+  display: flex;
   overflow: hidden;
+  padding-bottom: 0.06em;
 }
 
-/* 品牌名后的柔和光环（马卡龙粉紫晕染） */
-.entrance-page__title-mask::after {
-  position: absolute;
-  z-index: -1;
-  top: 50%;
-  left: 50%;
-  width: 118%;
-  aspect-ratio: 2.8;
-  content: "";
-  border-radius: 999px;
-  background: radial-gradient(closest-side, rgb(255 221 226 / 55%), rgb(230 222 248 / 45%) 55%, transparent 78%);
-  filter: blur(20px);
-  transform: translate(-50%, -50%);
-}
-
-/* 流光扫过（半透明白光带，被遮罩裁剪在标题范围内） */
-.entrance-page__title-mask::before {
-  position: absolute;
-  z-index: 1;
-  top: -12%;
-  bottom: -12%;
-  left: -30%;
-  width: 42%;
-  content: "";
-  pointer-events: none;
-  border-radius: 999px;
-  background: linear-gradient(100deg, transparent, rgb(255 255 255 / 62%) 50%, transparent);
-  animation: entrance-title-sheen 5.5s ease-in-out infinite;
-}
-
-/* 逐字入场 */
-.entrance-page__title-char {
+.entrance__title-char {
   display: inline-block;
-  opacity: 0;
-  animation: entrance-title-char 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  color: var(--ink-green-950);
+  background: linear-gradient(
+    168deg,
+    var(--ink-green-950) 0%,
+    var(--ink-green-800) 46%,
+    var(--sunset-gold-deep) 108%
+  );
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: entrance-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
-.entrance-page__title-char--2 {
-  animation-delay: 0.12s;
-}
-
-.entrance-page__title-char--3 {
-  animation-delay: 0.24s;
-}
-
-.entrance-page__title-char--4 {
-  animation-delay: 0.36s;
-}
-
-@keyframes entrance-title-sheen {
-  0% {
-    transform: translateX(-130%);
-  }
-  35% {
-    transform: translateX(-130%);
-  }
-  80% {
-    transform: translateX(420%);
-  }
-  100% {
-    transform: translateX(420%);
-  }
-}
-
-@keyframes entrance-title-char {
+@keyframes entrance-rise {
   from {
     opacity: 0;
     transform: translateY(0.4em);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.entrance-page__description {
-  max-width: 610px;
-  margin: 28px 0 0;
-  color: var(--green-muted);
-  font-size: clamp(14px, 1.1vw, 17px);
-  line-height: 1.85;
+.entrance__byline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: clamp(16px, 2.4vh, 26px);
 }
 
-.entrance-page__actions {
+/* 朱红印章：唯一的高饱和色块，落款位置 */
+.entrance__seal {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 15px;
+  line-height: 1.05;
+  letter-spacing: 0;
+  color: var(--paper-white);
+  background: var(--seal-red);
+  border-radius: 5px;
+  box-shadow: 0 6px 16px -8px rgb(180 64 47 / 70%);
+  writing-mode: vertical-rl;
+}
+
+.entrance__latin {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  color: var(--ink-green-700);
+}
+
+.entrance__byline-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--green-hairline), transparent);
+}
+
+.entrance__lede {
+  margin: clamp(20px, 3vh, 32px) 0 0;
+  max-width: 42ch;
+  font-size: clamp(15px, 1.15vw, 17px);
+  line-height: 1.85;
+  color: var(--green-muted);
+}
+
+.entrance__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-top: 34px;
+  margin-top: clamp(26px, 4vh, 42px);
 }
 
-.entrance-page__button {
-  min-width: 126px;
-  min-height: 48px;
-  padding: 0 22px;
-  font-weight: 650;
+.entrance__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 30px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  border: 1px solid transparent;
+  border-radius: 999px;
   cursor: pointer;
-  border-radius: 10px;
   transition:
-    transform 160ms ease,
-    background-color 160ms ease,
-    border-color 160ms ease,
-    box-shadow 160ms ease;
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s ease,
+    background-color 0.28s ease,
+    border-color 0.28s ease,
+    color 0.28s ease;
 }
 
-.entrance-page__button:hover {
+.entrance__button--primary {
+  color: var(--paper-white);
+  background: linear-gradient(140deg, var(--ink-green-800), var(--ink-green-950));
+  box-shadow:
+    0 16px 32px -16px rgb(15 39 33 / 62%),
+    0 0 0 1px rgb(15 39 33 / 30%);
+}
+
+.entrance__button--primary:hover {
   transform: translateY(-2px);
+  box-shadow:
+    0 22px 40px -16px rgb(15 39 33 / 68%),
+    0 0 0 1px var(--sunset-gold-deep);
 }
 
-.entrance-page__button:active {
-  transform: translateY(0);
+.entrance__button-arrow {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.entrance-page__button:focus-visible {
-  outline: 3px solid rgb(35 194 100 / 42%);
+.entrance__button--primary:hover .entrance__button-arrow {
+  transform: translateX(4px);
+}
+
+.entrance__button--secondary {
+  color: var(--ink-green-800);
+  background: rgb(250 246 238 / 62%);
+  border-color: rgb(29 77 60 / 22%);
+  backdrop-filter: blur(8px);
+}
+
+.entrance__button--secondary:hover {
+  transform: translateY(-2px);
+  color: var(--ink-green-950);
+  background: rgb(250 246 238 / 88%);
+  border-color: var(--sunset-gold-deep);
+}
+
+.entrance__button:focus-visible {
+  outline: 2px solid var(--sunset-gold-deep);
   outline-offset: 3px;
 }
 
-.entrance-page__button--primary {
-  color: #fff;
-  background: linear-gradient(135deg, var(--green-bright-glow), var(--green-bright-strong));
-  border: 1px solid rgb(26 179 88 / 55%);
-  box-shadow: 0 14px 28px rgb(27 179 88 / 26%);
-}
-
-.entrance-page__button--primary:hover {
-  background: linear-gradient(135deg, #4ce88b, var(--green-bright));
-  border-color: rgb(35 194 100 / 70%);
-  box-shadow: 0 18px 36px rgb(27 179 88 / 34%);
-}
-
-.entrance-page__button--secondary {
-  color: #1b6e42;
-  background: rgb(255 255 255 / 62%);
-  border: 1px solid rgb(35 194 100 / 40%);
-}
-
-.entrance-page__button--secondary:hover {
-  background: rgb(255 255 255 / 90%);
-  border-color: rgb(35 194 100 / 66%);
-}
-
-.entrance-preview {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  min-height: 100%;
-  place-items: center;
-  overflow: hidden;
-  border-left: 1px solid rgb(35 194 100 / 14%);
-}
-
-.entrance-preview::before,
-.entrance-preview::after {
-  position: absolute;
-  content: "";
-  border-radius: 999px;
-  filter: blur(2px);
-}
-
-.entrance-preview::before {
-  top: 9%;
-  right: 9%;
-  width: 38%;
-  height: 38%;
-  background: rgb(255 221 226 / 52%);
-}
-
-.entrance-preview::after {
-  bottom: 7%;
-  left: 8%;
-  width: 46%;
-  height: 34%;
-  background: rgb(230 222 248 / 56%);
-}
-
-.entrance-preview__ambient {
-  position: absolute;
-  inset: 14% 10%;
-  border: 1px solid rgb(35 194 100 / 30%);
-  border-radius: 50% 42% 54% 38%;
-  transform: rotate(-7deg);
-}
-
-.entrance-preview__frame {
-  position: relative;
-  z-index: 1;
+/* 实景缩略图：不标地名（照片对应景点无法逐一核实） */
+.entrance__scenes {
   display: flex;
-  width: clamp(230px, 22vw, 354px);
-  aspect-ratio: 0.53;
-  flex-direction: column;
   align-items: center;
-  padding: 16px;
-  background: rgb(255 255 255 / 72%);
-  border: 2px solid rgb(35 194 100 / 60%);
-  border-radius: 44px;
+  gap: 14px;
+  margin-top: clamp(30px, 5vh, 52px);
+}
+
+.entrance__thumbs {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entrance__thumb {
+  width: 46px;
+  aspect-ratio: 0.75;
+  overflow: hidden;
+  border-radius: 8px;
   box-shadow:
-    0 36px 90px rgb(27 179 88 / 18%),
-    inset 0 0 0 5px rgb(35 194 100 / 8%);
+    0 8px 18px -10px rgb(15 39 33 / 50%),
+    0 0 0 1px rgb(250 246 238 / 70%);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.entrance-preview__speaker {
-  width: 29%;
-  height: 4px;
-  margin: 2px 0 12px;
-  background: rgb(35 194 100 / 34%);
-  border-radius: 999px;
+.entrance__thumb:hover {
+  transform: translateY(-3px);
 }
 
-.entrance-preview__screen {
+.entrance__thumb img {
+  display: block;
   width: 100%;
-  flex: 1;
-  background:
-    linear-gradient(135deg, rgb(63 224 126 / 16%), transparent 44%),
-    rgb(222 247 229 / 78%);
-  border: 1px dashed rgb(35 194 100 / 40%);
-  border-radius: 30px;
+  height: 100%;
+  object-fit: cover;
 }
 
-.entrance-preview__home-indicator {
-  width: 33%;
-  height: 4px;
-  margin-top: 12px;
-  background: rgb(35 194 100 / 46%);
-  border-radius: 999px;
-}
-
-.entrance-preview__hint {
-  position: absolute;
-  right: 0;
-  bottom: clamp(24px, 4vw, 56px);
-  left: 0;
-  z-index: 200;
-  margin: 0;
-  color: rgb(77 107 95 / 66%);
+.entrance__scenes-label {
   font-size: 11px;
-  letter-spacing: 0.28em;
-  text-align: center;
+  letter-spacing: 0.18em;
+  color: var(--green-faint);
 }
 
-.entrance-page__footer {
-  position: absolute;
-  bottom: 28px;
-  left: clamp(36px, 6vw, 92px);
-  z-index: 2;
-  margin: 0;
-  color: rgb(77 107 95 / 50%);
-  font-size: 9px;
-  letter-spacing: 0.2em;
+/* —— 右栏：月洞门 + 手机 ————————————————————————————————— */
+
+.entrance__stage {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding-block: clamp(16px, 3vh, 40px);
 }
+
+/* 月洞门：实景照片经圆形裁切，作为手机背后的「开口」 */
+.entrance__gate {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(300px, 30vw, 470px);
+  aspect-ratio: 1;
+  transform: translate3d(
+    calc(-50% + var(--px, 0) * 26px),
+    calc(-50% + var(--py, 0) * 20px),
+    0
+  );
+  will-change: transform;
+}
+
+.entrance__gate-photo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-position: 50% 42%;
+  background-size: cover;
+  opacity: 0.9;
+  /* 边缘向内渐隐，让圆洞门与纸面融合而非硬边贴图 */
+  mask-image: radial-gradient(circle at 50% 50%, #000 56%, transparent 82%);
+}
+
+.entrance__gate-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgb(232 167 101 / 45%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px rgb(250 246 238 / 60%) inset,
+    0 40px 90px -50px rgb(15 39 33 / 60%);
+}
+
+.entrance__device-wrap {
+  position: relative;
+  transform: translate3d(
+    calc(var(--px, 0) * -18px),
+    calc(var(--py, 0) * -14px),
+    0
+  );
+  will-change: transform;
+}
+
+/* 浮动动画放在内层，避免与外层视差 transform 互相覆盖 */
+.entrance__device {
+  position: relative;
+  width: clamp(228px, 21vw, 320px);
+  aspect-ratio: 0.55;
+  padding: 9px;
+  background: linear-gradient(150deg, #2c3a35, #101a17 42%, #26332e);
+  border-radius: 46px;
+  box-shadow:
+    0 0 0 1px rgb(15 39 33 / 70%),
+    0 48px 90px -34px rgb(15 39 33 / 62%),
+    0 8px 24px -12px rgb(15 39 33 / 50%);
+  animation: entrance-float 7s ease-in-out infinite;
+}
+
+@keyframes entrance-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-12px) rotate(-0.6deg);
+  }
+}
+
+.entrance__device-screen {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 38px;
+  background: var(--ink-green-950);
+}
+
+.entrance__screen {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* 素材为 3:4，机身为 0.55，向中间取景保留门洞主体 */
+  object-fit: cover;
+  object-position: 50% 40%;
+}
+
+/* 上下轻微压暗，模拟屏幕玻璃的环境反射衰减 */
+.entrance__screen-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgb(15 39 33 / 42%) 0%,
+    transparent 22%,
+    transparent 74%,
+    rgb(15 39 33 / 46%) 100%
+  );
+}
+
+.entrance__device-island {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 62px;
+  height: 17px;
+  background: #0b1512;
+  border-radius: 999px;
+  transform: translateX(-50%);
+}
+
+/* 斜向高光：只在机身上方掠过一道，避免玻璃感过重 */
+.entrance__device-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: 46px;
+  pointer-events: none;
+  background: linear-gradient(
+    122deg,
+    rgb(250 246 238 / 26%) 0%,
+    rgb(250 246 238 / 6%) 26%,
+    transparent 44%
+  );
+}
+
+.entrance__hint {
+  margin: clamp(22px, 3.4vh, 38px) 0 0;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--green-faint);
+}
+
+.entrance__footer {
+  position: absolute;
+  bottom: clamp(20px, 3vh, 34px);
+  left: clamp(24px, 6vw, 96px);
+  z-index: 3;
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  color: var(--green-faint);
+}
+
+/* —— 响应式 ——————————————————————————————————————————— */
 
 @media (max-width: 900px) {
-  .entrance-page {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(420px, 56vh);
-    border-radius: 18px 0;
+  .entrance {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: clamp(28px, 5vh, 48px);
+    padding-bottom: clamp(72px, 10vh, 104px);
+    text-align: center;
   }
 
-  .entrance-page__content {
-    padding: 118px clamp(24px, 7vw, 68px) 72px;
+  .entrance__intro {
+    max-width: 520px;
   }
 
-  .entrance-page__title {
-    font-size: clamp(52px, 11vw, 88px);
+  .entrance__eyebrow,
+  .entrance__byline,
+  .entrance__actions,
+  .entrance__scenes {
+    justify-content: center;
   }
 
-  .entrance-preview {
-    min-height: 520px;
-    border-top: 1px solid rgb(35 194 100 / 14%);
-    border-left: 0;
+  .entrance__title-mask {
+    justify-content: center;
   }
 
-  .entrance-preview__frame {
-    width: min(260px, 64vw);
+  .entrance__lede {
+    margin-inline: auto;
   }
 
-  .entrance-page__footer {
+  .entrance__byline-rule {
     display: none;
+  }
+
+  .entrance__footer {
+    left: 0;
+    right: 0;
+    text-align: center;
   }
 }
 
 @media (max-width: 520px) {
-  .entrance-page {
-    border-radius: 0;
+  .entrance {
+    padding-inline: 20px;
   }
 
-  .entrance-page__content {
-    padding: 100px 22px 56px;
-  }
-
-  .entrance-page__title {
-    font-size: clamp(46px, 14vw, 66px);
-    line-height: 1.15;
-  }
-
-  .entrance-page__description {
-    line-height: 1.7;
-  }
-
-  .entrance-page__desktop-break {
+  .entrance__break {
     display: none;
   }
 
-  .entrance-page__actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  .entrance__button {
+    flex: 1 1 auto;
+    justify-content: center;
   }
 
-  .entrance-page__button {
-    min-width: 0;
-    padding: 0 14px;
+  .entrance__gate {
+    width: 84vw;
   }
 
-  .entrance-preview {
-    min-height: 430px;
-  }
-
-  .entrance-preview__frame {
-    width: min(220px, 62vw);
-    border-radius: 36px;
+  .entrance__trail .image-trail__img {
+    width: 104px;
   }
 }
 
+/* —— 无障碍：尊重系统减弱动效偏好 ——————————————————————— */
+
 @media (prefers-reduced-motion: reduce) {
-  .entrance-page__title-mask::before,
-  .entrance-page__title-char {
+  .entrance__title-char,
+  .entrance__device {
     animation: none;
   }
 
-  .entrance-page__title-char {
-    opacity: 1;
+  /* 去掉视差位移，但保留居中所需的 -50% 偏移 */
+  .entrance__gate {
+    transform: translate(-50%, -50%);
   }
 
-  .entrance-page__button {
+  .entrance__device-wrap {
+    transform: none;
+  }
+
+  .entrance__button,
+  .entrance__button-arrow,
+  .entrance__thumb {
     transition: none;
   }
 }

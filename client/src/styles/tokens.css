@@ -31,4 +31,33 @@
   --green-muted: #4d6b5f;
   --green-faint: #7ea392;
   --green-hairline: rgb(35 194 100 / 16%);
+
+  /* —— 西湖实景取色 —— */
+
+  /* 取自 public/assets/west_lake 实景照片，用于进入页等展示性界面。
+     照片中并不存在荧光绿，故正文与主按钮改用下列墨绿层级。 */
+
+  /* 墨绿：荷叶暗部 / 瓦灰屋檐 */
+  --ink-green-950: #0f2721;
+  --ink-green-900: #14342c;
+  --ink-green-800: #1d4d3c;
+  --ink-green-700: #2a6650;
+  --ink-green-600: #3a7f64;
+
+  /* 晚霞：夕照亭的金橘与珊瑚 */
+  --sunset-gold: #e8a765;
+  --sunset-gold-deep: #d08c46;
+  --sunset-coral: #e2795f;
+  --sunset-rose: #e59aa0;
+
+  /* 朱红：印章 */
+  --seal-red: #b4402f;
+
+  /* 远山雾紫 */
+  --mist-violet: #b9c2de;
+  --mist-blue: #9fb0cf;
+
+  /* 宣纸暖白 */
+  --paper-white: #faf6ee;
+  --paper-warm: #f4ece0;
 }
