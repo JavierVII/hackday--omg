@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 import "./styles.css";
 
 export function EntrancePage() {
@@ -23,9 +25,9 @@ export function EntrancePage() {
         </p>
 
         <div className="entrance-page__actions" aria-label="入口选择">
-          <button className="entrance-page__button entrance-page__button--primary" type="button">
+          <Link className="entrance-page__button entrance-page__button--primary" to="/home">
             体验游客端
-          </button>
+          </Link>
           <button className="entrance-page__button entrance-page__button--secondary" type="button">
             进入管理端
           </button>
