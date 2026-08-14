@@ -283,20 +283,24 @@
   line-height: 1.6;
 }
 
-.cloud-tour-card button {
+.cloud-tour-card__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 36px;
   padding: 0 15px;
   color: #fff;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
   background: #157f79;
   border: 0;
   border-radius: 10px;
   box-shadow: 0 8px 16px rgb(13 94 89 / 19%);
 }
 
-.cloud-tour-card button span {
+.cloud-tour-card__cta span {
   margin-left: 5px;
 }
 

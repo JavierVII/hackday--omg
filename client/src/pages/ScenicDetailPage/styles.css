@@ -1,0 +1,596 @@
+.scenic-stage--refined {
+  min-height: 100svh;
+  padding: 28px;
+  color: #123f3c;
+  background:
+    radial-gradient(circle at 78% 12%, rgb(207 169 90 / 16%), transparent 26%),
+    radial-gradient(circle at 14% 82%, rgb(57 148 138 / 18%), transparent 30%),
+    #082f32;
+}
+
+.scenic-detail--refined {
+  position: relative;
+  display: grid;
+  width: min(100%, 480px);
+  height: calc(100svh - 56px);
+  min-height: 540px;
+  grid-template-rows: minmax(0, 1fr) auto;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #f7f8f5;
+  border: 1px solid rgb(222 241 236 / 48%);
+  border-radius: 30px;
+  box-shadow: 0 32px 92px rgb(0 18 20 / 46%);
+}
+
+.scenic-detail__scroll--refined {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-color: rgb(21 103 96 / 36%) transparent;
+  scrollbar-width: thin;
+}
+
+.scenic-detail__scroll--refined::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scenic-detail__scroll--refined::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scenic-detail__scroll--refined::-webkit-scrollbar-thumb {
+  background: rgb(21 103 96 / 36%);
+  border-radius: 999px;
+}
+
+.scenic-cover {
+  position: relative;
+  height: 292px;
+  color: #113f3c;
+  background-image: url("/assets/west-lake-hero.png");
+  background-position: 54% center;
+  background-size: cover;
+}
+
+.scenic-cover::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 64px;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(transparent, #f7f8f5);
+}
+
+.scenic-status {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 0;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 750;
+  text-shadow: 0 1px 5px rgb(0 35 34 / 45%);
+}
+
+.scenic-status__icons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.scenic-cover__toolbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 18px 0;
+}
+
+.scenic-cover__toolbar-group {
+  display: flex;
+  gap: 9px;
+}
+
+.scenic-icon-button {
+  display: grid;
+  width: 44px;
+  aspect-ratio: 1;
+  place-items: center;
+  padding: 0;
+  color: #174843;
+  text-decoration: none;
+  cursor: pointer;
+  background: rgb(255 255 255 / 91%);
+  border: 1px solid rgb(255 255 255 / 72%);
+  border-radius: 50%;
+  box-shadow: 0 8px 24px rgb(23 62 55 / 16%);
+  backdrop-filter: blur(10px);
+  transition: color 160ms ease, transform 160ms ease, background-color 160ms ease;
+}
+
+.scenic-icon-button:hover {
+  transform: translateY(-1px);
+}
+
+.scenic-icon-button.is-active {
+  color: #a66b30;
+  background: #fff8e9;
+}
+
+.scenic-summary {
+  position: relative;
+  z-index: 2;
+  padding: 0 24px 25px;
+  margin-top: -26px;
+}
+
+.scenic-summary h1 {
+  margin: 0;
+  color: #0f3f3c;
+  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
+  font-size: clamp(29px, 7.4vw, 36px);
+  font-weight: 600;
+  line-height: 1.22;
+  letter-spacing: 0.025em;
+}
+
+.scenic-summary__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 13px;
+  align-items: center;
+  margin-top: 14px;
+  color: #727c79;
+  font-size: 11px;
+}
+
+.scenic-summary__meta > span {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.scenic-summary__rating {
+  gap: 8px !important;
+  color: #c7933d;
+}
+
+.scenic-summary__rating strong {
+  color: #14514d;
+  font-size: 22px;
+}
+
+.scenic-summary__stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.scenic-explore-rail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0 18px;
+  padding: 22px 0 24px;
+  background: #fff;
+  border: 1px solid #e4e9e5;
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgb(35 65 56 / 7%);
+}
+
+.scenic-explore-rail button {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 8px;
+  color: #154b47;
+  text-align: center;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+.scenic-explore-rail button + button::before {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 0;
+  width: 1px;
+  content: "";
+  background: #e5e9e5;
+}
+
+.scenic-explore-rail__icon {
+  display: grid;
+  width: 43px;
+  aspect-ratio: 1;
+  place-items: center;
+  margin-bottom: 12px;
+  color: #176c66;
+  background: #edf6f2;
+  border: 1px solid #cfe3dc;
+  border-radius: 50%;
+  transition: color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.scenic-explore-rail button:hover .scenic-explore-rail__icon {
+  color: #fff;
+  background: #176c66;
+  transform: translateY(-2px);
+}
+
+.scenic-explore-rail strong {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.scenic-explore-rail small {
+  margin-top: 5px;
+  color: #919a97;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.scenic-editorial {
+  position: relative;
+  margin-top: 18px;
+  overflow: hidden;
+  padding: 30px 24px 34px;
+  background: linear-gradient(135deg, #f1f4ef, #fff 72%);
+  border-top: 1px solid #e5e9e3;
+  border-bottom: 1px solid #e5e9e3;
+}
+
+.scenic-editorial h2 {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: #164b47;
+  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.03em;
+}
+
+.scenic-editorial p {
+  position: relative;
+  z-index: 1;
+  max-width: 390px;
+  margin: 16px 0 0;
+  color: #6f7a76;
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.scenic-editorial__mountains {
+  position: absolute;
+  right: -34px;
+  bottom: -48px;
+  width: 210px;
+  height: 126px;
+  opacity: 0.42;
+  background:
+    radial-gradient(ellipse at 70% 100%, transparent 0 46%, #c8d8d1 47% 49%, transparent 50%),
+    radial-gradient(ellipse at 26% 100%, transparent 0 42%, #d1ddd7 43% 45%, transparent 46%);
+}
+
+.scenic-content-section {
+  padding: 28px 0 2px;
+}
+
+.scenic-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px 16px;
+}
+
+.scenic-section-title h2 {
+  position: relative;
+  margin: 0;
+  padding-left: 11px;
+  color: #173f3c;
+  font-size: 18px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+
+.scenic-section-title h2::before {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 0;
+  width: 3px;
+  content: "";
+  background: #caa152;
+  border-radius: 999px;
+}
+
+.scenic-section-title button {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+  padding: 0;
+  color: #7b8682;
+  font-size: 10px;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+.scenic-spot-rail,
+.scenic-story-rail {
+  display: flex;
+  width: calc(100% - 22px);
+  gap: 12px;
+  overflow-x: auto;
+  margin-left: 22px;
+  padding: 0 22px 8px 0;
+  scroll-padding-right: 22px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.scenic-spot-rail::-webkit-scrollbar,
+.scenic-story-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.scenic-spot-card {
+  width: 160px;
+  flex: 0 0 160px;
+  padding: 0;
+  color: #1d4945;
+  text-align: left;
+  background: transparent;
+  scroll-snap-align: start;
+}
+
+.scenic-spot-card__image {
+  display: block;
+  width: 100%;
+  height: 96px;
+  background-image: url("/assets/west-lake-hero.png");
+  background-size: 310%;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgb(33 67 58 / 11%);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.scenic-spot-card:hover .scenic-spot-card__image {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgb(33 67 58 / 16%);
+}
+
+.scenic-spot-card__image.is-turtle-pond {
+  background-position: 10% 78%;
+}
+
+.scenic-spot-card__image.is-lotus {
+  background-position: 45% 74%;
+}
+
+.scenic-spot-card__image.is-sunset {
+  background-position: 92% 34%;
+}
+
+.scenic-spot-card__copy,
+.scenic-spot-card__copy > span {
+  display: flex;
+  align-items: center;
+}
+
+.scenic-spot-card__copy {
+  justify-content: space-between;
+  padding: 10px 2px 0;
+}
+
+.scenic-spot-card__copy > span {
+  min-width: 0;
+  gap: 5px;
+}
+
+.scenic-spot-card__copy strong {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.scenic-spot-card__copy small {
+  color: #9a8d72;
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+.scenic-spot-card__action {
+  display: grid;
+  width: 100%;
+  min-height: 34px;
+  grid-template-columns: auto 1fr auto;
+  gap: 5px;
+  align-items: center;
+  margin-top: 10px;
+  padding: 0 10px;
+  color: #176760;
+  font-size: 10px;
+  font-weight: 750;
+  text-align: left;
+  cursor: pointer;
+  background: #edf5f1;
+  border: 1px solid #d0e2dc;
+  border-radius: 10px;
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+}
+
+.scenic-spot-card__action:hover {
+  color: #fff;
+  background: #176c66;
+  border-color: #176c66;
+}
+
+.scenic-story-card {
+  position: relative;
+  width: 178px;
+  height: 142px;
+  flex: 0 0 178px;
+  overflow: hidden;
+  color: #fff;
+  background-image:
+    linear-gradient(180deg, transparent 36%, rgb(6 41 39 / 78%)),
+    url("/assets/west-lake-hero.png");
+  background-size: auto, 285%;
+  border-radius: 17px;
+  box-shadow: 0 9px 24px rgb(30 65 58 / 12%);
+  scroll-snap-align: start;
+}
+
+.scenic-story-card.is-dawn {
+  background-position: center, 8% 72%;
+}
+
+.scenic-story-card.is-summer {
+  background-position: center, 53% 62%;
+}
+
+.scenic-story-card.is-evening {
+  background-position: center, 96% 38%;
+}
+
+.scenic-story-card__copy {
+  position: absolute;
+  right: 44px;
+  bottom: 13px;
+  left: 14px;
+  display: grid;
+  gap: 4px;
+}
+
+.scenic-story-card__copy strong {
+  font-size: 13px;
+}
+
+.scenic-story-card__copy span {
+  color: rgb(255 255 255 / 78%);
+  font-size: 10px;
+}
+
+.scenic-story-card > button {
+  position: absolute;
+  right: 11px;
+  bottom: 11px;
+  display: grid;
+  width: 30px;
+  aspect-ratio: 1;
+  place-items: center;
+  padding: 0;
+  color: #fff;
+  cursor: pointer;
+  background: rgb(8 46 43 / 32%);
+  border: 1px solid rgb(255 255 255 / 44%);
+  border-radius: 50%;
+  backdrop-filter: blur(7px);
+}
+
+.scenic-content-section:last-child {
+  padding-bottom: 32px;
+}
+
+.scenic-cta-bar--refined {
+  position: relative;
+  z-index: 10;
+  padding: 12px 16px max(12px, env(safe-area-inset-bottom));
+  background: rgb(247 248 245 / 94%);
+  border-top: 1px solid #e1e6e1;
+  backdrop-filter: blur(18px);
+}
+
+.scenic-cta-bar--refined > button {
+  display: grid;
+  width: 100%;
+  min-height: 54px;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 0 15px 0 10px;
+  color: #fff8e8;
+  font-size: 15px;
+  font-weight: 750;
+  text-align: left;
+  cursor: pointer;
+  background:
+    radial-gradient(circle at 92% 12%, rgb(212 170 86 / 20%), transparent 28%),
+    linear-gradient(125deg, #0f615c, #147a72);
+  border: 0;
+  border-radius: 16px;
+  box-shadow: 0 12px 26px rgb(14 91 84 / 24%);
+}
+
+.scenic-cta-bar__icon {
+  display: grid;
+  width: 38px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: #f0cd86;
+  border: 1px solid rgb(242 207 141 / 72%);
+  border-radius: 50%;
+}
+
+.scenic-stage--refined button:focus-visible,
+.scenic-stage--refined a:focus-visible,
+.scenic-detail__scroll--refined:focus-visible {
+  outline: 3px solid rgb(24 128 119 / 34%);
+  outline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .scenic-stage--refined {
+    padding: 0;
+    background: #f7f8f5;
+  }
+
+  .scenic-detail--refined {
+    width: 100%;
+    height: 100svh;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 390px) {
+  .scenic-cover {
+    height: 272px;
+  }
+
+  .scenic-summary {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .scenic-summary h1 {
+    font-size: 28px;
+  }
+
+  .scenic-explore-rail {
+    margin-right: 12px;
+    margin-left: 12px;
+  }
+
+  .scenic-explore-rail small {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scenic-icon-button,
+  .scenic-explore-rail__icon,
+  .scenic-spot-card__image {
+    transition: none;
+  }
+}
