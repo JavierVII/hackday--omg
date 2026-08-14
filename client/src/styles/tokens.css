@@ -1,8 +1,31 @@
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
-  color: #f4f7f5;
-  background: #0b1f1a;
+  color: #17352a;
+  background: #f4fbf6;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+
+  /* —— 马卡龙渐变 · 明亮绿 主题 —— */
+
+  /* 马卡龙柔和底色 */
+  --macaron-cream: #fdf8ee;
+  --macaron-mint: #e6f7e6;
+  --macaron-green: #d7f2df;
+  --macaron-blush: #ffe3db;
+  --macaron-pink: #ffdde2;
+  --macaron-lavender: #e6def8;
+  --macaron-peach: #ffe3cf;
+
+  /* 明亮绿主色阶 */
+  --green-bright: #23c264;
+  --green-bright-strong: #1ab358;
+  --green-bright-hover: #2fd072;
+  --green-bright-glow: #3fe07e;
+
+  /* 文本层级 */
+  --green-deep: #17352a;
+  --green-muted: #4d6b5f;
+  --green-faint: #7ea392;
+  --green-hairline: rgb(35 194 100 / 16%);
 }
