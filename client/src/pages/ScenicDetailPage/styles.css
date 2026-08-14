@@ -1,11 +1,11 @@
 .scenic-stage--refined {
   min-height: 100svh;
   padding: 28px;
-  color: #123f3c;
+  color: var(--ink-green-900);
   background:
-    radial-gradient(circle at 78% 12%, rgb(207 169 90 / 16%), transparent 26%),
-    radial-gradient(circle at 14% 82%, rgb(57 148 138 / 18%), transparent 30%),
-    #082f32;
+    radial-gradient(circle at 78% 12%, rgb(232 167 101 / 20%), transparent 32%),
+    radial-gradient(circle at 14% 84%, rgb(226 121 95 / 15%), transparent 30%),
+    var(--ink-green-950);
 }
 
 .scenic-detail--refined {
@@ -17,10 +17,10 @@
   grid-template-rows: minmax(0, 1fr) auto;
   margin: 0 auto;
   overflow: hidden;
-  background: #f7f8f5;
-  border: 1px solid rgb(222 241 236 / 48%);
+  background: var(--paper-white);
+  border: 1px solid var(--hairline-gold);
   border-radius: 30px;
-  box-shadow: 0 32px 92px rgb(0 18 20 / 46%);
+  box-shadow: var(--shadow-float);
 }
 
 .scenic-detail__scroll--refined {
@@ -28,7 +28,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior-y: contain;
-  scrollbar-color: rgb(21 103 96 / 36%) transparent;
+  scrollbar-color: rgb(29 77 60 / 26%) transparent;
   scrollbar-width: thin;
 }
 
@@ -41,26 +41,33 @@
 }
 
 .scenic-detail__scroll--refined::-webkit-scrollbar-thumb {
-  background: rgb(21 103 96 / 36%);
+  background: rgb(29 77 60 / 26%);
   border-radius: 999px;
 }
+
+/* —— 封面 —— */
 
 .scenic-cover {
   position: relative;
   height: 292px;
-  color: #113f3c;
-  background-image: url("/assets/west-lake-hero.png");
-  background-position: 54% center;
-  background-size: cover;
 }
 
-.scenic-cover::after {
+.scenic-cover__photo {
   position: absolute;
-  inset: auto 0 0;
-  height: 64px;
-  content: "";
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 上缘压暗给状态栏与工具按钮留出可读性，下缘渐隐进纸面 */
+.scenic-cover__scrim {
+  position: absolute;
+  inset: 0;
   pointer-events: none;
-  background: linear-gradient(transparent, #f7f8f5);
+  background:
+    linear-gradient(to bottom, rgb(15 39 33 / 46%) 0%, transparent 30%),
+    linear-gradient(to bottom, transparent 62%, rgb(250 246 238 / 72%) 86%, var(--paper-white) 100%);
 }
 
 .scenic-status {
@@ -70,10 +77,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 20px 0;
-  color: #fff;
+  color: var(--paper-white);
   font-size: 12px;
-  font-weight: 750;
-  text-shadow: 0 1px 5px rgb(0 35 34 / 45%);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 6px rgb(15 39 33 / 55%);
 }
 
 .scenic-status__icons {
@@ -102,41 +109,47 @@
   aspect-ratio: 1;
   place-items: center;
   padding: 0;
-  color: #174843;
+  color: var(--ink-green-900);
   text-decoration: none;
   cursor: pointer;
-  background: rgb(255 255 255 / 91%);
-  border: 1px solid rgb(255 255 255 / 72%);
+  background: var(--glass-paper);
+  border: 1px solid rgb(250 246 238 / 56%);
   border-radius: 50%;
-  box-shadow: 0 8px 24px rgb(23 62 55 / 16%);
-  backdrop-filter: blur(10px);
-  transition: color 160ms ease, transform 160ms ease, background-color 160ms ease;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: var(--glass-blur);
+  transition: color 180ms ease, transform 180ms ease, background-color 180ms ease;
 }
 
 .scenic-icon-button:hover {
+  background: rgb(250 246 238 / 88%);
   transform: translateY(-1px);
 }
 
 .scenic-icon-button.is-active {
-  color: #a66b30;
-  background: #fff8e9;
+  color: var(--seal-red);
+  background: rgb(250 246 238 / 92%);
 }
+
+/* —— 标题与信息 —— */
 
 .scenic-summary {
   position: relative;
   z-index: 2;
   padding: 0 24px 25px;
-  margin-top: -26px;
+  margin-top: -28px;
 }
 
 .scenic-summary h1 {
   margin: 0;
-  color: #0f3f3c;
-  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
+  color: var(--ink-green-950);
+  font-family: var(--font-display);
   font-size: clamp(29px, 7.4vw, 36px);
-  font-weight: 600;
-  line-height: 1.22;
-  letter-spacing: 0.025em;
+  font-weight: 400;
+  line-height: 1.24;
+  letter-spacing: 0.04em;
+  background: linear-gradient(168deg, var(--ink-green-950) 0%, var(--ink-green-800) 58%, var(--sunset-gold-deep) 122%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .scenic-summary__meta {
@@ -145,7 +158,7 @@
   gap: 9px 13px;
   align-items: center;
   margin-top: 14px;
-  color: #727c79;
+  color: var(--ink-green-700);
   font-size: 11px;
 }
 
@@ -157,12 +170,14 @@
 
 .scenic-summary__rating {
   gap: 8px !important;
-  color: #c7933d;
+  color: var(--sunset-gold-deep);
 }
 
 .scenic-summary__rating strong {
-  color: #14514d;
-  font-size: 22px;
+  color: var(--ink-green-900);
+  font-family: var(--font-display);
+  font-size: 23px;
+  font-weight: 400;
 }
 
 .scenic-summary__stars {
@@ -170,39 +185,43 @@
   gap: 2px;
 }
 
+/* —— 游览入口 —— */
+
 .scenic-explore-rail {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin: 0 18px;
   padding: 22px 0 24px;
-  background: #fff;
-  border: 1px solid #e4e9e5;
+  background: linear-gradient(150deg, var(--paper-white), var(--paper-warm));
+  border: 1px solid var(--hairline-ink);
   border-radius: 20px;
-  box-shadow: 0 12px 30px rgb(35 65 56 / 7%);
+  box-shadow: var(--shadow-card);
 }
 
-.scenic-explore-rail button {
+.scenic-explore-rail :is(a, button) {
   position: relative;
   display: flex;
   min-width: 0;
   flex-direction: column;
   align-items: center;
   padding: 0 8px;
-  color: #154b47;
+  color: var(--ink-green-900);
+  font-family: inherit;
   text-align: center;
+  text-decoration: none;
   cursor: pointer;
   background: transparent;
   border: 0;
 }
 
-.scenic-explore-rail button + button::before {
+.scenic-explore-rail :is(a, button) + :is(a, button)::before {
   position: absolute;
   top: 12px;
   bottom: 12px;
   left: 0;
   width: 1px;
   content: "";
-  background: #e5e9e5;
+  background: var(--hairline-ink);
 }
 
 .scenic-explore-rail__icon {
@@ -211,51 +230,55 @@
   aspect-ratio: 1;
   place-items: center;
   margin-bottom: 12px;
-  color: #176c66;
-  background: #edf6f2;
-  border: 1px solid #cfe3dc;
+  color: var(--ink-green-700);
+  background: rgb(42 102 80 / 9%);
+  border: 1px solid var(--hairline-ink-strong);
   border-radius: 50%;
-  transition: color 160ms ease, background-color 160ms ease, transform 160ms ease;
+  transition: color 180ms ease, background-color 180ms ease, transform 180ms ease;
 }
 
-.scenic-explore-rail button:hover .scenic-explore-rail__icon {
-  color: #fff;
-  background: #176c66;
+.scenic-explore-rail :is(a, button):hover .scenic-explore-rail__icon {
+  color: var(--paper-white);
+  background: linear-gradient(140deg, var(--ink-green-800), var(--ink-green-950));
+  border-color: transparent;
   transform: translateY(-2px);
 }
 
 .scenic-explore-rail strong {
   font-size: 12px;
+  font-weight: 600;
   line-height: 1.35;
 }
 
 .scenic-explore-rail small {
   margin-top: 5px;
-  color: #919a97;
+  color: var(--ink-green-600);
   font-size: 9px;
   line-height: 1.4;
 }
+
+/* —— 景区导语 —— */
 
 .scenic-editorial {
   position: relative;
   margin-top: 18px;
   overflow: hidden;
   padding: 30px 24px 34px;
-  background: linear-gradient(135deg, #f1f4ef, #fff 72%);
-  border-top: 1px solid #e5e9e3;
-  border-bottom: 1px solid #e5e9e3;
+  background: linear-gradient(135deg, var(--paper-warm), var(--paper-white) 74%);
+  border-top: 1px solid var(--hairline-ink);
+  border-bottom: 1px solid var(--hairline-ink);
 }
 
 .scenic-editorial h2 {
   position: relative;
   z-index: 1;
   margin: 0;
-  color: #164b47;
-  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
-  font-size: 25px;
-  font-weight: 600;
-  line-height: 1.35;
-  letter-spacing: 0.03em;
+  color: var(--ink-green-900);
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.38;
+  letter-spacing: 0.05em;
 }
 
 .scenic-editorial p {
@@ -263,22 +286,25 @@
   z-index: 1;
   max-width: 390px;
   margin: 16px 0 0;
-  color: #6f7a76;
+  color: var(--ink-green-700);
   font-size: 12px;
-  line-height: 1.9;
+  line-height: 1.95;
 }
 
+/* 右下角远山，只用墨绿细线勾两道 */
 .scenic-editorial__mountains {
   position: absolute;
   right: -34px;
   bottom: -48px;
   width: 210px;
   height: 126px;
-  opacity: 0.42;
+  opacity: 0.5;
   background:
-    radial-gradient(ellipse at 70% 100%, transparent 0 46%, #c8d8d1 47% 49%, transparent 50%),
-    radial-gradient(ellipse at 26% 100%, transparent 0 42%, #d1ddd7 43% 45%, transparent 46%);
+    radial-gradient(ellipse at 70% 100%, transparent 0 46%, rgb(42 102 80 / 34%) 47% 49%, transparent 50%),
+    radial-gradient(ellipse at 26% 100%, transparent 0 42%, rgb(185 194 222 / 62%) 43% 45%, transparent 46%);
 }
+
+/* —— 区块标题 —— */
 
 .scenic-content-section {
   padding: 28px 0 2px;
@@ -294,21 +320,22 @@
 .scenic-section-title h2 {
   position: relative;
   margin: 0;
-  padding-left: 11px;
-  color: #173f3c;
-  font-size: 18px;
-  font-weight: 750;
-  letter-spacing: 0.02em;
+  padding-left: 12px;
+  color: var(--ink-green-950);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
 }
 
 .scenic-section-title h2::before {
   position: absolute;
-  top: 2px;
-  bottom: 2px;
+  top: 3px;
+  bottom: 3px;
   left: 0;
   width: 3px;
   content: "";
-  background: #caa152;
+  background: var(--sunset-gold);
   border-radius: 999px;
 }
 
@@ -317,12 +344,15 @@
   gap: 2px;
   align-items: center;
   padding: 0;
-  color: #7b8682;
+  color: var(--ink-green-600);
+  font-family: inherit;
   font-size: 10px;
   cursor: pointer;
   background: transparent;
   border: 0;
 }
+
+/* —— 场景卡 / 游记卡 —— */
 
 .scenic-spot-rail,
 .scenic-story-rail {
@@ -346,7 +376,7 @@
   width: 160px;
   flex: 0 0 160px;
   padding: 0;
-  color: #1d4945;
+  color: var(--ink-green-900);
   text-align: left;
   background: transparent;
   scroll-snap-align: start;
@@ -356,28 +386,24 @@
   display: block;
   width: 100%;
   height: 96px;
-  background-image: url("/assets/west-lake-hero.png");
-  background-size: 310%;
+  overflow: hidden;
+  border: 1px solid var(--hairline-ink);
   border-radius: 15px;
-  box-shadow: 0 8px 20px rgb(33 67 58 / 11%);
+  box-shadow: var(--shadow-card);
   transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.scenic-spot-card__image img,
+.scenic-story-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .scenic-spot-card:hover .scenic-spot-card__image {
   transform: translateY(-2px);
-  box-shadow: 0 12px 26px rgb(33 67 58 / 16%);
-}
-
-.scenic-spot-card__image.is-turtle-pond {
-  background-position: 10% 78%;
-}
-
-.scenic-spot-card__image.is-lotus {
-  background-position: 45% 74%;
-}
-
-.scenic-spot-card__image.is-sunset {
-  background-position: 92% 34%;
+  box-shadow: var(--shadow-raised);
 }
 
 .scenic-spot-card__copy,
@@ -393,17 +419,18 @@
 
 .scenic-spot-card__copy > span {
   min-width: 0;
-  gap: 5px;
+  gap: 6px;
 }
 
 .scenic-spot-card__copy strong {
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
   white-space: nowrap;
 }
 
 .scenic-spot-card__copy small {
-  color: #9a8d72;
-  font-size: 8px;
+  color: var(--ink-green-600);
+  font-size: 9px;
   white-space: nowrap;
 }
 
@@ -416,21 +443,36 @@
   align-items: center;
   margin-top: 10px;
   padding: 0 10px;
-  color: #176760;
+  color: var(--ink-green-800);
   font-size: 10px;
-  font-weight: 750;
+  font-weight: 600;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
-  background: #edf5f1;
-  border: 1px solid #d0e2dc;
+  background: rgb(42 102 80 / 8%);
+  border: 1px solid var(--hairline-ink-strong);
   border-radius: 10px;
-  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+  transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease;
 }
 
 .scenic-spot-card__action:hover {
-  color: #fff;
-  background: #176c66;
-  border-color: #176c66;
+  color: var(--paper-white);
+  background: linear-gradient(140deg, var(--ink-green-800), var(--ink-green-950));
+  border-color: transparent;
+}
+
+.scenic-spot-card__action.is-pending {
+  grid-template-columns: auto 1fr;
+  color: var(--ink-green-600);
+  cursor: default;
+  background: transparent;
+  border-style: dashed;
+}
+
+.scenic-spot-card__action.is-pending:hover {
+  color: var(--ink-green-600);
+  background: transparent;
+  border-color: var(--hairline-ink-strong);
 }
 
 .scenic-story-card {
@@ -439,26 +481,17 @@
   height: 142px;
   flex: 0 0 178px;
   overflow: hidden;
-  color: #fff;
-  background-image:
-    linear-gradient(180deg, transparent 36%, rgb(6 41 39 / 78%)),
-    url("/assets/west-lake-hero.png");
-  background-size: auto, 285%;
+  color: var(--paper-white);
+  border: 1px solid var(--hairline-ink);
   border-radius: 17px;
-  box-shadow: 0 9px 24px rgb(30 65 58 / 12%);
+  box-shadow: var(--shadow-card);
   scroll-snap-align: start;
 }
 
-.scenic-story-card.is-dawn {
-  background-position: center, 8% 72%;
-}
-
-.scenic-story-card.is-summer {
-  background-position: center, 53% 62%;
-}
-
-.scenic-story-card.is-evening {
-  background-position: center, 96% 38%;
+.scenic-story-card__mask {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgb(15 39 33 / 86%) 0%, rgb(15 39 33 / 26%) 44%, transparent 72%);
 }
 
 .scenic-story-card__copy {
@@ -471,11 +504,14 @@
 }
 
 .scenic-story-card__copy strong {
-  font-size: 13px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
 }
 
 .scenic-story-card__copy span {
-  color: rgb(255 255 255 / 78%);
+  color: rgb(250 246 238 / 72%);
   font-size: 10px;
 }
 
@@ -488,10 +524,10 @@
   aspect-ratio: 1;
   place-items: center;
   padding: 0;
-  color: #fff;
+  color: var(--paper-white);
   cursor: pointer;
-  background: rgb(8 46 43 / 32%);
-  border: 1px solid rgb(255 255 255 / 44%);
+  background: var(--glass-ink);
+  border: 1px solid var(--hairline-gold);
   border-radius: 50%;
   backdrop-filter: blur(7px);
 }
@@ -500,16 +536,18 @@
   padding-bottom: 32px;
 }
 
+/* —— 底部主操作 —— */
+
 .scenic-cta-bar--refined {
   position: relative;
-  z-index: 10;
+  z-index: 2;
   padding: 12px 16px max(12px, env(safe-area-inset-bottom));
-  background: rgb(247 248 245 / 94%);
-  border-top: 1px solid #e1e6e1;
+  background: rgb(250 246 238 / 92%);
+  border-top: 1px solid var(--hairline-ink);
   backdrop-filter: blur(18px);
 }
 
-.scenic-cta-bar--refined > button {
+.scenic-cta-bar--refined > :is(a, button) {
   display: grid;
   width: 100%;
   min-height: 54px;
@@ -517,17 +555,26 @@
   gap: 12px;
   align-items: center;
   padding: 0 15px 0 10px;
-  color: #fff8e8;
-  font-size: 15px;
-  font-weight: 750;
+  color: var(--paper-white);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
   background:
-    radial-gradient(circle at 92% 12%, rgb(212 170 86 / 20%), transparent 28%),
-    linear-gradient(125deg, #0f615c, #147a72);
+    radial-gradient(circle at 92% 10%, rgb(232 167 101 / 26%), transparent 40%),
+    linear-gradient(140deg, var(--ink-green-800), var(--ink-green-950));
   border: 0;
   border-radius: 16px;
-  box-shadow: 0 12px 26px rgb(14 91 84 / 24%);
+  box-shadow: var(--shadow-raised);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.scenic-cta-bar--refined > :is(a, button):hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-float), 0 0 0 1px var(--hairline-gold);
 }
 
 .scenic-cta-bar__icon {
@@ -535,22 +582,21 @@
   width: 38px;
   aspect-ratio: 1;
   place-items: center;
-  color: #f0cd86;
-  border: 1px solid rgb(242 207 141 / 72%);
+  color: var(--sunset-gold);
+  border: 1px solid rgb(232 167 101 / 62%);
   border-radius: 50%;
 }
 
-.scenic-stage--refined button:focus-visible,
-.scenic-stage--refined a:focus-visible,
+.scenic-stage--refined :is(a, button):focus-visible,
 .scenic-detail__scroll--refined:focus-visible {
-  outline: 3px solid rgb(24 128 119 / 34%);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
 @media (max-width: 520px) {
   .scenic-stage--refined {
     padding: 0;
-    background: #f7f8f5;
+    background: var(--paper-white);
   }
 
   .scenic-detail--refined {
@@ -590,7 +636,16 @@
 @media (prefers-reduced-motion: reduce) {
   .scenic-icon-button,
   .scenic-explore-rail__icon,
-  .scenic-spot-card__image {
+  .scenic-spot-card__image,
+  .scenic-spot-card__action,
+  .scenic-cta-bar--refined > :is(a, button) {
     transition: none;
+  }
+
+  .scenic-icon-button:hover,
+  .scenic-spot-card:hover .scenic-spot-card__image,
+  .scenic-explore-rail :is(a, button):hover .scenic-explore-rail__icon,
+  .scenic-cta-bar--refined > :is(a, button):hover {
+    transform: none;
   }
 }

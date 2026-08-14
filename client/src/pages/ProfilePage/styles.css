@@ -1,31 +1,27 @@
-.profile-stage {
-  color: #173d3a;
-}
-
-.profile-page {
-  background: #f5f1e8;
-}
+/* 我的。外壳（.app-home-stage / .app-home / .app-bottom-nav）复用 HomePage/styles.css，
+   本文件只写本页自有部分，配色取 tokens.css 的西湖实景色板。 */
 
 .profile-hero {
   position: relative;
   flex: none;
   padding: 14px 20px 30px;
-  color: #effbf8;
-  background:
-    radial-gradient(circle at 82% 18%, rgb(116 222 209 / 22%), transparent 28%),
-    linear-gradient(145deg, #0e5956, #0a3d40 76%);
+  overflow: hidden;
+  color: var(--paper-white);
+  background: linear-gradient(158deg, var(--ink-green-800) 0%, var(--ink-green-900) 52%, var(--ink-green-950) 100%);
 }
 
+/* 右下角晚霞光晕，与首页 / 个人空间同一手法 */
 .profile-hero::after {
   position: absolute;
-  right: -48px;
-  bottom: -62px;
-  width: 190px;
+  right: -56px;
+  bottom: -76px;
+  width: 210px;
   aspect-ratio: 1;
-  content: "";
-  border: 1px solid rgb(149 232 220 / 12%);
+  background:
+    radial-gradient(circle at 50% 50%, rgb(232 167 101 / 28%) 0%, rgb(226 121 95 / 12%) 46%, transparent 72%);
   border-radius: 50%;
-  box-shadow: 0 0 0 28px rgb(110 215 202 / 5%);
+  content: "";
+  pointer-events: none;
 }
 
 .profile-status {
@@ -34,15 +30,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: rgb(230 249 245 / 76%);
+  color: rgb(250 246 238 / 74%);
   font-size: 12px;
-  font-weight: 650;
 }
 
 .profile-status time {
-  color: #fff;
+  color: var(--paper-white);
   font-size: 14px;
-  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
 }
 
 .profile-hero__heading {
@@ -60,17 +56,18 @@
 }
 
 .profile-hero__heading p {
-  font-family: "STKaiti", "KaiTi", serif;
+  font-family: var(--font-display);
   font-size: 30px;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: 0.08em;
+  text-shadow: 0 1px 12px rgb(15 39 33 / 40%);
 }
 
 .profile-hero__heading h1 {
   margin-top: 4px;
-  color: rgb(229 248 244 / 70%);
+  color: rgb(250 246 238 / 68%);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 0.08em;
 }
 
@@ -80,21 +77,22 @@
   width: 40px;
   aspect-ratio: 1;
   place-items: center;
-  color: #effbf8;
+  color: var(--paper-white);
   cursor: pointer;
-  background: rgb(255 255 255 / 10%);
-  border: 1px solid rgb(223 250 245 / 18%);
+  background: rgb(250 246 238 / 10%);
+  border: 1px solid rgb(250 246 238 / 18%);
   border-radius: 13px;
 }
 
+/* 未读小圆点 */
 .profile-hero__heading > button span {
   position: absolute;
   top: 8px;
   right: 8px;
   width: 6px;
   aspect-ratio: 1;
-  background: #f1c77b;
-  border: 1px solid #0c4b4a;
+  background: var(--sunset-gold);
+  border: 1px solid var(--ink-green-900);
   border-radius: 50%;
 }
 
@@ -108,48 +106,29 @@
   margin-top: 24px;
 }
 
+/* 头像：实景照片裁切，不再用 CSS 画太阳与山丘 */
 .profile-avatar {
   position: relative;
-  display: grid;
   width: 66px;
   aspect-ratio: 1;
   overflow: hidden;
-  place-items: end center;
-  color: #f8e9c8;
-  background: #d3ece5;
-  border: 2px solid rgb(255 255 255 / 72%);
   border-radius: 22px;
-  box-shadow: 0 9px 22px rgb(0 35 35 / 23%);
+  box-shadow: var(--shadow-raised);
 }
 
-.profile-avatar svg {
-  position: relative;
-  z-index: 2;
-  margin-bottom: 7px;
-  padding: 3px;
-  color: #f8e9c8;
-  background: #347a70;
-  border-radius: 50% 50% 38% 38%;
+.profile-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.profile-avatar__sun {
+.profile-avatar__ring {
   position: absolute;
-  top: 9px;
-  right: 9px;
-  width: 16px;
-  aspect-ratio: 1;
-  background: #efc87c;
-  border-radius: 50%;
-}
-
-.profile-avatar__hill {
-  position: absolute;
-  right: -8px;
-  bottom: 0;
-  left: -8px;
-  height: 31px;
-  background: #72ad97;
-  border-radius: 60% 60% 0 0;
+  inset: 0;
+  border: 2px solid rgb(250 246 238 / 70%);
+  border-radius: 22px;
+  box-shadow: inset 0 -18px 24px -16px rgb(15 39 33 / 60%);
 }
 
 .profile-card__identity h2,
@@ -158,8 +137,9 @@
 }
 
 .profile-card__identity h2 {
-  font-family: "STKaiti", "KaiTi", serif;
+  font-family: var(--font-display);
   font-size: 23px;
+  font-weight: 400;
   letter-spacing: 0.04em;
 }
 
@@ -168,27 +148,32 @@
   gap: 3px;
   align-items: center;
   margin-top: 4px;
-  color: rgb(232 249 245 / 78%);
+  color: rgb(250 246 238 / 78%);
   font-size: 11px;
+}
+
+.profile-card__identity p > svg {
+  color: var(--sunset-gold);
 }
 
 .profile-card__identity > span {
   display: block;
   margin-top: 5px;
-  color: rgb(220 244 239 / 48%);
+  color: rgb(250 246 238 / 46%);
   font-size: 9px;
+  font-variant-numeric: tabular-nums;
   letter-spacing: 0.04em;
 }
 
 .profile-card__edit {
   min-height: 31px;
   padding: 0 11px;
-  color: #f2fbf9;
+  color: var(--paper-white);
+  font-family: inherit;
   font-size: 10px;
-  font-weight: 700;
   cursor: pointer;
-  background: rgb(255 255 255 / 10%);
-  border: 1px solid rgb(233 252 248 / 24%);
+  background: rgb(250 246 238 / 10%);
+  border: 1px solid var(--hairline-gold);
   border-radius: 9px;
 }
 
@@ -203,21 +188,24 @@
   padding: 0 18px 18px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-color: rgb(22 130 123 / 32%) transparent;
+  scrollbar-color: rgb(42 102 80 / 32%) transparent;
   scrollbar-width: thin;
 }
+
+/* 焦点环由 HomePage/styles.css 的 `.app-home :is(a, button, input):focus-visible` 统一提供 */
+
+/* —— 旅程数据 —— */
 
 .profile-overview {
   position: relative;
   z-index: 2;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  margin-top: 0;
   padding: 16px 8px;
-  background: #fffdf8;
-  border: 1px solid #dedfd7;
+  background: var(--paper-white);
+  border: 1px solid var(--hairline-ink);
   border-radius: 17px;
-  box-shadow: 0 10px 28px rgb(43 76 65 / 10%);
+  box-shadow: var(--shadow-card);
 }
 
 .profile-overview div {
@@ -227,19 +215,23 @@
 }
 
 .profile-overview div + div {
-  border-left: 1px solid #e6e4dc;
+  border-left: 1px solid var(--hairline-ink);
 }
 
 .profile-overview strong {
-  color: #126f6a;
-  font-family: "STKaiti", "KaiTi", serif;
+  color: var(--ink-green-800);
+  font-family: var(--font-display);
   font-size: 24px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
 }
 
 .profile-overview span {
-  color: #7c8b87;
+  color: var(--ink-green-600);
   font-size: 10px;
 }
+
+/* —— 小节 —— */
 
 .profile-section {
   display: grid;
@@ -254,15 +246,18 @@
 
 .profile-section__heading h2 {
   margin: 0;
-  color: #183f3b;
-  font-family: "STKaiti", "KaiTi", serif;
+  color: var(--ink-green-950);
+  font-family: var(--font-display);
   font-size: 21px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
 }
 
 .profile-section__heading button {
   display: flex;
   align-items: center;
-  color: #899793;
+  color: var(--sunset-gold-deep);
+  font-family: inherit;
   font-size: 10px;
   cursor: pointer;
   background: transparent;
@@ -281,13 +276,20 @@
   gap: 5px;
   justify-items: start;
   padding: 14px 11px;
-  color: #183f3b;
+  color: var(--ink-green-900);
+  font-family: inherit;
   text-align: left;
   cursor: pointer;
-  background: #fffdf8;
-  border: 1px solid #dfded5;
+  background: var(--paper-white);
+  border: 1px solid var(--hairline-ink);
   border-radius: 15px;
-  box-shadow: 0 7px 18px rgb(58 70 62 / 6%);
+  box-shadow: var(--shadow-card);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.profile-feature:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-raised);
 }
 
 .profile-feature__icon {
@@ -299,21 +301,25 @@
   border-radius: 11px;
 }
 
-.profile-feature--jade .profile-feature__icon { color: #19766f; background: #dceee7; }
-.profile-feature--amber .profile-feature__icon { color: #9c6c32; background: #f3e6ce; }
-.profile-feature--rose .profile-feature__icon { color: #a15957; background: #f3dfda; }
+/* 三种功能色：墨绿 / 金橘 / 远山雾紫，与首页发现卡同一组 */
+.profile-feature--ink .profile-feature__icon { color: var(--ink-green-700); background: rgb(42 102 80 / 12%); }
+.profile-feature--gold .profile-feature__icon { color: var(--sunset-gold-deep); background: rgb(232 167 101 / 20%); }
+.profile-feature--mist .profile-feature__icon { color: var(--mist-ink); background: rgb(185 194 222 / 30%); }
 
 .profile-feature strong {
   font-size: 12px;
+  font-weight: 600;
 }
 
 .profile-feature small {
   overflow: hidden;
-  color: #8a9894;
+  color: var(--ink-green-600);
   font-size: 9px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* —— 本月回忆 —— */
 
 .profile-memory {
   display: grid;
@@ -321,12 +327,13 @@
   gap: 12px;
   align-items: center;
   padding: 14px;
-  color: #fff7e9;
+  color: var(--paper-white);
   background:
-    radial-gradient(circle at 88% 18%, rgb(255 225 153 / 23%), transparent 25%),
-    linear-gradient(120deg, #c88342, #9e5b3b);
+    radial-gradient(circle at 88% 16%, rgb(232 167 101 / 26%), transparent 38%),
+    linear-gradient(120deg, var(--ink-green-800), var(--ink-green-950));
+  border: 1px solid var(--hairline-gold);
   border-radius: 16px;
-  box-shadow: 0 10px 22px rgb(133 76 42 / 16%);
+  box-shadow: var(--shadow-card);
 }
 
 .profile-memory__mark {
@@ -334,9 +341,9 @@
   width: 39px;
   aspect-ratio: 1;
   place-items: center;
-  color: #f6d69f;
-  background: rgb(255 255 255 / 12%);
-  border: 1px solid rgb(255 239 203 / 22%);
+  color: var(--sunset-coral);
+  background: rgb(250 246 238 / 10%);
+  border: 1px solid rgb(232 167 101 / 30%);
   border-radius: 12px;
 }
 
@@ -346,22 +353,32 @@
 }
 
 .profile-memory p {
-  color: rgb(255 246 226 / 70%);
+  color: rgb(250 246 238 / 68%);
   font-size: 9px;
+  letter-spacing: 0.08em;
 }
 
 .profile-memory strong {
   display: block;
   margin-top: 3px;
-  font-family: "STKaiti", "KaiTi", serif;
+  font-family: var(--font-display);
   font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
 }
+
+.profile-memory > svg:last-child {
+  color: rgb(250 246 238 / 64%);
+}
+
+/* —— 更多服务 —— */
 
 .profile-settings {
   overflow: hidden;
-  background: #fffdf8;
-  border: 1px solid #dfded5;
+  background: var(--paper-white);
+  border: 1px solid var(--hairline-ink);
   border-radius: 16px;
+  box-shadow: var(--shadow-card);
 }
 
 .profile-settings button {
@@ -372,20 +389,26 @@
   gap: 10px;
   align-items: center;
   padding: 0 13px;
-  color: #34514e;
+  color: var(--ink-green-800);
+  font-family: inherit;
   text-align: left;
   cursor: pointer;
   background: transparent;
   border: 0;
+  transition: background 160ms ease;
+}
+
+.profile-settings button:hover {
+  background: var(--paper-warm);
 }
 
 .profile-settings button + button {
-  border-top: 1px solid #ece9e1;
+  border-top: 1px solid var(--hairline-ink);
 }
 
 .profile-settings button > span:nth-child(2) {
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .profile-settings__icon {
@@ -393,18 +416,20 @@
   width: 30px;
   aspect-ratio: 1;
   place-items: center;
-  color: #397b73;
-  background: #edf4f0;
+  color: var(--ink-green-700);
+  background: rgb(42 102 80 / 10%);
   border-radius: 9px;
 }
 
 .profile-settings small {
-  color: #9ba6a3;
+  color: var(--ink-green-600);
   font-size: 9px;
+  opacity: 0.8;
 }
 
 .profile-settings svg:last-child {
-  color: #a8b1ae;
+  color: var(--ink-green-600);
+  opacity: 0.6;
 }
 
 @media (max-width: 370px) {
@@ -418,5 +443,16 @@
 
   .profile-feature {
     padding-inline: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-feature,
+  .profile-settings button {
+    transition: none;
+  }
+
+  .profile-feature:hover {
+    transform: none;
   }
 }

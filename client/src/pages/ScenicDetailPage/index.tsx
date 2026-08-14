@@ -18,36 +18,46 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import { westLakeHero, westLakeLandscapes, westLakePortraits, type Photo } from "../../lib/assets";
+
 import "./styles.css";
 
 interface ExploreEntry {
-  description: string;
-  icon: LucideIcon;
-  label: string;
+  readonly description: string;
+  readonly icon: LucideIcon;
+  readonly label: string;
+  readonly to?: string;
 }
 
-interface ScenicSpot {
-  className: string;
-  distance: string;
-  name: string;
+interface ScenicScene {
+  readonly caption: string;
+  readonly name: string;
+  readonly photo: Photo;
+  /** 已建好 3D 场景的才有 sceneId，其余显示「场景制作中」 */
+  readonly sceneId?: string;
 }
 
 interface TravelStory {
-  className: string;
-  subtitle: string;
-  title: string;
+  readonly photo: Photo;
+  readonly subtitle: string;
+  readonly title: string;
 }
 
-const exploreEntries: ExploreEntry[] = [
+/** Demo 主线场景，游客从这里进入 3D 云游 */
+const primarySceneId = "scene-broken-bridge";
+
+const exploreEntries: readonly ExploreEntry[] = [
   {
     label: "线上 3D 云游",
     description: "足不出户云游西湖",
     icon: Box,
+    to: `/scene/${primarySceneId}/loading`,
   },
   {
     label: "线下智游向导",
     description: "智能定位与讲解",
     icon: Navigation,
+    to: "/guide",
   },
   {
     label: "经典游览路线",
@@ -56,16 +66,43 @@ const exploreEntries: ExploreEntry[] = [
   },
 ];
 
-const scenicSpots: ScenicSpot[] = [
-  { name: "乌龟潭", distance: "2.4 km", className: "is-turtle-pond" },
-  { name: "曲院风荷", distance: "1.8 km", className: "is-lotus" },
-  { name: "雷峰夕照", distance: "3.2 km", className: "is-sunset" },
+const scenicScenes: readonly ScenicScene[] = [
+  {
+    // TODO 换图：这是西湖雪景，不是断桥本身。拿到断桥实拍后替换。
+    name: "断桥残雪",
+    caption: "雪后湖上桥亭",
+    photo: westLakeLandscapes.snowBridge,
+    sceneId: primarySceneId,
+  },
+  {
+    name: "雷峰塔",
+    caption: "隔湖望塔影",
+    photo: westLakePortraits.leifengPagodaDay,
+    sceneId: "scene-leifeng-pagoda",
+  },
+  {
+    name: "三潭印月",
+    caption: "湖心石塔",
+    photo: westLakePortraits.threePools,
+  },
 ];
 
-const travelStories: TravelStory[] = [
-  { title: "西湖晨色", subtitle: "不负人间四月天", className: "is-dawn" },
-  { title: "漫步苏堤", subtitle: "邂逅夏日荷香", className: "is-summer" },
-  { title: "断桥落日", subtitle: "浪漫定格瞬间", className: "is-evening" },
+const travelStories: readonly TravelStory[] = [
+  {
+    title: "一窗湖山",
+    subtitle: "我心相印亭的圆门",
+    photo: westLakePortraits.heartMirrorGate,
+  },
+  {
+    title: "落日集贤亭",
+    subtitle: "日头正落在亭顶",
+    photo: westLakePortraits.jixianPavilionSunset,
+  },
+  {
+    title: "乌龟潭静水",
+    subtitle: "一潭绿水与茅亭",
+    photo: westLakeLandscapes.turtlePond,
+  },
 ];
 
 export function ScenicDetailPage() {
@@ -76,6 +113,14 @@ export function ScenicDetailPage() {
       <article className="scenic-detail scenic-detail--refined">
         <div className="scenic-detail__scroll scenic-detail__scroll--refined" aria-label="景区详情内容" tabIndex={0}>
           <section className="scenic-cover" aria-labelledby="scenic-title">
+            <img
+              className="scenic-cover__photo"
+              alt={westLakeHero.alt}
+              src={westLakeHero.src}
+              style={{ objectPosition: westLakeHero.focus }}
+            />
+            <span className="scenic-cover__scrim" aria-hidden="true" />
+
             <div className="scenic-status" aria-label="当前时间 9 点 24 分">
               <time>9:24</time>
               <span className="scenic-status__icons" aria-hidden="true">
@@ -117,7 +162,7 @@ export function ScenicDetailPage() {
                   ))}
                 </span>
               </span>
-              <span><MapPin size={13} aria-hidden="true" /> 距离 12.4 km</span>
+              <span><MapPin size={13} aria-hidden="true" /> 浙江杭州 · 西湖区</span>
               <span><Clock3 size={13} aria-hidden="true" /> 建议游玩 3–5 小时</span>
             </div>
           </section>
@@ -125,15 +170,20 @@ export function ScenicDetailPage() {
           <section className="scenic-explore-rail" aria-label="景区游览入口">
             {exploreEntries.map((entry) => {
               const Icon = entry.icon;
-
-              return (
-                <button key={entry.label} type="button">
+              const body = (
+                <>
                   <span className="scenic-explore-rail__icon" aria-hidden="true">
                     <Icon size={22} strokeWidth={1.8} />
                   </span>
                   <strong>{entry.label}</strong>
                   <small>{entry.description}</small>
-                </button>
+                </>
+              );
+
+              return entry.to ? (
+                <Link key={entry.label} to={entry.to}>{body}</Link>
+              ) : (
+                <button key={entry.label} type="button">{body}</button>
               );
             })}
           </section>
@@ -146,29 +196,48 @@ export function ScenicDetailPage() {
             </p>
           </section>
 
-          <section className="scenic-content-section" aria-labelledby="nearby-spots-title">
+          <section className="scenic-content-section" aria-labelledby="scenic-scenes-title">
             <div className="scenic-section-title">
-              <h2 id="nearby-spots-title">附近景点</h2>
-              <button type="button" aria-label="查看全部附近景点">
+              <h2 id="scenic-scenes-title">3D 场景</h2>
+              <button type="button" aria-label="查看全部 3D 场景">
                 查看全部 <ChevronRight size={16} aria-hidden="true" />
               </button>
             </div>
 
             <div className="scenic-spot-rail">
-              {scenicSpots.map((spot) => (
-                <article className="scenic-spot-card" key={spot.name}>
-                  <span className={`scenic-spot-card__image ${spot.className}`} aria-hidden="true" />
+              {scenicScenes.map((scene) => (
+                <article className="scenic-spot-card" key={scene.name}>
+                  <span className="scenic-spot-card__image">
+                    <img
+                      alt={scene.photo.alt}
+                      decoding="async"
+                      loading="lazy"
+                      src={scene.photo.src}
+                      style={{ objectPosition: scene.photo.focus }}
+                    />
+                  </span>
                   <span className="scenic-spot-card__copy">
                     <span>
-                      <strong>{spot.name}</strong>
-                      <small>{spot.distance}</small>
+                      <strong>{scene.name}</strong>
+                      <small>{scene.caption}</small>
                     </span>
                   </span>
-                  <button className="scenic-spot-card__action" type="button" aria-label={`进入${spot.name}的 3D 场景`}>
-                    <Box size={14} strokeWidth={1.8} aria-hidden="true" />
-                    <span>进入 3D 场景</span>
-                    <ArrowRight size={14} strokeWidth={1.8} aria-hidden="true" />
-                  </button>
+                  {scene.sceneId ? (
+                    <Link
+                      className="scenic-spot-card__action"
+                      to={`/scene/${scene.sceneId}/loading`}
+                      aria-label={`进入${scene.name}的 3D 场景`}
+                    >
+                      <Box size={14} strokeWidth={1.8} aria-hidden="true" />
+                      <span>进入 3D 场景</span>
+                      <ArrowRight size={14} strokeWidth={1.8} aria-hidden="true" />
+                    </Link>
+                  ) : (
+                    <span className="scenic-spot-card__action is-pending">
+                      <Box size={14} strokeWidth={1.8} aria-hidden="true" />
+                      <span>场景制作中</span>
+                    </span>
+                  )}
                 </article>
               ))}
             </div>
@@ -184,7 +253,15 @@ export function ScenicDetailPage() {
 
             <div className="scenic-story-rail">
               {travelStories.map((story) => (
-                <article className={`scenic-story-card ${story.className}`} key={story.title}>
+                <article className="scenic-story-card" key={story.title}>
+                  <img
+                    alt={story.photo.alt}
+                    decoding="async"
+                    loading="lazy"
+                    src={story.photo.src}
+                    style={{ objectPosition: story.photo.focus }}
+                  />
+                  <span className="scenic-story-card__mask" aria-hidden="true" />
                   <div className="scenic-story-card__copy">
                     <strong>{story.title}</strong>
                     <span>{story.subtitle}</span>
@@ -199,11 +276,11 @@ export function ScenicDetailPage() {
         </div>
 
         <footer className="scenic-cta-bar scenic-cta-bar--refined">
-          <button type="button">
+          <Link to={`/scene/${primarySceneId}/loading`}>
             <span className="scenic-cta-bar__icon" aria-hidden="true"><Box size={22} strokeWidth={1.8} /></span>
             <span>开启 3D 云游</span>
             <ArrowRight size={20} strokeWidth={1.8} aria-hidden="true" />
-          </button>
+          </Link>
         </footer>
       </article>
     </main>

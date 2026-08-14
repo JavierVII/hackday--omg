@@ -5,17 +5,22 @@ import {
   Footprints,
   Gem,
   Heart,
+  Home,
   Map,
   MapPin,
   MessageCircleMore,
   Settings,
   ShieldCheck,
   Sparkles,
-  UserRound,
+  User,
 } from "lucide-react";
 import { Link } from "react-router";
 
+import { westLakePortraits } from "../../lib/assets";
+
 import "./styles.css";
+
+const avatarPhoto = westLakePortraits.heartMirrorGate;
 
 const overviewItems = [
   { value: "3", label: "云游旅程" },
@@ -24,9 +29,9 @@ const overviewItems = [
 ] as const;
 
 const featureItems = [
-  { label: "我的旅程", description: "回看云游记录", icon: Map, tone: "jade" },
-  { label: "数字收藏", description: "珍藏旅途故事", icon: Gem, tone: "amber" },
-  { label: "足迹地图", description: "点亮到访城市", icon: Footprints, tone: "rose" },
+  { label: "我的旅程", description: "回看云游记录", icon: Map, tone: "ink" },
+  { label: "数字收藏", description: "珍藏旅途故事", icon: Gem, tone: "gold" },
+  { label: "足迹地图", description: "点亮到访城市", icon: Footprints, tone: "mist" },
 ] as const;
 
 const settingItems = [
@@ -35,6 +40,12 @@ const settingItems = [
   { label: "通用设置", icon: Settings, detail: "" },
   { label: "帮助与反馈", icon: CircleHelp, detail: "" },
   { label: "关于灵境奇旅", icon: Sparkles, detail: "v1.0 Demo" },
+] as const;
+
+const bottomNavigation = [
+  { label: "个人空间", icon: Sparkles, to: "/space" },
+  { label: "首页", icon: Home, to: "/home" },
+  { label: "我的", icon: User, to: "/profile" },
 ] as const;
 
 export function ProfilePage() {
@@ -59,10 +70,13 @@ export function ProfilePage() {
           </div>
 
           <section className="profile-card" aria-label="用户资料">
-            <div className="profile-avatar" aria-hidden="true">
-              <span className="profile-avatar__sun" />
-              <span className="profile-avatar__hill" />
-              <UserRound size={38} strokeWidth={1.55} />
+            <div className="profile-avatar">
+              <img
+                src={avatarPhoto.src}
+                alt="头像：我心相印亭的月洞门"
+                style={{ objectPosition: avatarPhoto.focus }}
+              />
+              <span className="profile-avatar__ring" aria-hidden="true" />
             </div>
             <div className="profile-card__identity">
               <h2>西湖漫游者</h2>
@@ -126,18 +140,24 @@ export function ProfilePage() {
         </div>
 
         <nav className="app-bottom-nav" aria-label="游客端主导航">
-          <Link className="app-bottom-nav__item" to="/space">
-            <span className="app-bottom-nav__icon" aria-hidden="true">◇</span>
-            <span>个人空间</span>
-          </Link>
-          <Link className="app-bottom-nav__item" to="/home">
-            <span className="app-bottom-nav__icon" aria-hidden="true">⌂</span>
-            <span>首页</span>
-          </Link>
-          <Link className="app-bottom-nav__item is-active" to="/profile" aria-current="page">
-            <span className="app-bottom-nav__icon" aria-hidden="true">○</span>
-            <span>我的</span>
-          </Link>
+          {bottomNavigation.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.to === "/profile";
+
+            return (
+              <Link
+                className={isActive ? "app-bottom-nav__item is-active" : "app-bottom-nav__item"}
+                key={item.to}
+                to={item.to}
+                aria-current={isActive ? "page" : undefined}
+              >
+                <span className="app-bottom-nav__icon" aria-hidden="true">
+                  <Icon size={21} strokeWidth={isActive ? 2.1 : 1.8} />
+                </span>
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
       </section>
     </main>

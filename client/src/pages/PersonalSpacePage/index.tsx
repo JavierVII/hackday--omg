@@ -6,15 +6,19 @@ import {
   ChevronRight,
   Drama,
   Gem,
+  Home,
   Image,
   Lamp,
   Landmark,
   MapPin,
   MoonStar,
   Sparkles,
+  User,
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
+
+import { westLakePortraits } from "../../lib/assets";
 
 import "./styles.css";
 
@@ -61,22 +65,30 @@ const demoTravelMoments = [
     location: "杭州西湖 · 断桥残雪",
     date: "8月14日 19:32",
     note: "晚风从湖面吹来，和云游搭档一起等到了月亮。",
-    position: "center 56%",
+    photo: westLakePortraits.threePools,
   },
   {
     title: "灯谜答对啦",
     location: "杭州西湖 · 中秋雅集",
     date: "8月14日 20:06",
     note: "解开最后一道灯谜，也把“月映断桥”带回了背包。",
-    position: "center 82%",
+    photo: westLakePortraits.jixianPavilionDusk,
   },
   {
     title: "雷峰塔下的金色时刻",
     location: "杭州西湖 · 雷峰塔",
     date: "8月12日 17:48",
     note: "光落在塔影与湖面之间，刚好按下了快门。",
-    position: "center 38%",
+    photo: westLakePortraits.leifengSunset,
   },
+] as const;
+
+const momentCoverPhoto = westLakePortraits.jixianPavilionSunset;
+
+const bottomNavigation = [
+  { label: "个人空间", icon: Sparkles, to: "/space" },
+  { label: "首页", icon: Home, to: "/home" },
+  { label: "我的", icon: User, to: "/profile" },
 ] as const;
 
 function DigitalAssets() {
@@ -136,7 +148,11 @@ function TravelMoments() {
   return (
     <div className="space-view" role="tabpanel" aria-label="游玩瞬间">
       <section className="space-moment-summary" aria-label="西湖旅途回忆">
-        <img src="/assets/west-lake-hero.png" alt="夕阳下的西湖" />
+        <img
+          src={momentCoverPhoto.src}
+          alt={momentCoverPhoto.alt}
+          style={{ objectPosition: momentCoverPhoto.focus }}
+        />
         <div className="space-moment-summary__shade" />
         <div className="space-moment-summary__copy">
           <span><CalendarDays size={13} /> 2026年8月</span>
@@ -159,9 +175,11 @@ function TravelMoments() {
           <article className="space-moment-card" key={moment.title}>
             <div className="space-moment-card__media">
               <img
-                src="/assets/west-lake-hero.png"
-                alt=""
-                style={{ objectPosition: moment.position }}
+                src={moment.photo.src}
+                alt={moment.photo.alt}
+                loading="lazy"
+                decoding="async"
+                style={{ objectPosition: moment.photo.focus }}
               />
               <span><Image size={13} /> {index === 0 ? "3张" : "1张"}</span>
             </div>
@@ -231,18 +249,24 @@ export function PersonalSpacePage() {
         </div>
 
         <nav className="app-bottom-nav" aria-label="游客端主导航">
-          <Link className="app-bottom-nav__item is-active" to="/space" aria-current="page">
-            <span className="app-bottom-nav__icon" aria-hidden="true">◇</span>
-            <span>个人空间</span>
-          </Link>
-          <Link className="app-bottom-nav__item" to="/home">
-            <span className="app-bottom-nav__icon" aria-hidden="true">⌂</span>
-            <span>首页</span>
-          </Link>
-          <Link className="app-bottom-nav__item" to="/profile">
-            <span className="app-bottom-nav__icon" aria-hidden="true">○</span>
-            <span>我的</span>
-          </Link>
+          {bottomNavigation.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.to === "/space";
+
+            return (
+              <Link
+                className={isActive ? "app-bottom-nav__item is-active" : "app-bottom-nav__item"}
+                key={item.to}
+                to={item.to}
+                aria-current={isActive ? "page" : undefined}
+              >
+                <span className="app-bottom-nav__icon" aria-hidden="true">
+                  <Icon size={21} strokeWidth={isActive ? 2.1 : 1.8} />
+                </span>
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
       </section>
     </main>

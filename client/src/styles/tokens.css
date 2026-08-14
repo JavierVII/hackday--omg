@@ -4,8 +4,8 @@
 
   /* 艺术展示字体（楷/宋体系，无网络依赖，优雅降级） */
   --font-display: "STKaiti", "KaiTi", "楷体", "Kaiti SC", "Noto Serif SC", "Songti SC", serif;
-  color: #17352a;
-  background: #f4fbf6;
+  color: var(--ink-green-900);
+  background: var(--paper-white);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 
@@ -57,7 +57,32 @@
   --mist-violet: #b9c2de;
   --mist-blue: #9fb0cf;
 
+  /* 雾紫压深，用于文字/图标（原色太浅，压在纸面上读不清） */
+  --mist-ink: #6b7699;
+
   /* 宣纸暖白 */
   --paper-white: #faf6ee;
   --paper-warm: #f4ece0;
+
+  /* —— 由上面色板派生，供各页复用，避免重复硬编码 —— */
+
+  /* 阴影一律以墨绿为底，不用纯黑（纯黑压在暖白纸面上会发灰） */
+  --shadow-rgb: 15 39 33;
+  --shadow-card: 0 10px 24px -12px rgb(var(--shadow-rgb) / 30%);
+  --shadow-raised: 0 16px 32px -16px rgb(var(--shadow-rgb) / 42%);
+  --shadow-float: 0 28px 64px -28px rgb(var(--shadow-rgb) / 52%);
+
+  /* 描边：墨绿细线 / 金橘细线 */
+  --hairline-ink: rgb(29 77 60 / 16%);
+  --hairline-ink-strong: rgb(29 77 60 / 26%);
+  --hairline-gold: rgb(232 167 101 / 45%);
+
+  /* 深色玻璃面（压在照片或 3D 画面上时用） */
+  --glass-ink: rgb(15 39 33 / 62%);
+  --glass-ink-strong: rgb(15 39 33 / 78%);
+  --glass-paper: rgb(250 246 238 / 68%);
+  --glass-blur: blur(12px);
+
+  /* 焦点环 */
+  --focus-ring: var(--sunset-gold-deep);
 }
