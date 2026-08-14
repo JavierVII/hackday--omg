@@ -24,9 +24,9 @@ const discoverySections = [
 ] as const;
 
 const bottomNavigation = [
-  { label: "个人空间", icon: "◇", active: false },
-  { label: "首页", icon: "⌂", active: true },
-  { label: "我的", icon: "○", active: false },
+  { label: "个人空间", icon: "◇", to: "/space" },
+  { label: "首页", icon: "⌂", to: "/home" },
+  { label: "我的", icon: "○", to: "/profile" },
 ] as const;
 
 export function HomePage() {
@@ -119,15 +119,15 @@ export function HomePage() {
 
         <nav className="app-bottom-nav" aria-label="游客端主导航">
           {bottomNavigation.map((item) => (
-            <button
-              className={item.active ? "app-bottom-nav__item is-active" : "app-bottom-nav__item"}
+            <Link
+              className={item.to === "/home" ? "app-bottom-nav__item is-active" : "app-bottom-nav__item"}
               key={item.label}
-              type="button"
-              aria-current={item.active ? "page" : undefined}
+              to={item.to}
+              aria-current={item.to === "/home" ? "page" : undefined}
             >
               <span className="app-bottom-nav__icon" aria-hidden="true">{item.icon}</span>
               <span>{item.label}</span>
-            </button>
+            </Link>
           ))}
         </nav>
       </section>
