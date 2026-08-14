@@ -129,7 +129,11 @@ export function HomePage() {
           <section className="cloud-tour-card" aria-labelledby="cloud-tour-title">
             <div className="cloud-tour-card__copy">
               <p className="cloud-tour-card__eyebrow">今日云游</p>
-              <h1 id="cloud-tour-title">水光山色，遇见西湖</h1>
+              <h1 id="cloud-tour-title">
+                水光山色，
+                <br />
+                遇见西湖
+              </h1>
               <p>走进可探索、可互动的数字风景，在故事里重新认识一座城。</p>
               <Link className="cloud-tour-card__cta" to="/scenic/hangzhou-west-lake">
                 进入景区
