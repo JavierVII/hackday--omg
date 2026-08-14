@@ -1,0 +1,653 @@
+.app-home-stage {
+  min-height: 100svh;
+  padding: 28px;
+  color: #173d3a;
+  background:
+    radial-gradient(circle at 18% 12%, rgb(75 205 192 / 24%), transparent 28%),
+    radial-gradient(circle at 88% 84%, rgb(226 173 89 / 18%), transparent 25%),
+    #092f32;
+}
+
+.app-home {
+  position: relative;
+  display: flex;
+  width: min(100%, 480px);
+  height: calc(100svh - 56px);
+  min-height: 0;
+  flex-direction: column;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #f5f1e8;
+  border: 1px solid rgb(206 238 232 / 42%);
+  border-radius: 30px;
+  box-shadow: 0 28px 90px rgb(0 20 22 / 44%);
+}
+
+.app-home__header {
+  position: relative;
+  flex: none;
+  padding: 14px 22px 24px;
+  color: #effbf8;
+  background:
+    radial-gradient(circle at 88% 16%, rgb(102 220 207 / 22%), transparent 30%),
+    linear-gradient(145deg, #0d5553, #0b3f42 70%);
+}
+
+.app-home__header::after {
+  position: absolute;
+  right: -26px;
+  bottom: -44px;
+  width: 156px;
+  aspect-ratio: 1;
+  content: "";
+  border: 1px solid rgb(142 230 217 / 10%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 26px rgb(113 214 201 / 4%);
+}
+
+.app-status {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.app-status__time {
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+
+.app-status__indicators {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.app-status__signal {
+  display: flex;
+  gap: 2px;
+  height: 14px;
+  align-items: flex-end;
+}
+
+.app-status__signal i {
+  display: block;
+  width: 3px;
+  background: currentColor;
+  border-radius: 2px;
+}
+
+.app-status__signal i:nth-child(1) { height: 4px; }
+.app-status__signal i:nth-child(2) { height: 7px; }
+.app-status__signal i:nth-child(3) { height: 10px; }
+.app-status__signal i:nth-child(4) { height: 13px; }
+
+.app-status__wifi {
+  font-size: 20px;
+  line-height: 1;
+  transform: rotate(-28deg);
+}
+
+.app-status__battery {
+  position: relative;
+  width: 21px;
+  height: 10px;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+}
+
+.app-status__battery::before {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  bottom: 2px;
+  left: 2px;
+  content: "";
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.app-status__battery::after {
+  position: absolute;
+  top: 2px;
+  right: -4px;
+  width: 2px;
+  height: 4px;
+  content: "";
+  background: currentColor;
+  border-radius: 0 2px 2px 0;
+}
+
+.app-brand-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.app-brand,
+.app-brand__slogan,
+.app-location {
+  margin: 0;
+}
+
+.app-brand {
+  flex: none;
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.app-brand__slogan {
+  color: rgb(226 247 242 / 82%);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.app-location {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 7px;
+  color: rgb(232 249 246 / 88%);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.app-location__pin {
+  color: #f2c982;
+  font-size: 18px;
+}
+
+.app-location__poem {
+  margin-left: 4px;
+  color: rgb(226 247 242 / 66%);
+  font-weight: 500;
+}
+
+.app-search {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  height: 46px;
+  align-items: center;
+  margin-top: 20px;
+  padding: 0 13px;
+  color: #315451;
+  background: rgb(255 255 255 / 94%);
+  border: 1px solid rgb(213 238 232 / 62%);
+  border-radius: 14px;
+  box-shadow: 0 10px 26px rgb(0 31 32 / 18%);
+}
+
+.app-search__icon {
+  width: 15px;
+  aspect-ratio: 1;
+  flex: none;
+  border: 2px solid #54706e;
+  border-radius: 50%;
+}
+
+.app-search__icon::after {
+  display: block;
+  width: 6px;
+  height: 2px;
+  margin: 11px 0 0 10px;
+  content: "";
+  background: #54706e;
+  transform: rotate(45deg);
+  border-radius: 3px;
+}
+
+.app-search input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0 12px;
+  color: #173d3a;
+  background: transparent;
+  border: 0;
+  outline: 0;
+}
+
+.app-search input::placeholder {
+  color: #728986;
+}
+
+.app-search:focus-within {
+  outline: 3px solid rgb(97 210 197 / 36%);
+  outline-offset: 2px;
+}
+
+.app-search kbd {
+  flex: none;
+  padding: 3px 6px;
+  color: #6f8783;
+  font-family: inherit;
+  font-size: 10px;
+  background: #edf3f0;
+  border: 1px solid #d9e4e0;
+  border-radius: 5px;
+}
+
+.app-home__content {
+  display: grid;
+  min-height: 0;
+  flex: 1;
+  gap: 16px;
+  padding: 18px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: rgb(22 130 123 / 32%) transparent;
+  scrollbar-width: thin;
+}
+
+.cloud-tour-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(124px, 0.88fr);
+  min-height: 206px;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 96%), rgb(231 243 233 / 96%));
+  border: 1px solid #d7e5dc;
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgb(43 76 65 / 10%);
+}
+
+.cloud-tour-card__copy {
+  position: relative;
+  z-index: 2;
+  padding: 22px 0 20px 20px;
+}
+
+.cloud-tour-card__eyebrow {
+  margin: 0 0 8px;
+  color: #b77b35;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.cloud-tour-card h1 {
+  margin: 0;
+  color: #183f3b;
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 25px;
+  line-height: 1.25;
+}
+
+.cloud-tour-card p:not(.cloud-tour-card__eyebrow) {
+  margin: 10px 0 16px;
+  color: #637a75;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.cloud-tour-card__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 15px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  background: #157f79;
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgb(13 94 89 / 19%);
+}
+
+.cloud-tour-card__cta span {
+  margin-left: 5px;
+}
+
+.cloud-tour-card__art {
+  position: relative;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.cloud-tour-card__sun {
+  position: absolute;
+  top: 22px;
+  right: 20px;
+  width: 45px;
+  aspect-ratio: 1;
+  background: #f0cb88;
+  border-radius: 50%;
+  box-shadow: 0 0 0 10px rgb(240 203 136 / 14%);
+}
+
+.cloud-tour-card__pagoda {
+  position: absolute;
+  right: 52px;
+  bottom: 48px;
+  z-index: 4;
+  display: grid;
+  width: 40px;
+  height: 86px;
+  place-items: center;
+  color: #f8e8c3;
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 18px;
+  background: linear-gradient(90deg, #8e5c36, #6b402b 55%, #9c6840);
+  clip-path: polygon(43% 0, 57% 0, 61% 12%, 89% 20%, 67% 25%, 72% 38%, 100% 46%, 72% 52%, 78% 68%, 98% 76%, 70% 81%, 72% 100%, 28% 100%, 30% 81%, 2% 76%, 22% 68%, 28% 52%, 0 46%, 28% 38%, 33% 25%, 11% 20%, 39% 12%);
+  filter: drop-shadow(0 5px 3px rgb(33 65 54 / 24%));
+}
+
+.cloud-tour-card__hill {
+  position: absolute;
+  right: -22px;
+  bottom: 36px;
+  width: 150px;
+  height: 92px;
+  background: #89b39a;
+  border-radius: 75% 0 0;
+  transform: rotate(-8deg);
+}
+
+.cloud-tour-card__hill--back {
+  right: 22px;
+  bottom: 48px;
+  width: 130px;
+  height: 76px;
+  opacity: 0.52;
+  background: #b4ccb7;
+  transform: rotate(9deg);
+}
+
+.cloud-tour-card__hill--front {
+  z-index: 2;
+}
+
+.cloud-tour-card__water {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  height: 54px;
+  background: repeating-linear-gradient(0deg, #85c8bf 0 3px, #b9ddd4 3px 7px);
+  clip-path: polygon(0 25%, 32% 8%, 68% 18%, 100% 0, 100% 100%, 0 100%);
+}
+
+.discovery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.discovery-card {
+  display: flex;
+  min-width: 0;
+  min-height: 166px;
+  flex-direction: column;
+  padding: 15px 13px 13px;
+  color: #183f3b;
+  text-align: left;
+  cursor: pointer;
+  background: #fffdf8;
+  border: 1px solid #dfded5;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgb(58 70 62 / 6%);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.discovery-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgb(58 70 62 / 11%);
+}
+
+.discovery-card__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.discovery-card__heading strong {
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 23px;
+}
+
+.discovery-card__heading > span {
+  display: grid;
+  width: 28px;
+  aspect-ratio: 1;
+  place-items: center;
+  font-size: 17px;
+  border-radius: 9px;
+}
+
+.discovery-card--jade .discovery-card__heading > span {
+  color: #19766f;
+  background: #dceee7;
+}
+
+.discovery-card--amber .discovery-card__heading > span {
+  color: #9c6c32;
+  background: #f3e6ce;
+}
+
+.discovery-card--rose .discovery-card__heading > span {
+  color: #a15957;
+  background: #f3dfda;
+}
+
+.discovery-card__items {
+  display: grid;
+  gap: 5px;
+  margin-top: 12px;
+  color: #6e7d78;
+  font-size: 12px;
+}
+
+.discovery-card__more {
+  margin-top: auto;
+  padding-top: 12px;
+  color: #9aaaa5;
+  font-size: 10px;
+}
+
+.festival-banner {
+  position: relative;
+  display: grid;
+  min-height: 104px;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  overflow: hidden;
+  padding: 17px 18px;
+  color: #fffdf4;
+  text-align: left;
+  cursor: pointer;
+  background:
+    radial-gradient(circle at 88% 18%, rgb(255 225 153 / 26%), transparent 25%),
+    linear-gradient(120deg, #c98540, #9c5735);
+  border: 0;
+  border-radius: 18px;
+  box-shadow: 0 12px 26px rgb(133 76 42 / 19%);
+}
+
+.festival-banner::after {
+  position: absolute;
+  right: 58px;
+  bottom: -42px;
+  width: 126px;
+  aspect-ratio: 1;
+  content: "";
+  border: 1px solid rgb(255 239 197 / 18%);
+  border-radius: 50%;
+}
+
+.festival-banner__edition {
+  padding: 5px 8px;
+  color: #92502f;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  background: #f7dfad;
+  border-radius: 7px;
+}
+
+.festival-banner__copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 5px;
+}
+
+.festival-banner__copy strong {
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 22px;
+}
+
+.festival-banner__copy small {
+  color: rgb(255 245 220 / 78%);
+  font-size: 10px;
+}
+
+.festival-banner__stamp {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 48px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: #ffeac1;
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 24px;
+  border: 1px solid rgb(255 234 193 / 62%);
+  border-radius: 50%;
+}
+
+.app-bottom-nav {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  flex: none;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 10px 10px max(10px, env(safe-area-inset-bottom));
+  background: rgb(255 253 248 / 94%);
+  border-top: 1px solid #dedfd7;
+  backdrop-filter: blur(16px);
+}
+
+.app-bottom-nav__item {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  place-items: center;
+  padding: 4px 0;
+  color: #86938f;
+  font-size: 10px;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  text-decoration: none;
+}
+
+.app-bottom-nav__item.is-active {
+  color: #126f6a;
+  font-weight: 800;
+}
+
+.app-bottom-nav__item.is-active::before {
+  position: absolute;
+  top: -10px;
+  width: 30px;
+  height: 3px;
+  content: "";
+  background: #16827b;
+  border-radius: 0 0 3px 3px;
+}
+
+.app-bottom-nav__icon {
+  display: grid;
+  width: 28px;
+  aspect-ratio: 1;
+  place-items: center;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 520px) {
+  .app-home-stage {
+    padding: 0;
+    background: #f5f1e8;
+  }
+
+  .app-home {
+    width: 100%;
+    height: 100svh;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-brand-row {
+    display: block;
+  }
+
+  .app-brand__slogan {
+    margin-top: 3px;
+    font-size: 11px;
+  }
+
+  .cloud-tour-card {
+    grid-template-columns: minmax(0, 1.18fr) minmax(108px, 0.82fr);
+  }
+
+  .cloud-tour-card__copy {
+    padding-left: 16px;
+  }
+
+  .discovery-card {
+    min-height: 156px;
+    padding: 13px 10px 11px;
+  }
+
+  .discovery-card__heading strong {
+    font-size: 20px;
+  }
+
+  .festival-banner {
+    grid-template-columns: 1fr auto;
+  }
+
+  .festival-banner__edition {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .discovery-card {
+    transition: none;
+  }
+}

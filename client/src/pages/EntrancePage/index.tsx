@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Link } from "react-router";
 
 import ImageTrail from "../../components/common/ImageTrail";
 
@@ -131,12 +132,12 @@ export function EntrancePage() {
         </p>
 
         <div className="entrance__actions" aria-label="入口选择">
-          <button className="entrance__button entrance__button--primary" type="button">
+          <Link className="entrance__button entrance__button--primary" to="/home">
             体验游客端
             <span className="entrance__button-arrow" aria-hidden="true">
               →
             </span>
-          </button>
+          </Link>
           <button className="entrance__button entrance__button--secondary" type="button">
             进入管理端
           </button>

@@ -1,0 +1,604 @@
+.space-stage {
+  color: #173d3a;
+}
+
+.space-page {
+  background: #f5f1e8;
+}
+
+.space-header {
+  position: relative;
+  flex: none;
+  padding: 14px 20px 42px;
+  overflow: hidden;
+  color: #effbf8;
+  background:
+    radial-gradient(circle at 88% 4%, rgb(113 222 208 / 21%), transparent 30%),
+    linear-gradient(145deg, #0e5956, #0a3d40 76%);
+}
+
+.space-header::before,
+.space-header::after {
+  position: absolute;
+  content: "";
+  border: 1px solid rgb(150 232 220 / 10%);
+  border-radius: 50%;
+}
+
+.space-header::before {
+  right: -58px;
+  bottom: -80px;
+  width: 220px;
+  aspect-ratio: 1;
+  box-shadow: 0 0 0 30px rgb(104 213 199 / 4%);
+}
+
+.space-header::after {
+  top: 78px;
+  left: -62px;
+  width: 116px;
+  aspect-ratio: 1;
+}
+
+.space-status {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: rgb(230 249 245 / 72%);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.space-status time {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.space-title-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 26px;
+}
+
+.space-title-row h1,
+.space-title-row p {
+  margin: 0;
+}
+
+.space-title-row h1 {
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 30px;
+  letter-spacing: 0.08em;
+}
+
+.space-title-row p {
+  margin-top: 5px;
+  color: rgb(229 248 244 / 68%);
+  font-size: 11px;
+}
+
+.space-title-row__mark {
+  display: grid;
+  width: 43px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: #f0ce8c;
+  background: rgb(255 255 255 / 9%);
+  border: 1px solid rgb(232 250 247 / 17%);
+  border-radius: 14px;
+}
+
+.space-overview {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 25px;
+}
+
+.space-overview div {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 1px 6px;
+  place-content: center;
+  color: #ead19c;
+}
+
+.space-overview div + div {
+  border-left: 1px solid rgb(226 248 244 / 14%);
+}
+
+.space-overview svg {
+  grid-row: 1 / 3;
+  align-self: center;
+}
+
+.space-overview strong {
+  color: #fff;
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.space-overview span {
+  color: rgb(229 248 244 / 58%);
+  font-size: 9px;
+}
+
+.space-content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 16px;
+  min-height: 0;
+  flex: 1;
+  margin-top: -21px;
+  padding: 0 18px 18px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: rgb(22 130 123 / 32%) transparent;
+  scrollbar-width: thin;
+}
+
+.space-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+  padding: 5px;
+  background: #fffdf8;
+  border: 1px solid #dedfd7;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgb(43 76 65 / 11%);
+}
+
+.space-tabs button {
+  display: flex;
+  min-height: 42px;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+  color: #82908c;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 11px;
+  transition: color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.space-tabs button.is-active {
+  color: #effbf8;
+  background: #146f69;
+  box-shadow: 0 7px 14px rgb(16 100 94 / 20%);
+}
+
+.space-tabs button:focus {
+  outline: 0;
+}
+
+.space-tabs button:focus-visible {
+  outline: 2px solid #58b8ae;
+  outline-offset: 1px;
+}
+
+.space-view {
+  display: grid;
+  gap: 16px;
+  animation: space-view-enter 220ms ease both;
+}
+
+.space-wallet {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 13px 14px;
+  background: #e4eee8;
+  border: 1px solid #d3e2da;
+  border-radius: 15px;
+}
+
+.space-wallet__icon {
+  display: grid;
+  width: 40px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: #1b7770;
+  background: #f8fbf8;
+  border-radius: 12px;
+}
+
+.space-wallet p,
+.space-wallet strong {
+  margin: 0;
+}
+
+.space-wallet p {
+  color: #7b8f88;
+  font-size: 9px;
+}
+
+.space-wallet strong {
+  display: block;
+  margin-top: 3px;
+  color: #294b47;
+  font-size: 12px;
+}
+
+.space-wallet > span {
+  color: #1d736c;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.space-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.space-section-heading h2,
+.space-section-heading p {
+  margin: 0;
+}
+
+.space-section-heading h2 {
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 21px;
+}
+
+.space-section-heading p {
+  margin-top: 3px;
+  color: #8a9894;
+  font-size: 9px;
+}
+
+.space-section-heading button {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  color: #778b86;
+  font-size: 10px;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+.space-featured-asset {
+  position: relative;
+  display: grid;
+  min-height: 150px;
+  grid-template-columns: 1.2fr 0.8fr;
+  overflow: hidden;
+  color: #fff7e4;
+  background:
+    radial-gradient(circle at 85% 12%, rgb(255 231 170 / 24%), transparent 28%),
+    linear-gradient(130deg, #b97238, #704a36);
+  border-radius: 18px;
+  box-shadow: 0 12px 26px rgb(128 76 44 / 17%);
+}
+
+.space-featured-asset__copy {
+  position: relative;
+  z-index: 2;
+  padding: 20px;
+}
+
+.space-featured-asset__copy > span {
+  color: #f5dca9;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.space-featured-asset h3,
+.space-featured-asset p {
+  margin: 0;
+}
+
+.space-featured-asset h3 {
+  margin-top: 6px;
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 25px;
+}
+
+.space-featured-asset p {
+  margin-top: 5px;
+  color: rgb(255 245 221 / 66%);
+  font-size: 10px;
+}
+
+.space-featured-asset small {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  margin-top: 17px;
+  color: #f7e6c1;
+  font-size: 9px;
+}
+
+.space-featured-asset__art {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.space-featured-asset__art svg {
+  position: relative;
+  z-index: 2;
+  color: #f6d694;
+  filter: drop-shadow(0 6px 12px rgb(60 37 24 / 28%));
+}
+
+.space-featured-asset__art span {
+  position: absolute;
+  width: 92px;
+  aspect-ratio: 1;
+  border: 1px solid rgb(255 228 168 / 24%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 18px rgb(255 229 172 / 7%);
+}
+
+.space-asset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.space-asset-card {
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  color: #274a46;
+  text-align: left;
+  cursor: pointer;
+  background: #fffdf8;
+  border: 1px solid #dfded5;
+  border-radius: 16px;
+  box-shadow: 0 7px 18px rgb(58 70 62 / 6%);
+}
+
+.space-asset-card__art {
+  position: relative;
+  display: grid;
+  min-height: 96px;
+  place-items: center;
+}
+
+.space-asset-card--moon .space-asset-card__art { color: #9b6b2d; background: #f1e4c9; }
+.space-asset-card--story .space-asset-card__art { color: #9b5b59; background: #f0dcda; }
+.space-asset-card--pagoda .space-asset-card__art { color: #276f68; background: #dcece6; }
+.space-asset-card--lantern .space-asset-card__art { color: #a66137; background: #f1dfd2; }
+
+.space-asset-card__verified {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: rgb(255 253 248 / 86%);
+}
+
+.space-asset-card__copy {
+  display: grid;
+  padding: 11px 12px 13px;
+}
+
+.space-asset-card__copy small {
+  color: #a07949;
+  font-size: 8px;
+}
+
+.space-asset-card__copy strong {
+  margin-top: 3px;
+  overflow: hidden;
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 17px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.space-asset-card__copy span,
+.space-asset-card__copy time {
+  color: #879590;
+  font-size: 9px;
+}
+
+.space-asset-card__copy span {
+  margin-top: 6px;
+}
+
+.space-asset-card__copy time {
+  margin-top: 2px;
+  color: #a7afac;
+}
+
+.space-moment-summary {
+  position: relative;
+  min-height: 184px;
+  overflow: hidden;
+  color: #fff;
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgb(41 60 54 / 18%);
+}
+
+.space-moment-summary > img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 56%;
+}
+
+.space-moment-summary__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(7 45 43 / 82%), rgb(7 45 43 / 18%) 78%);
+}
+
+.space-moment-summary__copy {
+  position: absolute;
+  bottom: 20px;
+  left: 18px;
+  z-index: 1;
+}
+
+.space-moment-summary__copy span {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  color: #f1d497;
+  font-size: 9px;
+}
+
+.space-moment-summary h2,
+.space-moment-summary p {
+  margin: 0;
+}
+
+.space-moment-summary h2 {
+  margin-top: 7px;
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 24px;
+}
+
+.space-moment-summary p {
+  margin-top: 5px;
+  color: rgb(235 249 245 / 76%);
+  font-size: 10px;
+}
+
+.space-moment-summary__count {
+  position: absolute;
+  right: 17px;
+  bottom: 19px;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  padding-left: 15px;
+  border-left: 1px solid rgb(255 255 255 / 30%);
+}
+
+.space-moment-summary__count strong {
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 27px;
+}
+
+.space-moment-summary__count span {
+  color: rgb(255 255 255 / 70%);
+  font-size: 8px;
+}
+
+.space-moment-list {
+  display: grid;
+  gap: 12px;
+}
+
+.space-moment-card {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  overflow: hidden;
+  background: #fffdf8;
+  border: 1px solid #dfded5;
+  border-radius: 16px;
+  box-shadow: 0 7px 18px rgb(58 70 62 / 6%);
+}
+
+.space-moment-card__media {
+  position: relative;
+  min-height: 146px;
+  overflow: hidden;
+}
+
+.space-moment-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(0.94);
+}
+
+.space-moment-card__media span {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  padding: 4px 6px;
+  color: #fff;
+  font-size: 8px;
+  background: rgb(7 38 37 / 64%);
+  border-radius: 7px;
+  backdrop-filter: blur(8px);
+}
+
+.space-moment-card__copy {
+  min-width: 0;
+  padding: 13px 13px 12px;
+}
+
+.space-moment-card__copy time {
+  color: #b0834b;
+  font-size: 8px;
+}
+
+.space-moment-card__copy h3 {
+  margin: 5px 0 0;
+  overflow: hidden;
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 17px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.space-moment-card__copy p {
+  display: -webkit-box;
+  margin: 7px 0 0;
+  overflow: hidden;
+  color: #7d8d88;
+  font-size: 9px;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.space-moment-card__copy .space-moment-card__location {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  margin-top: 6px;
+  color: #50726d;
+  white-space: nowrap;
+  -webkit-line-clamp: 1;
+}
+
+@keyframes space-view-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 370px) {
+  .space-overview svg {
+    display: none;
+  }
+
+  .space-moment-card {
+    grid-template-columns: 104px 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .space-view {
+    animation: none;
+  }
+
+  .space-tabs button {
+    transition: none;
+  }
+}
