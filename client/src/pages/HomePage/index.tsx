@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   ArrowRight,
   ChevronRight,
   Compass,
@@ -91,6 +92,11 @@ const bottomNavigation = [
 export function HomePage() {
   return (
     <main className="app-home-stage">
+      <Link className="app-home-demo-back" to="/" aria-label="返回进入页">
+        <ArrowLeft size={17} strokeWidth={1.9} aria-hidden="true" />
+        返回进入页
+      </Link>
+
       <section className="app-home" aria-label="灵境奇旅游客端首页">
         <header className="app-home__header">
           <div className="app-home__glow" aria-hidden="true" />
