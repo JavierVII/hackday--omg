@@ -14,6 +14,8 @@ import { clone } from "three/examples/jsm/utils/SkeletonUtils.js";
 type AssetPreviewCanvasProps = {
   modelUrl: string;
   resetKey: number;
+  modelScale?: number;
+  brightness?: number;
   onReady: () => void;
   onError: () => void;
 };
@@ -84,7 +86,11 @@ function PreviewControls({ resetKey }: { resetKey: number }) {
   return null;
 }
 
-function NormalizedModel({ modelUrl, onReady }: Pick<AssetPreviewCanvasProps, "modelUrl" | "onReady">) {
+function NormalizedModel({
+  modelUrl,
+  modelScale = 1,
+  onReady,
+}: Pick<AssetPreviewCanvasProps, "modelUrl" | "modelScale" | "onReady">) {
   const gltf = useLoader(GLTFLoader, modelUrl);
   const mixerRef = useRef<AnimationMixer | null>(null);
 
@@ -96,7 +102,7 @@ function NormalizedModel({ modelUrl, onReady }: Pick<AssetPreviewCanvasProps, "m
     const center = bounds.getCenter(new Vector3());
     const size = bounds.getSize(new Vector3());
     const longestSide = Math.max(size.x, size.y, size.z) || 1;
-    const scale = 2.55 / longestSide;
+    const scale = (2.55 * modelScale) / longestSide;
 
     modelClone.position.copy(center).multiplyScalar(-1);
     modelClone.scale.setScalar(scale);
@@ -108,7 +114,7 @@ function NormalizedModel({ modelUrl, onReady }: Pick<AssetPreviewCanvasProps, "m
     });
 
     return modelClone;
-  }, [gltf.scene]);
+  }, [gltf.scene, modelScale]);
 
   useEffect(() => {
     if (gltf.animations.length > 0) {
@@ -130,7 +136,14 @@ function NormalizedModel({ modelUrl, onReady }: Pick<AssetPreviewCanvasProps, "m
   return <primitive object={model} />;
 }
 
-export function AssetPreviewCanvas({ modelUrl, resetKey, onReady, onError }: AssetPreviewCanvasProps) {
+export function AssetPreviewCanvas({
+  modelUrl,
+  resetKey,
+  modelScale = 1,
+  brightness = 1,
+  onReady,
+  onError,
+}: AssetPreviewCanvasProps) {
   return (
     <PreviewErrorBoundary key={modelUrl} modelUrl={modelUrl} onError={onError}>
       <Canvas
@@ -140,18 +153,18 @@ export function AssetPreviewCanvas({ modelUrl, resetKey, onReady, onError }: Ass
         shadows
       >
         <color attach="background" args={["#e9e2d7"]} />
-        <ambientLight intensity={1.5} />
-        <hemisphereLight args={["#fff7e9", "#587064", 1.35]} />
+        <ambientLight intensity={1.5 * brightness} />
+        <hemisphereLight args={["#fff7e9", "#587064", 1.35 * brightness]} />
         <directionalLight
           castShadow
           color="#fff1d8"
-          intensity={2.4}
+          intensity={2.4 * brightness}
           position={[3.5, 5, 4]}
           shadow-mapSize={[1024, 1024]}
         />
-        <directionalLight color="#9fb0cf" intensity={1.1} position={[-4, 2, -3]} />
+        <directionalLight color="#9fb0cf" intensity={1.1 * brightness} position={[-4, 2, -3]} />
         <Suspense fallback={null}>
-          <NormalizedModel modelUrl={modelUrl} onReady={onReady} />
+          <NormalizedModel modelUrl={modelUrl} modelScale={modelScale} onReady={onReady} />
         </Suspense>
         <PreviewControls resetKey={resetKey} />
       </Canvas>

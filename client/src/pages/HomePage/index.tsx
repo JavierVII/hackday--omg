@@ -1,23 +1,21 @@
 import {
   ArrowLeft,
   ArrowRight,
-  Box,
-  ChevronRight,
-  Gem,
   Home,
+  Leaf,
   MapPin,
   Moon,
-  Navigation,
   Search,
   Sparkles,
+  Sunset,
   Timer,
   User,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
+import { readAlmanac } from "../../lib/almanac";
 import {
   palaceMuseumPhotos,
   pingyaoPhotos,
@@ -27,17 +25,6 @@ import {
 } from "../../lib/assets";
 
 import "./styles.css";
-
-/** 首页三张能力卡：对应本产品真正提供的三种游法，而不是内容社区式的频道分类 */
-interface PlayStyle {
-  /** 卡片底部的主操作文案，与 CLAUDE.md 的「主操作文案」约定一致：一卡一动作 */
-  readonly action: string;
-  readonly icon: LucideIcon;
-  readonly items: readonly string[];
-  readonly label: string;
-  readonly to: string;
-  readonly tone: "ink" | "gold" | "mist";
-}
 
 interface ScenicAreaCard {
   readonly name: string;
@@ -54,33 +41,6 @@ const festivalSceneId = "scene-broken-bridge";
 
 /** 纪念卡限量额度，Demo 写死；接入后端后应由活动配置下发 */
 const festivalQuota = { claimed: 1286, total: 5000 } as const;
-
-const playStyles: readonly PlayStyle[] = [
-  {
-    label: "云游",
-    icon: Box,
-    items: ["3D 场景", "主题氛围", "自由探索"],
-    action: "开始云游",
-    to: "/scenic/hangzhou-west-lake",
-    tone: "ink",
-  },
-  {
-    label: "向导",
-    icon: Navigation,
-    items: ["实时定位", "沿途讲解", "路线推荐"],
-    action: "开启向导",
-    to: "/guide",
-    tone: "mist",
-  },
-  {
-    label: "藏品",
-    icon: Gem,
-    items: ["数字资产", "纪念卡", "游玩瞬间"],
-    action: "打开背包",
-    to: "/space",
-    tone: "gold",
-  },
-];
 
 /** 西湖是核心；另外两处用来说明平台可以承载任意景区 */
 const scenicAreas: readonly ScenicAreaCard[] = [
@@ -110,32 +70,35 @@ const bottomNavigation = [
 
 const pad = (value: number) => String(value).padStart(2, "0");
 
+/** 每秒一跳的时钟。倒计时与「湖山此刻」共用同一个 interval。 */
+function useSecondTick() {
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return now;
+}
+
 /**
- * 活动倒计时。
- *
- * 截止时刻按「打开页面时刻 + 3 天」的零点算，而不是写死日期 ——
+ * 活动截止时刻：按「打开页面时刻 + 3 天」的零点算，而不是写死日期 ——
  * Demo 无论哪天演示都在活动期内，不会出现负数倒计时。
  */
-function useFestivalCountdown() {
-  const deadline = useMemo(() => {
+function useFestivalDeadline() {
+  return useMemo(() => {
     const end = new Date();
     end.setHours(0, 0, 0, 0);
     end.setDate(end.getDate() + 3);
 
     return end.getTime();
   }, []);
+}
 
-  const [remaining, setRemaining] = useState(() => Math.max(0, deadline - Date.now()));
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setRemaining(Math.max(0, deadline - Date.now()));
-    }, 1000);
-
-    return () => window.clearInterval(timer);
-  }, [deadline]);
-
-  const totalSeconds = Math.floor(remaining / 1000);
+function formatCountdown(remaining: number) {
+  const totalSeconds = Math.floor(Math.max(0, remaining) / 1000);
 
   return {
     days: Math.floor(totalSeconds / 86400),
@@ -146,7 +109,10 @@ function useFestivalCountdown() {
 }
 
 export function HomePage() {
-  const countdown = useFestivalCountdown();
+  const now = useSecondTick();
+  const deadline = useFestivalDeadline();
+  const countdown = formatCountdown(deadline - now);
+  const almanac = readAlmanac(new Date(now));
   const claimedPercent = Math.round((festivalQuota.claimed / festivalQuota.total) * 100);
   const rewardPhoto = westLakeLandscapes.snowBridge;
 
@@ -244,43 +210,6 @@ export function HomePage() {
             </ul>
           </section>
 
-          <section className="play-style-section" aria-labelledby="play-style-title">
-            <div className="app-section-title">
-              <h2 id="play-style-title">三种游法</h2>
-              <span>云游 · 向导 · 藏品</span>
-            </div>
-
-            <div className="play-grid">
-              {playStyles.map((style) => {
-                const Icon = style.icon;
-
-                return (
-                  <Link
-                    className={`play-card play-card--${style.tone}`}
-                    key={style.label}
-                    to={style.to}
-                  >
-                    <span className="play-card__heading">
-                      <strong>{style.label}</strong>
-                      <span aria-hidden="true">
-                        <Icon size={16} strokeWidth={1.9} />
-                      </span>
-                    </span>
-                    <span className="play-card__items">
-                      {style.items.map((item) => (
-                        <span key={item}>{item}</span>
-                      ))}
-                    </span>
-                    <span className="play-card__action">
-                      {style.action}
-                      <ChevronRight size={12} strokeWidth={2} aria-hidden="true" />
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
-
           <section className="festival-section" aria-labelledby="festival-section-title">
             <div className="app-section-title">
               <h2 id="festival-section-title">限时活动</h2>
@@ -344,6 +273,63 @@ export function HomePage() {
                 <span className="festival-event__cta">
                   立即参与
                   <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
+                </span>
+              </span>
+            </Link>
+          </section>
+
+          <section className="almanac-section" aria-labelledby="almanac-title">
+            <div className="app-section-title">
+              <h2 id="almanac-title">湖山此刻</h2>
+              <span>
+                {almanac.solarTerm} · {almanac.phenology}
+              </span>
+            </div>
+
+            <Link
+              className="almanac-card"
+              to="/scenic/hangzhou-west-lake"
+              aria-label={`${almanac.shichen}，${almanac.shichenNote}。此刻最宜去${almanac.pick.spot}`}
+            >
+              <span className="almanac-card__wash" aria-hidden="true" />
+
+              <span className="almanac-card__head">
+                <span className="almanac-card__hour">
+                  <strong>{almanac.shichen}</strong>
+                  <time>{almanac.clock}</time>
+                </span>
+                <span className="almanac-card__seal" aria-hidden="true">
+                  {almanac.pick.label}
+                </span>
+              </span>
+
+              <span className="almanac-card__note">{almanac.shichenNote}</span>
+
+              <span className="almanac-card__meta">
+                <Sunset size={12} strokeWidth={1.9} aria-hidden="true" />
+                {almanac.sunsetLine}
+              </span>
+
+              <span className="almanac-card__pick">
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  decoding="async"
+                  loading="lazy"
+                  src={almanac.pick.photo.src}
+                  style={{ objectPosition: almanac.pick.photo.focus }}
+                />
+                <span className="almanac-card__pick-copy">
+                  <small>
+                    <Leaf size={11} strokeWidth={1.9} aria-hidden="true" />
+                    此刻最宜
+                  </small>
+                  <strong>{almanac.pick.spot}</strong>
+                  <em>{almanac.pick.line}</em>
+                </span>
+                <span className="almanac-card__pick-go">
+                  去看看
+                  <ArrowRight size={13} strokeWidth={2} aria-hidden="true" />
                 </span>
               </span>
             </Link>

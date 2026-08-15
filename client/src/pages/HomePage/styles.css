@@ -424,111 +424,182 @@
   box-shadow: var(--shadow-card);
 }
 
-/* —— 三种游法 —— */
+/* —— 湖山此刻（中式日课） —— */
 
-.play-grid {
+/* 纸面日课卡：时辰 + 朱红时段印 + 景象白描 + 日落倒数 + 此刻推荐去处。
+   全部按本机时间实时推算，见 src/lib/almanac.ts。 */
+.almanac-card {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.play-card {
-  display: flex;
-  min-width: 0;
-  min-height: 152px;
-  flex-direction: column;
-  padding: 14px 12px 12px;
+  gap: 9px;
+  overflow: hidden;
+  padding: 16px;
   color: var(--ink-green-900);
-  font-family: inherit;
-  text-align: left;
   text-decoration: none;
-  cursor: pointer;
-  background: var(--paper-white);
+  background: linear-gradient(152deg, var(--paper-white) 0%, var(--paper-warm) 100%);
   border: 1px solid var(--hairline-ink);
-  border-radius: 16px;
+  border-radius: 18px;
   box-shadow: var(--shadow-card);
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
-.play-card:hover {
+.almanac-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-raised);
 }
 
-.play-card__heading {
+/* 左上角一抹晚霞水痕，压掉纸面渐变的塑料感 */
+.almanac-card__wash {
+  position: absolute;
+  top: -56px;
+  left: -40px;
+  width: 190px;
+  aspect-ratio: 1;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgb(232 167 101 / 18%) 0%,
+    rgb(185 194 222 / 12%) 48%,
+    transparent 72%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.almanac-card__head {
+  position: relative;
+  z-index: 1;
   display: flex;
-  align-items: center;
+  gap: 12px;
+  align-items: flex-start;
   justify-content: space-between;
 }
 
-.play-card__heading strong {
+.almanac-card__hour {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+}
+
+.almanac-card__hour strong {
   color: var(--ink-green-950);
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+.almanac-card__hour time {
+  color: var(--ink-green-700);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
   letter-spacing: 0.06em;
 }
 
-.play-card__heading > span {
-  display: grid;
-  width: 27px;
-  aspect-ratio: 1;
-  place-items: center;
-  border-radius: 9px;
-}
-
-.play-card--ink .play-card__heading > span {
-  color: var(--ink-green-700);
-  background: rgb(42 102 80 / 12%);
-}
-
-.play-card--gold .play-card__heading > span {
-  color: var(--sunset-gold-deep);
-  background: rgb(232 167 101 / 20%);
-}
-
-.play-card--mist .play-card__heading > span {
-  color: var(--mist-ink);
-  background: rgb(185 194 222 / 30%);
-}
-
-.play-card__items {
-  display: grid;
-  gap: 5px;
-  margin-top: 12px;
-  color: var(--ink-green-700);
+/* 朱红时段印 —— 全页唯一的高饱和落款，见 docs/DESIGN-claude.md §2.4 */
+.almanac-card__seal {
+  flex: none;
+  padding: 5px 4px;
+  color: var(--paper-white);
+  font-family: var(--font-display);
   font-size: 12px;
+  letter-spacing: 0.14em;
+  writing-mode: vertical-rl;
+  background: var(--seal-red);
+  border-radius: 5px;
+  box-shadow: 0 6px 14px -8px rgb(180 64 47 / 70%);
 }
 
-/* 主操作文案：一卡一动作，比原先统一的「探索更多」更明确 */
-.play-card__action {
-  display: flex;
-  gap: 1px;
-  align-items: center;
-  margin-top: auto;
-  padding-top: 12px;
-  font-size: 10px;
-  letter-spacing: 0.02em;
-}
-
-.play-card--ink .play-card__action {
+.almanac-card__note {
+  position: relative;
+  z-index: 1;
   color: var(--ink-green-700);
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.06em;
 }
 
-.play-card--gold .play-card__action {
+.almanac-card__meta {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
   color: var(--sunset-gold-deep);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
 }
 
-.play-card--mist .play-card__action {
-  color: var(--mist-ink);
+/* 此刻推荐：虚线分隔，实景缩略图 + 一句白描 */
+.almanac-card__pick {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 11px;
+  align-items: center;
+  margin-top: 3px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--hairline-ink-strong);
 }
 
-.play-card__action svg {
+.almanac-card__pick img {
+  display: block;
+  width: 46px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow:
+    0 8px 16px -10px rgb(15 39 33 / 60%),
+    0 0 0 1px rgb(250 246 238 / 60%);
+}
+
+.almanac-card__pick-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.almanac-card__pick-copy small {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  color: var(--ink-green-600);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+.almanac-card__pick-copy strong {
+  color: var(--ink-green-950);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+.almanac-card__pick-copy em {
+  color: var(--ink-green-700);
+  font-size: 11px;
+  font-style: normal;
+  line-height: 1.5;
+}
+
+.almanac-card__pick-go {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  flex: none;
+  color: var(--ink-green-700);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.almanac-card__pick-go svg {
   transition: transform 180ms ease;
 }
 
-.play-card:hover .play-card__action svg {
-  transform: translateX(2px);
+.almanac-card:hover .almanac-card__pick-go svg {
+  transform: translateX(3px);
 }
 
 /* —— 限时活动 —— */
@@ -911,13 +982,12 @@
     font-size: 23px;
   }
 
-  .play-card {
-    min-height: 146px;
-    padding: 12px 10px 10px;
+  .almanac-card__hour strong {
+    font-size: 23px;
   }
 
-  .play-card__heading strong {
-    font-size: 19px;
+  .almanac-card__note {
+    font-size: 14px;
   }
 
   .festival-event__status {
@@ -946,7 +1016,7 @@
 @media (prefers-reduced-motion: reduce) {
   .cloud-tour-card__cta,
   .scenic-area-card,
-  .play-card,
+  .almanac-card,
   .festival-event {
     transition: none;
   }
@@ -959,7 +1029,7 @@
 
   .cloud-tour-card__cta:hover,
   .scenic-area-card:hover,
-  .play-card:hover,
+  .almanac-card:hover,
   .festival-event:hover {
     transform: none;
   }
@@ -968,12 +1038,12 @@
     animation: none;
   }
 
-  .play-card__action svg,
+  .almanac-card__pick-go svg,
   .festival-event__cta svg {
     transition: none;
   }
 
-  .play-card:hover .play-card__action svg,
+  .almanac-card:hover .almanac-card__pick-go svg,
   .festival-event:hover .festival-event__cta svg {
     transform: none;
   }

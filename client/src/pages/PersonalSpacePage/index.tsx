@@ -5,19 +5,14 @@ import {
   CalendarDays,
   Camera,
   ChevronRight,
-  Coffee,
-  Flower2,
   Gem,
   Home,
   Image,
   Landmark,
   Maximize2,
   MapPin,
-  Rabbit,
   RotateCcw,
   Sparkles,
-  Squirrel,
-  Umbrella,
   User,
   X,
 } from "lucide-react";
@@ -44,8 +39,8 @@ const digitalAssets = [
     type: "景观模型",
     source: "雷峰夕照",
     date: "2026.08.15",
-    icon: Landmark,
     tone: "pagoda",
+    thumbnailUrl: "/assets/digital_assets/leifeng-pagoda.jpg",
     modelUrl: encodeURI("/assets/models_glb/雷峰塔.glb"),
   },
   {
@@ -53,8 +48,8 @@ const digitalAssets = [
     type: "自然收藏",
     source: "曲院风荷",
     date: "2026.08.15",
-    icon: Flower2,
     tone: "story",
+    thumbnailUrl: "/assets/digital_assets/lotus.jpg",
     modelUrl: encodeURI("/assets/models_glb/荷花.glb"),
   },
   {
@@ -62,8 +57,9 @@ const digitalAssets = [
     type: "互动道具",
     source: "烟雨西湖",
     date: "2026.08.14",
-    icon: Umbrella,
     tone: "lantern",
+    thumbnailUrl: "/assets/digital_assets/oil-paper-umbrella.jpg",
+    previewScale: 0.78,
     modelUrl: encodeURI("/assets/models_glb/油纸伞.glb"),
   },
   {
@@ -71,8 +67,8 @@ const digitalAssets = [
     type: "文化器物",
     source: "龙井问茶",
     date: "2026.08.13",
-    icon: Coffee,
     tone: "moon",
+    thumbnailUrl: "/assets/digital_assets/tea-set.jpg",
     modelUrl: encodeURI("/assets/models_glb/茶具.glb"),
   },
   {
@@ -80,8 +76,9 @@ const digitalAssets = [
     type: "生态精灵",
     source: "西湖群山",
     date: "2026.08.12",
-    icon: Squirrel,
     tone: "story",
+    thumbnailUrl: "/assets/digital_assets/squirrel.jpg",
+    brightness: 1.38,
     modelUrl: encodeURI("/assets/models_glb/松鼠.glb"),
   },
   {
@@ -89,8 +86,9 @@ const digitalAssets = [
     type: "灵境伙伴",
     source: "湖畔草木",
     date: "2026.08.12",
-    icon: Rabbit,
     tone: "moon",
+    thumbnailUrl: "/assets/digital_assets/rabbit.jpg",
+    previewScale: 0.78,
     modelUrl: encodeURI("/assets/models_glb/兔子.glb"),
   },
 ] as const;
@@ -171,6 +169,8 @@ function AssetViewer({ asset, onClose }: { asset: DigitalAsset; onClose: () => v
             <AssetPreviewCanvas
               modelUrl={asset.modelUrl}
               resetKey={resetKey}
+              modelScale={"previewScale" in asset ? asset.previewScale : 1}
+              brightness={"brightness" in asset ? asset.brightness : 1}
               onReady={handleReady}
               onError={handleError}
             />
@@ -206,7 +206,7 @@ function AssetViewer({ asset, onClose }: { asset: DigitalAsset; onClose: () => v
         </footer>
       </section>
     </div>,
-    document.body,
+    document.querySelector(".space-page") ?? document.body,
   );
 }
 
@@ -246,36 +246,33 @@ function DigitalAssets() {
           <small><MapPin size={12} /> {featuredAsset.source}</small>
         </div>
         <div className="space-featured-asset__art" aria-hidden="true">
-          <Landmark size={46} strokeWidth={1.3} />
-          <span />
+          <img src={featuredAsset.thumbnailUrl} alt="" />
         </div>
         <Maximize2 className="space-featured-asset__open" size={15} aria-hidden="true" />
       </button>
 
       <section className="space-asset-grid" aria-label="数字资产列表">
         {digitalAssets.map((asset) => {
-          const Icon = asset.icon;
-
           return (
-          <button
-            className={`space-asset-card space-asset-card--${asset.tone}`}
-            key={asset.name}
-            type="button"
-            aria-label={`查看${asset.name} 3D 模型`}
-            onClick={() => setSelectedAsset(asset)}
-          >
-            <span className="space-asset-card__art">
-              <Icon size={34} strokeWidth={1.45} />
-              <BadgeCheck className="space-asset-card__verified" size={16} fill="currentColor" />
-              <span className="space-asset-card__view"><Maximize2 size={11} /> 查看 3D</span>
-            </span>
-            <span className="space-asset-card__copy">
-              <small>{asset.type}</small>
-              <strong>{asset.name}</strong>
-              <span>{asset.source}</span>
-              <time>{asset.date}</time>
-            </span>
-          </button>
+            <button
+              className={`space-asset-card space-asset-card--${asset.tone}`}
+              key={asset.name}
+              type="button"
+              aria-label={`查看${asset.name} 3D 模型`}
+              onClick={() => setSelectedAsset(asset)}
+            >
+              <span className="space-asset-card__art">
+                <img src={asset.thumbnailUrl} alt="" loading="lazy" decoding="async" />
+                <BadgeCheck className="space-asset-card__verified" size={16} fill="currentColor" />
+                <span className="space-asset-card__view"><Maximize2 size={11} /> 查看 3D</span>
+              </span>
+              <span className="space-asset-card__copy">
+                <small>{asset.type}</small>
+                <strong>{asset.name}</strong>
+                <span>{asset.source}</span>
+                <time>{asset.date}</time>
+              </span>
+            </button>
           );
         })}
       </section>
