@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type MouseEvent as ReactMouseEvent } from "react";
 import { Link } from "react-router";
 
+import { useUiStore } from "../../app/stores/uiStore";
 import ImageTrail from "../../components/common/ImageTrail";
+import { prefersReducedMotion } from "../../lib/motion";
 
 import "./styles.css";
 
@@ -45,7 +47,7 @@ function usePointerParallax<T extends HTMLElement>() {
   useEffect(() => {
     const element = ref.current;
 
-    if (!element || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (!element || prefersReducedMotion()) {
       return;
     }
 
@@ -70,11 +72,52 @@ function usePointerParallax<T extends HTMLElement>() {
   return ref;
 }
 
+/**
+ * 圆心贴到视口边缘时，「入画」二字与月轮会被裁掉。
+ * 收进中间 60% 的范围里，取景才稳。
+ */
+function clampToSafeBand(value: number, size: number) {
+  return Math.min(Math.max(value, size * 0.2), size * 0.8);
+}
+
 export function EntrancePage() {
   const rootRef = usePointerParallax<HTMLElement>();
+  const deviceRef = useRef<HTMLDivElement>(null);
+  const closeGate = useUiStore((state) => state.closeGate);
+  const departing = useUiStore((state) => state.gate.phase === "closing");
+
+  /**
+   * 「体验游客端」不直接跳转：先让墨色从手机屏幕中心合拢（穿门入境过场），
+   * 再由 GateTransition 切到 /home，避免一眨眼就换了个界面的生硬感。
+   *
+   * 新标签页 / 减弱动效两种情况交还给 <Link> 的默认行为。
+   */
+  const handleEnterClient = (event: ReactMouseEvent<HTMLAnchorElement>) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+
+    if (prefersReducedMotion()) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const rect = deviceRef.current?.getBoundingClientRect();
+
+    closeGate(
+      "/home",
+      rect === undefined
+        ? null
+        : {
+            x: clampToSafeBand(rect.left + rect.width / 2, window.innerWidth),
+            y: clampToSafeBand(rect.top + rect.height / 2, window.innerHeight),
+          },
+    );
+  };
 
   return (
-    <main className="entrance" ref={rootRef}>
+    <main className={`entrance${departing ? " is-departing" : ""}`} ref={rootRef}>
       {/* —— 背景层：晚霞大气 → 远山 → 颗粒 → 暗角 —— */}
       <div className="entrance__sky" aria-hidden="true" />
 
@@ -132,7 +175,11 @@ export function EntrancePage() {
         </p>
 
         <div className="entrance__actions" aria-label="入口选择">
-          <Link className="entrance__button entrance__button--primary" to="/home">
+          <Link
+            className="entrance__button entrance__button--primary"
+            onClick={handleEnterClient}
+            to="/home"
+          >
             体验游客端
             <span className="entrance__button-arrow" aria-hidden="true">
               →
@@ -163,7 +210,7 @@ export function EntrancePage() {
         </div>
 
         <div className="entrance__device-wrap">
-          <div className="entrance__device">
+          <div className="entrance__device" ref={deviceRef}>
             <div className="entrance__device-screen">
               <img className="entrance__screen" src={SCREEN_IMAGE} alt="游客端界面预览" />
               <div className="entrance__screen-scrim" aria-hidden="true" />

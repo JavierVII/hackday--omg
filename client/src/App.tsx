@@ -2,6 +2,7 @@ import { useLocation } from "react-router";
 
 import { BackgroundMusic } from "./components/common/BackgroundMusic";
 import { EntranceReturnButton } from "./components/common/EntranceReturnButton";
+import { GateTransition } from "./components/overlays/GateTransition";
 import { AppRouter } from "./router";
 
 /** 需要实景漂移背景的页面：/home /space /profile /scenic/* /exhibition/* */
@@ -18,6 +19,8 @@ export function App() {
       <AppRouter />
       <EntranceReturnButton />
       <BackgroundMusic />
+      {/* 过场层挂在路由之外，跨路由切换时动画不中断 */}
+      <GateTransition />
     </>
   );
 }

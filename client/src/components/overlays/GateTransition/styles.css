@@ -1,0 +1,359 @@
+/* ==========================================================================
+   穿门入境 —— 进入页 → 游客端 的过场
+   母题：朝月洞门迈一步 → 墨色自手机屏心洇满画面 → 金环掠过眼前 → 落在灵境之内。
+   合门 820ms / 开门 840ms，必须与 index.tsx 的 CLOSING_MS / OPENING_MS 对齐。
+   ========================================================================== */
+
+/* 光圈半径与边缘柔化带都要注册成自定义属性，CSS 才会逐帧插值；
+   不注册的话遮罩只在末帧跳变。
+   柔化带同样从 0 长出来 —— 固定宽度会让起手第一帧就凭空多出一块柔边墨斑。 */
+@property --gate-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --gate-feather {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+.gate {
+  position: fixed;
+  inset: 0;
+
+  /* 高于返回按钮 105、背景音乐 100、云游浮层 120 */
+  z-index: 200;
+
+  /* 金环放大到数倍视口，不能撑出滚动条 */
+  overflow: hidden;
+
+  /* 光圈圆心：进入页交出手机屏幕中心；未提供时落在视口正中。
+     遮罩、涟漪、月轮、金环共用这一对变量。 */
+  --gate-x: 50%;
+  --gate-y: 50%;
+
+  /* 这里刻意不写 pointer-events: none ——
+     过场期间要吃掉全部指针操作，避免「飞行途中」误触底下的页面。 */
+}
+
+/* —— 墨色帷幕：合门时自圆心洇满，开门时自圆心让开 —————————————— */
+
+.gate__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at var(--gate-x) var(--gate-y), rgb(42 102 80 / 52%) 0%, transparent 44%),
+    linear-gradient(168deg, #123029 0%, var(--ink-green-950) 58%, #071c17 100%);
+}
+
+.gate[data-phase="closing"] .gate__veil {
+  /* 实心与透明之间留一条柔化带：宣纸吃墨的边缘，不是硬边圆 */
+  mask-image: radial-gradient(
+    circle at var(--gate-x) var(--gate-y),
+    #000 var(--gate-r),
+    transparent calc(var(--gate-r) + var(--gate-feather))
+  );
+  animation: gate-ink-spread 700ms cubic-bezier(0.62, 0, 0.28, 1) 120ms both;
+}
+
+.gate[data-phase="opening"] .gate__veil {
+  mask-image: radial-gradient(
+    circle at var(--gate-x) var(--gate-y),
+    transparent var(--gate-r),
+    #000 calc(var(--gate-r) + var(--gate-feather))
+  );
+  animation: gate-ink-part 760ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both;
+}
+
+/* 168vmax / 172vmax 均大于视口对角线，保证末帧一定「盖满」与「让空」。
+   两段都从 feather: 0 起手：合门第一帧是半径 0 的硬边圆（等于看不见），
+   开门第一帧是半径 0 的孔（等于全盖住），衔接处不会闪。 */
+@keyframes gate-ink-spread {
+  from {
+    --gate-r: 0px;
+    --gate-feather: 0px;
+  }
+
+  16% {
+    --gate-feather: 14vmax;
+  }
+
+  to {
+    --gate-r: 168vmax;
+    --gate-feather: 14vmax;
+  }
+}
+
+@keyframes gate-ink-part {
+  from {
+    --gate-r: 0px;
+    --gate-feather: 0px;
+  }
+
+  14% {
+    --gate-feather: 12vmax;
+  }
+
+  to {
+    --gate-r: 172vmax;
+    --gate-feather: 12vmax;
+  }
+}
+
+/* 纸纹颗粒：作为帷幕的子元素，一起被遮罩裁切，墨色才不显塑料感 */
+.gate__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.08;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* —— 涟漪：石落湖心的三圈，只在合门时出现 ————————————————————
+   基础状态一律 opacity: 0，动画自己把它推出来；开门阶段没有动画，也就自然隐去。 */
+
+.gate__ripples > i {
+  position: absolute;
+  top: var(--gate-y);
+  left: var(--gate-x);
+  width: 24vmax;
+  aspect-ratio: 1;
+  opacity: 0;
+  border: 1px solid rgb(250 246 238 / 34%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.06);
+}
+
+.gate[data-phase="closing"] .gate__ripples > i {
+  animation: gate-ripple 500ms cubic-bezier(0.33, 0, 0.2, 1) 120ms both;
+}
+
+.gate[data-phase="closing"] .gate__ripples > i:nth-child(2) {
+  animation-delay: 210ms;
+}
+
+.gate[data-phase="closing"] .gate__ripples > i:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+@keyframes gate-ripple {
+  from {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(0.06);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(3.2);
+  }
+}
+
+/* —— 月轮：门内的那点光，也是「入画」二字的背光 ———————————————
+   月在左上、字在右下：错开位置，白色月面才不会压在白色字上。 */
+
+.gate__moon {
+  position: absolute;
+  top: var(--gate-y);
+  left: var(--gate-x);
+  width: 34vmin;
+  aspect-ratio: 1;
+  opacity: 0;
+  background: radial-gradient(
+    circle at 26% 16%,
+    rgb(250 246 238 / 30%) 0%,
+    rgb(232 167 101 / 20%) 30%,
+    transparent 64%
+  );
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.6);
+}
+
+/* 月轮本体：小而实的一枚，光晕交给外层渐变 */
+.gate__moon::before {
+  position: absolute;
+  top: 16%;
+  left: 26%;
+  width: 22%;
+  aspect-ratio: 1;
+  content: "";
+  background: radial-gradient(circle at 38% 34%, #fff 0%, var(--paper-white) 44%, #f0dcb8 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 34px 6px rgb(250 246 238 / 40%);
+  transform: translate(-50%, -50%);
+}
+
+.gate[data-phase="closing"] .gate__moon {
+  animation: gate-moon-rise 400ms cubic-bezier(0.22, 1, 0.36, 1) 400ms both;
+}
+
+.gate[data-phase="opening"] .gate__moon {
+  animation: gate-moon-pass 300ms ease-out 100ms both;
+}
+
+@keyframes gate-moon-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes gate-moon-pass {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+}
+
+/* —— 落款：「入画」二字 + 朱红印章 ——————————————————————————
+   落在圆心而不是屏幕正中：门在哪里，字就在哪里。 */
+
+.gate__caption {
+  position: absolute;
+  top: var(--gate-y);
+  left: var(--gate-x);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+}
+
+.gate__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(38px, 5vw, 64px);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: 0.04em;
+  color: var(--paper-white);
+  text-shadow: 0 0 30px rgb(232 167 101 / 55%);
+}
+
+/* 与进入页落款同一枚印章，尺寸略小 */
+.gate__seal {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  line-height: 1.05;
+  color: var(--paper-white);
+  background: var(--seal-red);
+  border-radius: 4px;
+  box-shadow: 0 6px 18px -8px rgb(180 64 47 / 80%);
+  writing-mode: vertical-rl;
+}
+
+.gate[data-phase="closing"] .gate__caption {
+  animation: gate-caption-in 380ms cubic-bezier(0.22, 1, 0.36, 1) 440ms both;
+}
+
+/* 开门时字随之放大淡出，像是从字里穿了过去 */
+.gate[data-phase="opening"] .gate__caption {
+  animation: gate-caption-pass 300ms ease-in 120ms both;
+}
+
+@keyframes gate-caption-in {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translate(-50%, -50%) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes gate-caption-pass {
+  from {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translate(-50%, -50%) scale(1.22);
+  }
+}
+
+/* —— 门框：金环自圆心向外掠过 ————————————————————————————— */
+
+.gate__ring {
+  position: absolute;
+  top: var(--gate-y);
+  left: var(--gate-x);
+  width: 34vmax;
+  aspect-ratio: 1;
+  opacity: 0;
+  border: 1px solid rgb(232 167 101 / 70%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px rgb(250 246 238 / 22%) inset,
+    0 0 60px rgb(232 167 101 / 34%);
+  transform: translate(-50%, -50%) scale(0.12);
+  will-change: transform, opacity;
+}
+
+.gate[data-phase="closing"] .gate__ring {
+  animation: gate-ring-pass 820ms cubic-bezier(0.5, 0, 0.3, 1) both;
+}
+
+/* 开门时再掠一次：门框的另一侧从眼前退出，人已在门内 */
+.gate[data-phase="opening"] .gate__ring {
+  animation: gate-ring-away 560ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both;
+}
+
+@keyframes gate-ring-pass {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.12);
+  }
+
+  26% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(4.6);
+  }
+}
+
+/* 开门时金环从墨色里浮出再退出视野，不能一上来就带着透明度出现 */
+@keyframes gate-ring-away {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+
+  18% {
+    opacity: 0.75;
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(5.4);
+  }
+}
