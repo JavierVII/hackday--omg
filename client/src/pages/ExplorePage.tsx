@@ -12,6 +12,8 @@ import { fetchConfig } from "../services/clientConfigService";
 import { SceneManager, type FrameState } from "../three/SceneManager";
 import { ROUTES } from "../features/positioning/routes";
 import { launchMiniGame } from "../features/minigames";
+import { MiniGameHost, closeMiniGame, openMiniGame } from "../minigame";
+import { MINI_GAME_IDS, type MiniGameCompleteEvent, type MiniGameId } from "../minigame";
 import {
   Compass,
   AiAssistantButton,
@@ -37,6 +39,7 @@ const AHOLO_LOD_URL = "/assets/wuguitan-lod";
 const STORY_INTERACTION_ID = "interaction-wuguitan-story";
 const RIDDLE_INTERACTION_ID = "interaction-wuguitan-riddle";
 const PITCH_POT_INTERACTION_ID = "interaction-wuguitan-pitchpot";
+const BEADS_INTERACTION_ID = "interaction-wuguitan-beads";
 const RESTROOM_INTERACTION_ID = "facility-nearby-restroom";
 const RESTROOM_POINT: InteractionPoint = {
   id: RESTROOM_INTERACTION_ID,
@@ -82,11 +85,14 @@ export default function ExplorePage() {
   const storyDone = progress.completedInteractionIds.includes(STORY_INTERACTION_ID);
   const riddleDone = progress.completedInteractionIds.includes(RIDDLE_INTERACTION_ID);
   const pitchPotDone = progress.completedInteractionIds.includes(PITCH_POT_INTERACTION_ID);
+  const beadsDone = progress.completedInteractionIds.includes(BEADS_INTERACTION_ID);
   const activeInteractionId = !storyDone
     ? STORY_INTERACTION_ID
     : !riddleDone
       ? RIDDLE_INTERACTION_ID
-      : PITCH_POT_INTERACTION_ID;
+      : !pitchPotDone
+        ? PITCH_POT_INTERACTION_ID
+        : BEADS_INTERACTION_ID;
 
   useEffect(() => {
     fetchConfig().then((c) => {
@@ -233,7 +239,7 @@ export default function ExplorePage() {
           .map((p) => ({
             position: p.position,
             modelUrl:
-              p.miniGameId === WEST_LAKE_IDS.miniGames.pitchPot
+              p.miniGameId === WEST_LAKE_IDS.miniGames.touhu
                 ? "/assets/models/npc_knight.glb"
                 : "/assets/models/npc_mage.glb",
           }))
@@ -289,7 +295,9 @@ export default function ExplorePage() {
       ? { title: "任务 · 猜灯谜", hint: "已到达和泽三春。循墨绿路引前往灯谜处，完成中秋灯谜。" }
       : !pitchPotDone
         ? { title: "任务 · 前往投壶", hint: "灯谜挑战完成。继续沿路引前往投壶处，体验游园雅趣。" }
-        : { title: "任务完成", hint: "和泽三春游历完成，可继续自由探索。" };
+        : !beadsDone
+          ? { title: "任务 · 西湖串珠", hint: "完成投壶后，前往串珠互动点继续体验。" }
+          : { title: "任务完成", hint: "和泽三春游历完成，可继续自由探索。" };
 
   const markCompleted = (id: string) =>
     setProgress((p) =>
@@ -341,6 +349,16 @@ export default function ExplorePage() {
     } else if (point.type === "game" && point.miniGameId) {
       const game = config.miniGames.find((g) => g.id === point.miniGameId);
       if (game) {
+        const miniGameId = point.miniGameId as MiniGameId;
+        if (Object.values(MINI_GAME_IDS).includes(miniGameId)) {
+          openMiniGame(miniGameId, {
+            interactionId: point.id,
+            sceneId: point.sceneId,
+            source: "hotspot",
+            rewardId: point.rewardId ?? game.rewardId,
+          });
+          return;
+        }
         void launchMiniGame(game.type, {
           game,
           interactionId: point.id,
@@ -363,6 +381,20 @@ export default function ExplorePage() {
     }
   };
 
+  const handleMiniGameComplete = (event: MiniGameCompleteEvent) => {
+    const interactionId = event.context?.interactionId;
+    if (interactionId) markCompleted(interactionId);
+    const rewardId = event.context?.rewardId;
+    const reward = rewardId ? config.rewards.find((item) => item.id === rewardId) : undefined;
+    if (reward) {
+      setProgress((current) => current.unlockedRewardIds.includes(reward.id)
+        ? current
+        : { ...current, unlockedRewardIds: [...current.unlockedRewardIds, reward.id] });
+      setOverlay({ kind: "reward", reward });
+    }
+    closeMiniGame();
+  };
+
   const handleRiddleSuccess = () => {
     if (overlay?.kind !== "riddle") return;
     markCompleted(overlay.point.id);
@@ -383,6 +415,7 @@ export default function ExplorePage() {
   return (
     <div className="explore-page">
       <div ref={containerRef} className="scene-container" />
+      <MiniGameHost onClose={() => closeMiniGame()} onComplete={handleMiniGameComplete} />
       <TopBar areaName={config.scenicArea.name} sceneName={sceneName} />
       <CoordReadout x={frame?.x ?? 0} y={frame?.y ?? 0} z={frame?.z ?? 0} />
       <Compass

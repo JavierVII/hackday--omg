@@ -59,7 +59,7 @@ export interface InteractionPoint {
   enabled: boolean;
 }
 
-export type MiniGameType = "lantern-riddle" | "pitch-pot";
+export type MiniGameType = "lantern-riddle" | "pitch-pot" | "touhu" | "beads";
 
 export interface MiniGame {
   id: string;
@@ -123,7 +123,8 @@ export const WEST_LAKE_IDS = {
   },
   miniGames: {
     lanternRiddle: "minigame-lantern-riddle",
-    pitchPot: "minigame-pitch-pot",
+    touhu: "minigame-touhu",
+    beads: "minigame-beads",
   },
   rewards: {
     moonlitBrokenBridge: "reward-moonlit-broken-bridge",
