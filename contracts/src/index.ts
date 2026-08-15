@@ -8,6 +8,7 @@ export interface MediaRef {
   type: "image" | "video" | "model";
   name?: string;
   thumbnailUrl?: string;
+  format?: "ply" | "spz" | "lod-meta";
 }
 
 export type Asset3DStatus = "draft" | "reconstructing" | "pending_review" | "published" | "failed";
@@ -23,6 +24,10 @@ export interface Asset3D {
   status: Asset3DStatus;
   reconstructionJobId?: string;
   reconstructionProgress?: number;
+  reconstructionStatus?: string;
+  reconstructionMessage?: string;
+  reconstructionProvider?: "aholo3d" | "mock";
+  splatOutputs?: { plyUrl?: string; spzUrl?: string; lodMetaUrl?: string; upAxis?: "Y" | "Z" };
   failureReason?: string;
   viewCount: number;
   publishedAt?: ISODateString;

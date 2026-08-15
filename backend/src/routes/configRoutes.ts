@@ -3,7 +3,7 @@ import { ConfigService } from "../services/configService.js";
 import type { InteractionPoint, MiniGame, Theme } from "@hackday/contracts";
 
 const service = new ConfigService();
-const send = (response: ServerResponse, status: number, body: unknown) => { response.writeHead(status, { "content-type": "application/json; charset=utf-8", "access-control-allow-origin": "*", "access-control-allow-methods": "GET,PATCH,POST,DELETE,OPTIONS", "access-control-allow-headers": "content-type" }); response.end(JSON.stringify(body)); };
+const send = (response: ServerResponse, status: number, body: unknown) => { response.writeHead(status, { "content-type": "application/json; charset=utf-8", "access-control-allow-origin": "*", "access-control-allow-methods": "GET,PATCH,POST,DELETE,OPTIONS", "access-control-allow-headers": "content-type,x-asset-name,x-scenic-spot,x-description,x-file-name,x-task-quality" }); response.end(JSON.stringify(body)); };
 const readBody = async (request: IncomingMessage) => { const chunks: Buffer[] = []; for await (const chunk of request) chunks.push(Buffer.from(chunk)); return chunks.length ? JSON.parse(Buffer.concat(chunks).toString("utf8")) as Record<string, unknown> : {}; };
 
 export async function handleConfigRoute(request: IncomingMessage, response: ServerResponse): Promise<boolean> {

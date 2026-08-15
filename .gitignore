@@ -1,3 +1,6 @@
+.env
+.env.*
+!.env.example
 node_modules/
 dist/
 .vite/
@@ -5,3 +8,4 @@ dist/
 backend/data/config.json
 backend/data/config.json.tmp
 backend/data/*.pid
+backend/data/assets.json

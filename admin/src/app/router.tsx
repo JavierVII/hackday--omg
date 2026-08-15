@@ -38,4 +38,4 @@ export const router = createBrowserRouter([
     ],
   },
   { path: "*", element: <Navigate to="/dashboard" replace/> },
-]);
+], { basename: import.meta.env.VITE_ADMIN_BASE_PATH ?? "/admin" });

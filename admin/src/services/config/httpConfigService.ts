@@ -2,7 +2,7 @@ import type { AdminConfigState, ScenicExperienceConfig } from "@hackday/contract
 import type { InteractionPoint, MiniGame, Theme } from "@hackday/contracts";
 import type { ConfigService } from "./types";
 
-const API_URL = import.meta.env.VITE_CONFIG_API_URL ?? "http://127.0.0.1:8787";
+const API_URL = import.meta.env.VITE_CONFIG_API_URL ?? "";
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, { ...init, headers: { "content-type": "application/json", ...init?.headers } });
   const body = await response.json() as T & { error?: string };
