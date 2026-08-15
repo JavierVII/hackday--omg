@@ -52,13 +52,14 @@ interface CloudTour {
   readonly blurb: string;
   readonly photo: Photo;
   readonly spot: string;
-  readonly to: string;
+  /** 省略表示该处还没有落地页面，卡片只展示、不可点 */
+  readonly to?: string;
 }
 
 /**
  * 今日云游可切换的三处去向。
- * 西湖走已建成的景区详情页；另外两处是新目的地，
- * ID 暂按 `scene-*` 约定在此写死，接入 `GET /api/client/config` 后应由 `scenes` 下发。
+ * 西湖走景区详情页，展览馆走展馆详情页；时思寺尚无落地页面，暂时只展示不可点。
+ * ID 暂在此写死，接入 `GET /api/client/config` 后应由配置下发。
  */
 const cloudTours: readonly CloudTour[] = [
   {
@@ -75,18 +76,17 @@ const cloudTours: readonly CloudTour[] = [
     spot: "时思寺",
     heading: ["深山藏古寺，", "云深不知年"],
     blurb: "木构古刹静立山间，香樟与竹影替它数着年岁。",
-    cta: "入山寻寺",
+    cta: "即将开放",
     photo: featuredVenues.shishiTemple,
-    to: "/scene/scene-shisi-temple/loading",
   },
   {
-    id: "scene-art-gallery",
+    id: "art-gallery",
     spot: "艺术展览馆",
     heading: ["白墙之内，", "画里有声"],
     blurb: "当期《第贰樂章 · 舞曲》，在数字展厅里慢慢看完每一幅。",
     cta: "进馆看展",
     photo: featuredVenues.artGallery,
-    to: "/scene/scene-art-gallery/loading",
+    to: "/exhibition/art-gallery",
   },
 ];
 
@@ -355,10 +355,15 @@ function CloudTourDeck() {
                     {tour.heading[1]}
                   </h2>
                   <p>{tour.blurb}</p>
-                  <Link className="cloud-tour-card__cta" to={tour.to}>
-                    {tour.cta}
-                    <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
-                  </Link>
+                  {tour.to ? (
+                    <Link className="cloud-tour-card__cta" to={tour.to}>
+                      {tour.cta}
+                      <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+                    </Link>
+                  ) : (
+                    /* 还没有落地页面的去处：保留按钮位置，但不做成可点的链接 */
+                    <span className="cloud-tour-card__cta is-upcoming">{tour.cta}</span>
+                  )}
                 </div>
                 <figure className="cloud-tour-card__art">
                   <img

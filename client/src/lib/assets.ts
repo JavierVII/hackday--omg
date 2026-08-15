@@ -24,6 +24,7 @@ const WEST_LAKE = "/assets/west_lake";
 const WEST_LAKE_SUPP = "/assets/westlake_supp_imgs";
 const PALACE = "/assets/palace_museum";
 const PINGYAO = "/assets/pingyao_ancient_city";
+const EXHIBITION = "/assets/Exhibition";
 /** 尚未归组的单图直接放在 assets 根目录，补齐分组后再迁移 */
 const ROOT = "/assets";
 
@@ -150,6 +151,31 @@ export const featuredVenues = {
     alt: "明亮的白墙展厅里挂着数幅画作，右侧墙上是一幅圆形彩色作品",
     focus: "58% 44%",
     watermark: true,
+  },
+} as const satisfies Record<string, Photo>;
+
+/**
+ * 艺术展览馆内景，供展馆详情页的封面与「云游秘境」使用。
+ * 文件名是上传时的哈希，含义写在各自的 alt 里；三张都是横图。
+ */
+export const exhibitionPhotos = {
+  /** 挑高中庭：清水混凝土 + 暖木，异形天窗与旋转楼梯。最有气势，用作封面。约 1680×920 */
+  atriumStair: {
+    src: `${EXHIBITION}/8421febf-f2b5-4cde-8e44-233ec218a379.png`,
+    alt: "挑高的美术馆中庭，异形天窗洒下天光，弧形旋转楼梯旁挂着大幅抽象画",
+    focus: "50% 42%",
+  },
+  /** 天光长廊：格栅玻璃顶下的木饰面回廊，彩色画作沿墙排开，前方有一道绿植台。约 1080×545 */
+  skylightHall: {
+    src: `${EXHIBITION}/e50df8bc7684d99fd02f7d461644a23e_compress.jpg`,
+    alt: "玻璃天窗下的木色展厅长廊，白色展台上依次排开数幅彩色抽象画，画前是一道绿植",
+    focus: "50% 52%",
+  },
+  /** 小画布展区：白墙轨道灯 + 装框小画，墙面图形字「小小之布 · 小画」。约 1068×800 */
+  smallCanvas: {
+    src: `${EXHIBITION}/f69eb116e7641fc0f2b408b6d5644dce_compress.jpg`,
+    alt: "白墙展厅里成排装框的彩色小幅作品，墙面印着「小小之布 · 小画」字样",
+    focus: "46% 46%",
   },
 } as const satisfies Record<string, Photo>;
 

@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router";
 
 import { EntrancePage } from "../pages/EntrancePage";
+import { ExhibitionDetailPage } from "../pages/ExhibitionDetailPage";
 import { ExplorePage } from "../pages/ExplorePage";
 import { GuidePage } from "../pages/GuidePage";
 import { HomePage } from "../pages/HomePage";
@@ -17,6 +18,7 @@ export function AppRouter() {
       <Route path="/space" element={<PersonalSpacePage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/scenic/:scenicAreaId" element={<ScenicDetailPage />} />
+      <Route path="/exhibition/:venueId" element={<ExhibitionDetailPage />} />
       <Route path="/scene/:sceneId/loading" element={<SceneLoadingPage />} />
       <Route path="/scene/:sceneId/explore" element={<ExplorePage />} />
       <Route path="/guide" element={<GuidePage />} />
