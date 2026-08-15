@@ -24,6 +24,8 @@ const WEST_LAKE = "/assets/west_lake";
 const WEST_LAKE_SUPP = "/assets/westlake_supp_imgs";
 const PALACE = "/assets/palace_museum";
 const PINGYAO = "/assets/pingyao_ancient_city";
+/** 尚未归组的单图直接放在 assets 根目录，补齐分组后再迁移 */
+const ROOT = "/assets";
 
 /** 西湖实景 · 竖图（1080×1440，可用于全屏/大图） */
 export const westLakePortraits = {
@@ -123,6 +125,30 @@ export const westLakeLandscapes = {
     src: encodeURI(`${WEST_LAKE_SUPP}/荷花池.png`),
     alt: "荷花池",
     focus: "50% 50%",
+    watermark: true,
+  },
+} as const satisfies Record<string, Photo>;
+
+/**
+ * 首页「今日云游」轮播里除西湖之外的两处目的地。
+ * 与西湖不同组，是因为它们不属于西湖景区，将来各自成组时从这里迁走。
+ */
+export const featuredVenues = {
+  /** 松阳时思寺，航拍古刹。近乎单色的墨绿，竖图 1080×1440 */
+  shishiTemple: {
+    src: encodeURI(`${ROOT}/时思寺.jpg`),
+    alt: "航拍深山中的时思寺，黑瓦屋顶与飞檐院落被竹林和古树环抱",
+    focus: "52% 46%",
+  },
+  /**
+   * 艺术展览馆内景，当期展览「第贰樂章 · 舞曲」。
+   * 横图约 972×730，右下角有淡色水印，卡片里落在明亮地面上不明显；
+   * 若要用于大图/首屏，先换成裁掉水印的版本。
+   */
+  artGallery: {
+    src: encodeURI(`${ROOT}/展览馆.jpg`),
+    alt: "明亮的白墙展厅里挂着数幅画作，右侧墙上是一幅圆形彩色作品",
+    focus: "58% 44%",
     watermark: true,
   },
 } as const satisfies Record<string, Photo>;

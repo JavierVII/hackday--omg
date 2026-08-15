@@ -109,6 +109,26 @@ export function ScenicDetailPage() {
   return (
     <main className="scenic-stage scenic-stage--refined demo-app-stage">
       <article className="scenic-detail scenic-detail--refined">
+        <div className="scenic-cover__toolbar" aria-label="景区快捷操作">
+          <Link className="scenic-icon-button" to="/home" aria-label="返回游客端首页">
+            <ArrowLeft size={21} strokeWidth={1.9} />
+          </Link>
+          <div className="scenic-cover__toolbar-group">
+            <button
+              className={isFavorite ? "scenic-icon-button is-active" : "scenic-icon-button"}
+              type="button"
+              aria-label={isFavorite ? "取消收藏" : "收藏景区"}
+              aria-pressed={isFavorite}
+              onClick={() => setIsFavorite((favorite) => !favorite)}
+            >
+              <Heart size={21} strokeWidth={1.9} fill={isFavorite ? "currentColor" : "none"} />
+            </button>
+            <button className="scenic-icon-button" type="button" aria-label="分享景区">
+              <Share2 size={21} strokeWidth={1.9} />
+            </button>
+          </div>
+        </div>
+
         <div className="scenic-detail__scroll scenic-detail__scroll--refined" aria-label="景区详情内容" tabIndex={0}>
           <section className="scenic-cover" aria-labelledby="scenic-title">
             <img
@@ -120,26 +140,6 @@ export function ScenicDetailPage() {
             <span className="scenic-cover__scrim" aria-hidden="true" />
 
             <MobileStatusBar className="scenic-status" />
-
-            <div className="scenic-cover__toolbar">
-              <Link className="scenic-icon-button" to="/home" aria-label="返回游客端首页">
-                <ArrowLeft size={21} strokeWidth={1.9} />
-              </Link>
-              <div className="scenic-cover__toolbar-group">
-                <button
-                  className={isFavorite ? "scenic-icon-button is-active" : "scenic-icon-button"}
-                  type="button"
-                  aria-label={isFavorite ? "取消收藏" : "收藏景区"}
-                  aria-pressed={isFavorite}
-                  onClick={() => setIsFavorite((favorite) => !favorite)}
-                >
-                  <Heart size={21} strokeWidth={1.9} fill={isFavorite ? "currentColor" : "none"} />
-                </button>
-                <button className="scenic-icon-button" type="button" aria-label="分享景区">
-                  <Share2 size={21} strokeWidth={1.9} />
-                </button>
-              </div>
-            </div>
           </section>
 
           <section className="scenic-summary">

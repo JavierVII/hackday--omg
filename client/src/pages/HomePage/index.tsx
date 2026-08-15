@@ -25,6 +25,7 @@ import { Link } from "react-router";
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
 import { readAlmanac } from "../../lib/almanac";
 import {
+  featuredVenues,
   palaceMuseumPhotos,
   pingyaoPhotos,
   westLakeLandscapes,
@@ -55,8 +56,9 @@ interface CloudTour {
 }
 
 /**
- * 今日云游可切换的三处去向：景区总览 + 两个场景。
- * 接入 `GET /api/client/config` 后应由 `scenes` 生成，不再写死。
+ * 今日云游可切换的三处去向。
+ * 西湖走已建成的景区详情页；另外两处是新目的地，
+ * ID 暂按 `scene-*` 约定在此写死，接入 `GET /api/client/config` 后应由 `scenes` 下发。
  */
 const cloudTours: readonly CloudTour[] = [
   {
@@ -69,22 +71,22 @@ const cloudTours: readonly CloudTour[] = [
     to: "/scenic/hangzhou-west-lake",
   },
   {
-    id: "scene-broken-bridge",
-    spot: "断桥残雪",
-    heading: ["断桥不断，", "故事未完"],
-    blurb: "白堤起处，听一段千年也没散场的相逢与等待。",
-    cta: "云游断桥",
-    photo: westLakeLandscapes.snowBridge,
-    to: "/scene/scene-broken-bridge/loading",
+    id: "scene-shisi-temple",
+    spot: "时思寺",
+    heading: ["深山藏古寺，", "云深不知年"],
+    blurb: "木构古刹静立山间，香樟与竹影替它数着年岁。",
+    cta: "入山寻寺",
+    photo: featuredVenues.shishiTemple,
+    to: "/scene/scene-shisi-temple/loading",
   },
   {
-    id: "scene-leifeng-pagoda",
-    spot: "雷峰夕照",
-    heading: ["塔影千年，", "夕照满湖"],
-    blurb: "登上雷峰塔向北望，把一整面湖的金光收进一眼里。",
-    cta: "登塔远眺",
-    photo: westLakePortraits.leifengSunset,
-    to: "/scene/scene-leifeng-pagoda/loading",
+    id: "scene-art-gallery",
+    spot: "艺术展览馆",
+    heading: ["白墙之内，", "画里有声"],
+    blurb: "当期《第贰樂章 · 舞曲》，在数字展厅里慢慢看完每一幅。",
+    cta: "进馆看展",
+    photo: featuredVenues.artGallery,
+    to: "/scene/scene-art-gallery/loading",
   },
 ];
 

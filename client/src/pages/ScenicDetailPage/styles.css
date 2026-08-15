@@ -77,12 +77,19 @@
 }
 
 .scenic-cover__toolbar {
-  position: relative;
-  z-index: 2;
+  position: absolute;
+  top: 51px;
+  right: 18px;
+  left: 18px;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 18px 0;
+  pointer-events: none;
+}
+
+.scenic-cover__toolbar :is(a, button) {
+  pointer-events: auto;
 }
 
 .scenic-cover__toolbar-group {
