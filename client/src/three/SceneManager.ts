@@ -638,7 +638,12 @@ export class SceneManager {
       lod.tick(lodCamera);
       lod.start();
       this.aholoLod = lod;
-      void lod.onFinishSchedule().catch(() => {});
+      // 分块调度是异步的，失败原本被静默吞掉，页面会停在深色空场景上没有任何提示。
+      void lod
+        .onFinishSchedule()
+        .catch((err: unknown) =>
+          onProgress?.("实景分块加载失败：" + ((err as Error)?.message ?? String(err)))
+        );
 
       onProgress?.("加载碰撞体素…");
       this.voxel = await VoxelGrid.load("/assets/wuguitan-voxel/wuguitan");
@@ -660,6 +665,8 @@ export class SceneManager {
       this.aholoCamera = camera;
       this.aholoLookTarget = new aholo.Vector3(0, 0, 0);
       this.aholoReady = true;
+      // 创建 viewer 时容器尺寸可能还没稳定（布局、手机框），对齐一次绘制区。
+      viewer.resize();
       onProgress?.("");
     } catch (e) {
       onProgress?.("实景加载失败：" + (e as Error).message);
@@ -887,6 +894,9 @@ export class SceneManager {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h);
+    // aholo 的绘制区不会自己跟随容器：不传尺寸时它按 canvas 自适应。
+    // 漏掉这一步，实景画面会停在创建 viewer 那一刻的尺寸上。
+    this.aholoViewer?.resize();
   }
 
   private loop = () => {

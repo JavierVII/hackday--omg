@@ -19,6 +19,7 @@ import type { LucideIcon } from "lucide-react";
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
 import { CloudTourViewer } from "../../components/overlays/CloudTourViewer";
 import { westLakeHero, westLakeLandscapes, westLakePortraits, type Photo } from "../../lib/assets";
+import { WEST_LAKE_IDS } from "../../mocks/contracts";
 
 import "./styles.css";
 
@@ -61,7 +62,8 @@ const exploreEntries: readonly ExploreEntry[] = [
     label: "线下智游向导",
     description: "智能定位与讲解",
     icon: Navigation,
-    to: "/guide",
+    // 进入乌龟潭实景：先过场景加载页做定位校准，再进 3D 探索。
+    to: `/scene/${WEST_LAKE_IDS.scenes.reserved}/loading`,
   },
   {
     label: "经典游览路线",

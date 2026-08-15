@@ -1,9 +1,20 @@
-:root {
+/**
+ * 3D 场景体验专用样式（场景加载页 + 探索页）。
+ *
+ * 源自 rewards 分支的 index.css。原文件以 :root / * / html,body,#root / body /
+ * button 做全局重置，直接引入会污染并覆盖其它页面的 tokens 与排版，
+ * 因此这里把重置与变量全部收敛到 .explore-page / .loading-page 两个作用域内，
+ * 其余组件级类选择器保持原样。
+ */
+
+.explore-page,
+.loading-page {
   font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
   color: #17352a;
   background: #0f2721;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
   --paper: #faf6ee;
   --paper-warm: #f4ece0;
   --ink: #0f2721;
@@ -16,34 +27,34 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-* {
+.explore-page *,
+.loading-page * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html,
-body,
-#root {
-  height: 100%;
-}
-
-body {
-  min-width: 320px;
-  background: var(--ink);
-  color: var(--ink-strong);
-  -webkit-font-smoothing: antialiased;
-}
-
-button {
+.explore-page button,
+.loading-page button {
   font: inherit;
 }
 
+/* 手机外框：与 .scenic-detail--refined 等页面共用同一套机身尺寸，
+   让 3D 场景和其它页面一样呈现在手机里，而不是铺满整个视口。
+   保持为定位祖先（relative 与原 absolute 等效），内部 HUD／浮层
+   全是 absolute，因此无需改动任何一处 HUD 定位。 */
 .explore-page {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  width: min(100%, 480px);
+  height: calc(100svh - 56px);
+  min-height: 540px;
+  margin: 28px auto;
   overflow: hidden;
   isolation: isolate;
+  border: 1px solid var(--hairline-gold);
+  border-radius: 30px;
+  background: #0b1020;
+  box-shadow: var(--shadow-float);
 }
 
 .explore-page::before,
@@ -1434,11 +1445,10 @@ button {
 .reward-card { text-align: center; }
 .reward-visual { gap: 10px; font-size: 50px; }
 
+/* 加载页与场景内的实景加载遮罩共用视觉，但定位不同：
+   遮罩铺满场景（absolute inset:0），加载页本身是一台手机（见 .explore-page）。 */
 .loading-page,
 .aholo-loading {
-  position: absolute;
-  inset: 0;
-  z-index: 15;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1450,6 +1460,24 @@ button {
     linear-gradient(160deg, var(--paper), var(--paper-warm));
 }
 
+.aholo-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+}
+
+.loading-page {
+  position: relative;
+  width: min(100%, 480px);
+  height: calc(100svh - 56px);
+  min-height: 540px;
+  margin: 28px auto;
+  overflow: hidden;
+  border: 1px solid var(--hairline-gold);
+  border-radius: 30px;
+  box-shadow: var(--shadow-float);
+}
+
 .loading-brand { font-family: STKaiti, KaiTi, serif; font-size: 18px; letter-spacing: 0.28em; }
 .loading-scene { font-size: 14px; font-weight: 500; letter-spacing: 0.1em; }
 .loading-bar { width: 210px; height: 4px; overflow: hidden; border-radius: 999px; background: rgb(15 39 33 / 10%); }
@@ -1458,16 +1486,73 @@ button {
 .loading-percent { color: var(--gold-deep); font-size: 10px; }
 .aholo-loading { font-size: 12px; letter-spacing: 0.12em; }
 
+/* 场景配置缺失时的返回入口，避免停在无进度的加载页上。 */
+.loading-fallback {
+  margin-top: 4px;
+  padding: 8px 18px;
+  border: 1px solid rgb(15 39 33 / 16%);
+  border-radius: 999px;
+  background: rgb(250 246 238 / 72%);
+  color: var(--ink-strong);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+.loading-fallback:hover {
+  border-color: var(--gold-deep);
+  background: var(--paper);
+}
+
+.loading-fallback:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
+}
+
 @media (max-width: 520px) {
   .topbar { padding-inline: 15px; }
   .brand-seal { width: 34px; height: 34px; }
   .topbar-brand span, .topbar-area { display: none; }
   .taskbar { left: 14px; }
   .compass { right: 14px; }
+
+  /* 真机上取消机身边框，整屏沉浸——与其它页面的窄屏处理一致。 */
+  .explore-page,
+  .loading-page {
+    width: 100%;
+    height: 100svh;
+    min-height: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+  }
+}
+
+/* 模拟手机状态栏：浮在场景与加载页顶部，不参与加载页的 flex 居中。
+   z-index 12 压在 HUD(10) 之上、各类浮层(15+)之下。 */
+.scene-status {
+  position: absolute;
+  top: 11px;
+  right: 18px;
+  left: 18px;
+  z-index: 12;
+  pointer-events: none;
+}
+
+/* 顶栏下移，给状态栏留出位置（原 padding-top 18px）。 */
+.explore-page .topbar {
+  padding-top: 36px;
+}
+
+/* 加载页是米白纸底，状态栏改用墨色，否则默认的 --paper-white 会看不见。 */
+.loading-page .scene-status {
+  color: var(--ink-strong);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  .explore-page *, .explore-page *::before, .explore-page *::after,
+  .loading-page *, .loading-page *::before, .loading-page *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
