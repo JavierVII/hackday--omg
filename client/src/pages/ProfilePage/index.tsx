@@ -4,7 +4,6 @@ import {
   CircleHelp,
   Footprints,
   Gem,
-  Home,
   Images,
   Map,
   MapPin,
@@ -13,10 +12,9 @@ import {
   Settings,
   ShieldCheck,
   Sparkles,
-  User,
 } from "lucide-react";
-import { Link } from "react-router";
 
+import { AppBottomNav } from "../../components/common/AppBottomNav";
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
 import { westLakePortraits } from "../../lib/assets";
 
@@ -42,12 +40,6 @@ const settingItems = [
   { label: "通用设置", icon: Settings, detail: "" },
   { label: "帮助与反馈", icon: CircleHelp, detail: "" },
   { label: "关于灵境奇旅", icon: Sparkles, detail: "v1.0 Demo" },
-] as const;
-
-const bottomNavigation = [
-  { label: "个人空间", icon: Sparkles, to: "/space" },
-  { label: "首页", icon: Home, to: "/home" },
-  { label: "我的", icon: User, to: "/profile" },
 ] as const;
 
 export function ProfilePage() {
@@ -137,26 +129,7 @@ export function ProfilePage() {
           </section>
         </div>
 
-        <nav className="app-bottom-nav" aria-label="游客端主导航">
-          {bottomNavigation.map((item) => {
-            const Icon = item.icon;
-            const isActive = item.to === "/profile";
-
-            return (
-              <Link
-                className={isActive ? "app-bottom-nav__item is-active" : "app-bottom-nav__item"}
-                key={item.to}
-                to={item.to}
-                aria-current={isActive ? "page" : undefined}
-              >
-                <span className="app-bottom-nav__icon" aria-hidden="true">
-                  <Icon size={21} strokeWidth={isActive ? 2.1 : 1.8} />
-                </span>
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
+        <AppBottomNav activePath="/profile" />
       </section>
     </main>
   );

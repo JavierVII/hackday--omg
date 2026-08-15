@@ -1,15 +1,13 @@
 import {
   ArrowLeft,
   ArrowRight,
-  Home,
   Leaf,
   MapPin,
   Moon,
   Search,
-  Sparkles,
   Sunset,
   Timer,
-  User,
+  X,
 } from "lucide-react";
 import {
   useCallback,
@@ -17,11 +15,15 @@ import {
   useMemo,
   useRef,
   useState,
+  type FocusEvent as ReactFocusEvent,
+  type FormEvent as ReactFormEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
+import { AppBottomNav } from "../../components/common/AppBottomNav";
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
 import { readAlmanac } from "../../lib/almanac";
 import {
@@ -171,11 +173,86 @@ const scenicAreas: readonly ScenicAreaCard[] = [
   },
 ];
 
-const bottomNavigation = [
-  { label: "个人空间", icon: Sparkles, to: "/space" },
-  { label: "首页", icon: Home, to: "/home" },
-  { label: "我的", icon: User, to: "/profile" },
-] as const;
+interface SearchTarget {
+  /** 除名称之外还能命中的词：别称、拼音、馆内景点、当期展览名 */
+  readonly keywords: readonly string[];
+  readonly name: string;
+  readonly photo: Photo;
+  readonly region: string;
+  /** 省略表示还没有落地页面，搜得到但点不进去 */
+  readonly to?: string;
+}
+
+/**
+ * 搜索词库。目前只索引「去处」——已落地的西湖与展览馆能跳转，
+ * 其余三处搜得到、标注即将开放，免得搜了像是坏掉。
+ * 接入 `GET /api/client/config` 后应由 `scenes` / `scenicAreas` 生成，keywords 也随配置下发。
+ */
+const searchTargets: readonly SearchTarget[] = [
+  {
+    name: "杭州西湖风景名胜区",
+    region: "浙江 · 杭州 — 可云游",
+    keywords: [
+      "西湖", "杭州西湖", "杭州", "xihu", "west lake", "hangzhou",
+      "断桥", "断桥残雪", "雷峰塔", "苏堤", "白堤", "三潭印月", "乌龟潭",
+    ],
+    photo: westLakePortraits.jixianPavilionDusk,
+    to: "/scenic/hangzhou-west-lake",
+  },
+  {
+    name: "艺术展览馆",
+    region: "数字展馆 · 第貳樂章 舞曲 — 可云游",
+    keywords: [
+      "展览馆", "展馆", "展览", "美术馆", "艺术", "看展", "画展",
+      "第贰樂章", "第貳樂章", "舞曲", "小画布",
+      "zhanlan", "yishu", "art", "gallery", "exhibition", "museum",
+    ],
+    photo: featuredVenues.artGallery,
+    to: "/exhibition/art-gallery",
+  },
+  {
+    name: "时思寺",
+    region: "浙江 · 松阳 — 即将开放",
+    keywords: ["时思寺", "寺", "古寺", "寺庙", "松阳", "shisi", "temple"],
+    photo: featuredVenues.shishiTemple,
+  },
+  {
+    name: "故宫博物院",
+    region: "北京 · 东城 — 即将开放",
+    keywords: ["故宫", "紫禁城", "北京", "gugong", "palace", "forbidden city"],
+    photo: palaceMuseumPhotos.cornerTower,
+  },
+  {
+    name: "平遥古城",
+    region: "山西 · 晋中 — 即将开放",
+    keywords: ["平遥", "平遥古城", "古城", "山西", "晋中", "pingyao"],
+    photo: pingyaoPhotos.mingQingStreet,
+  },
+];
+
+/** 已落地的去处，用作聚焦时的默认推荐与无结果时的兜底 */
+const openTargets = searchTargets.filter((target) => target.to !== undefined);
+
+/**
+ * 名称 / 地区 / 关键词三处做大小写无关的包含匹配。
+ * 能跳转的排在前面，这样回车总是落在真的能进去的那一个上。
+ */
+function matchTargets(keyword: string): readonly SearchTarget[] {
+  const needle = keyword.trim().toLowerCase();
+
+  if (needle === "") {
+    return openTargets;
+  }
+
+  return searchTargets
+    .filter(
+      (target) =>
+        target.name.toLowerCase().includes(needle) ||
+        target.region.toLowerCase().includes(needle) ||
+        target.keywords.some((word) => word.toLowerCase().includes(needle)),
+    )
+    .sort((left, right) => Number(right.to !== undefined) - Number(left.to !== undefined));
+}
 
 const pad = (value: number) => String(value).padStart(2, "0");
 
@@ -402,6 +479,157 @@ function CloudTourDeck() {
   );
 }
 
+/**
+ * 顶部搜索。输入即在词库里筛「去处」，回车跳到第一个能进去的结果。
+ *
+ * 同样单独拆成组件：逐次按键的重渲染止步于此，不带动首页的倒计时与「湖山此刻」。
+ */
+function SiteSearch() {
+  const navigate = useNavigate();
+  const [keyword, setKeyword] = useState("");
+  const [isPanelOpen, setPanelOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const results = useMemo(() => matchTargets(keyword), [keyword]);
+  const query = keyword.trim();
+  /** 回车的落点：第一个真的能进去的结果 */
+  const firstHit = results.find((target) => target.to !== undefined);
+
+  const handleSubmit = (event: ReactFormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (firstHit?.to === undefined) {
+      return;
+    }
+
+    inputRef.current?.blur();
+    setPanelOpen(false);
+    navigate(firstHit.to);
+  };
+
+  /** 焦点移出整个搜索区才收起面板——点结果或点清空时不能提前关掉 */
+  const handleBlur = (event: ReactFocusEvent<HTMLFormElement>) => {
+    if (event.currentTarget.contains(event.relatedTarget)) {
+      return;
+    }
+
+    setPanelOpen(false);
+  };
+
+  const handleKeyDown = (event: ReactKeyboardEvent<HTMLFormElement>) => {
+    if (event.key !== "Escape") {
+      return;
+    }
+
+    if (keyword === "") {
+      setPanelOpen(false);
+      inputRef.current?.blur();
+
+      return;
+    }
+
+    setKeyword("");
+  };
+
+  const handleClear = () => {
+    setKeyword("");
+    inputRef.current?.focus();
+  };
+
+  return (
+    <form
+      className="app-search-field"
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      onSubmit={handleSubmit}
+      role="search"
+    >
+      <label className="app-search">
+        <Search size={16} strokeWidth={2} aria-hidden="true" />
+        <span className="sr-only">搜索景区、展馆或场景</span>
+        <input
+          enterKeyHint="search"
+          onChange={(event) => {
+            setKeyword(event.target.value);
+            setPanelOpen(true);
+          }}
+          onFocus={() => setPanelOpen(true)}
+          placeholder="搜索景区、展馆、场景…"
+          ref={inputRef}
+          type="search"
+          value={keyword}
+        />
+        {keyword === "" ? null : (
+          <button aria-label="清空搜索" className="app-search__clear" onClick={handleClear} type="button">
+            <X size={15} strokeWidth={2} aria-hidden="true" />
+          </button>
+        )}
+      </label>
+
+      {isPanelOpen ? (
+        <div
+          className="app-search__panel"
+          /* 按下时不让焦点离开输入框：这样 blur 不会先把面板收起来，
+             点结果的那次 click 才不会落空（移动端尤其容易踩到）。 */
+          onMouseDown={(event) => event.preventDefault()}
+        >
+          <p className="app-search__panel-title">
+            {query === "" ? "现在可以云游" : results.length > 0 ? "搜索结果" : `没有找到「${query}」`}
+          </p>
+
+          <ul className="app-search__results">
+            {(results.length > 0 ? results : openTargets).map((target) => (
+              <li key={target.name}>
+                <SearchHit onNavigate={() => setPanelOpen(false)} target={target} />
+              </li>
+            ))}
+          </ul>
+
+          {query !== "" && results.length === 0 ? (
+            <p className="app-search__empty-hint">换个词试试，上面两处是现在就能进的。</p>
+          ) : null}
+        </div>
+      ) : null}
+
+      <p aria-live="polite" className="sr-only">
+        {isPanelOpen && query !== "" ? `找到 ${results.length} 个去处` : ""}
+      </p>
+    </form>
+  );
+}
+
+/** 一条搜索结果。有 `to` 的是链接，没有的只是一行不可点的条目 */
+function SearchHit({ onNavigate, target }: { onNavigate: () => void; target: SearchTarget }) {
+  const body = (
+    <>
+      <img
+        alt=""
+        decoding="async"
+        loading="lazy"
+        src={target.photo.src}
+        style={{ objectPosition: target.photo.focus }}
+      />
+      <span className="app-search-hit__copy">
+        <strong>{target.name}</strong>
+        <small>{target.region}</small>
+      </span>
+      {target.to === undefined ? (
+        <span className="app-search-hit__tag">未开放</span>
+      ) : (
+        <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+      )}
+    </>
+  );
+
+  return target.to === undefined ? (
+    <span className="app-search-hit is-upcoming">{body}</span>
+  ) : (
+    <Link className="app-search-hit" onClick={onNavigate} to={target.to}>
+      {body}
+    </Link>
+  );
+}
+
 export function HomePage() {
   const now = useSecondTick();
   const deadline = useFestivalDeadline();
@@ -434,11 +662,7 @@ export function HomePage() {
             <span className="app-location__poem">湖光山色，醉美杭城。</span>
           </p>
 
-          <label className="app-search">
-            <Search size={16} strokeWidth={2} aria-hidden="true" />
-            <span className="sr-only">搜索景区、场景、主题或路线</span>
-            <input type="search" placeholder="搜索景区、场景、主题、路线…" />
-          </label>
+          <SiteSearch />
         </header>
 
         <div className="app-home__content">
@@ -613,26 +837,7 @@ export function HomePage() {
           </section>
         </div>
 
-        <nav className="app-bottom-nav" aria-label="游客端主导航">
-          {bottomNavigation.map((item) => {
-            const Icon = item.icon;
-            const isActive = item.to === "/home";
-
-            return (
-              <Link
-                className={isActive ? "app-bottom-nav__item is-active" : "app-bottom-nav__item"}
-                key={item.label}
-                to={item.to}
-                aria-current={isActive ? "page" : undefined}
-              >
-                <span className="app-bottom-nav__icon" aria-hidden="true">
-                  <Icon size={21} strokeWidth={isActive ? 2.1 : 1.8} />
-                </span>
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
+        <AppBottomNav activePath="/home" />
       </section>
     </main>
   );

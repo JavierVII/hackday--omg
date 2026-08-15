@@ -6,20 +6,18 @@ import {
   Camera,
   ChevronRight,
   Gem,
-  Home,
   Image,
   Landmark,
   Maximize2,
   MapPin,
   RotateCcw,
   Sparkles,
-  User,
   X,
 } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Link } from "react-router";
 
+import { AppBottomNav } from "../../components/common/AppBottomNav";
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
 import { westLakePortraits } from "../../lib/assets";
 
@@ -150,12 +148,6 @@ const demoTravelMoments = [
 ] as const;
 
 const momentCoverPhoto = westLakePortraits.jixianPavilionSunset;
-
-const bottomNavigation = [
-  { label: "个人空间", icon: Sparkles, to: "/space" },
-  { label: "首页", icon: Home, to: "/home" },
-  { label: "我的", icon: User, to: "/profile" },
-] as const;
 
 function AssetViewer({ asset, onClose }: { asset: DigitalAsset; onClose: () => void }) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -429,26 +421,7 @@ export function PersonalSpacePage() {
           {activeView === "assets" ? <DigitalAssets /> : <TravelMoments />}
         </div>
 
-        <nav className="app-bottom-nav" aria-label="游客端主导航">
-          {bottomNavigation.map((item) => {
-            const Icon = item.icon;
-            const isActive = item.to === "/space";
-
-            return (
-              <Link
-                className={isActive ? "app-bottom-nav__item is-active" : "app-bottom-nav__item"}
-                key={item.to}
-                to={item.to}
-                aria-current={isActive ? "page" : undefined}
-              >
-                <span className="app-bottom-nav__icon" aria-hidden="true">
-                  <Icon size={21} strokeWidth={isActive ? 2.1 : 1.8} />
-                </span>
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
+        <AppBottomNav activePath="/space" />
       </section>
     </main>
   );
