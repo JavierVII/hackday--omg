@@ -95,6 +95,36 @@ const digitalAssets = [
 
 type DigitalAsset = (typeof digitalAssets)[number];
 
+const assetLevelThresholds = [0, 3, 8, 14] as const;
+const assetLevelTitles = ["初见旅人", "湖畔拾光者", "西湖典藏家", "灵境守藏人"] as const;
+
+function getAssetCollectionStatus(collected: number) {
+  let level = 1;
+
+  for (let index = 1; index < assetLevelThresholds.length; index += 1) {
+    if (collected < assetLevelThresholds[index]) break;
+    level = index + 1;
+  }
+
+  const currentLevelAt = assetLevelThresholds[level - 1];
+  const nextLevelAt = assetLevelThresholds[level] ?? currentLevelAt + 6;
+  const progress = Math.min(
+    100,
+    Math.round(((collected - currentLevelAt) / (nextLevelAt - currentLevelAt)) * 100),
+  );
+
+  return {
+    collected,
+    level,
+    nextLevel: level + 1,
+    nextLevelAt,
+    progress,
+    title: assetLevelTitles[level - 1] ?? assetLevelTitles.at(-1),
+  };
+}
+
+const assetCollection = getAssetCollectionStatus(digitalAssets.length);
+
 const demoTravelMoments = [
   {
     title: "断桥的第一缕月光",
@@ -216,13 +246,29 @@ function DigitalAssets() {
 
   return (
     <div className="space-view" role="tabpanel" aria-label="数字资产">
-      <section className="space-wallet" aria-label="旅人背包概览">
+      <section className="space-wallet" aria-label="数字空间收藏等级">
         <div className="space-wallet__icon"><Backpack size={24} strokeWidth={1.7} /></div>
-        <div>
-          <p>旅人背包</p>
-          <strong>收藏每一段真实到过的风景</strong>
+        <div className="space-wallet__copy">
+          <div className="space-wallet__title">
+            <p>数字空间</p>
+            <span>Lv.{assetCollection.level}</span>
+          </div>
+          <strong>{assetCollection.title}</strong>
+          <div
+            className="space-wallet__progress"
+            role="progressbar"
+            aria-label="数字空间升级进度"
+            aria-valuemin={0}
+            aria-valuemax={assetCollection.nextLevelAt}
+            aria-valuenow={assetCollection.collected}
+          >
+            <span style={{ width: `${assetCollection.progress}%` }} />
+          </div>
+          <small>
+            已收藏 {assetCollection.collected} 件 · 再收集 {assetCollection.nextLevelAt - assetCollection.collected} 件升至 Lv.{assetCollection.nextLevel}
+          </small>
         </div>
-        <span>6 / 12</span>
+        <span>{assetCollection.collected} / {assetCollection.nextLevelAt}</span>
       </section>
 
       <div className="space-section-heading">

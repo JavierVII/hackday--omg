@@ -4,7 +4,7 @@
 .profile-hero {
   position: relative;
   flex: none;
-  padding: 14px 20px 30px;
+  padding: 14px 20px 38px;
   overflow: hidden;
   color: var(--paper-white);
   background: linear-gradient(158deg, var(--ink-green-800) 0%, var(--ink-green-900) 52%, var(--ink-green-950) 100%);
@@ -24,40 +24,16 @@
   pointer-events: none;
 }
 
-.profile-hero__heading {
-  position: relative;
-  z-index: 1;
+.profile-hero__actions {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-top: 24px;
+  gap: 8px;
+  align-self: start;
 }
 
-.profile-hero__heading p,
-.profile-hero__heading h1 {
-  margin: 0;
-}
-
-.profile-hero__heading p {
-  font-family: var(--font-display);
-  font-size: 30px;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-shadow: 0 1px 12px rgb(15 39 33 / 40%);
-}
-
-.profile-hero__heading h1 {
-  margin-top: 4px;
-  color: rgb(250 246 238 / 68%);
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-}
-
-.profile-hero__heading > button {
+.profile-hero__actions > button {
   position: relative;
   display: grid;
-  width: 40px;
+  width: 38px;
   aspect-ratio: 1;
   place-items: center;
   color: var(--paper-white);
@@ -68,7 +44,7 @@
 }
 
 /* 未读小圆点 */
-.profile-hero__heading > button span {
+.profile-message-button span {
   position: absolute;
   top: 8px;
   right: 8px;
@@ -86,7 +62,7 @@
   grid-template-columns: auto 1fr auto;
   gap: 14px;
   align-items: center;
-  margin-top: 24px;
+  margin-top: 22px;
 }
 
 /* 头像：实景照片裁切，不再用 CSS 画太阳与山丘 */
@@ -146,18 +122,6 @@
   font-size: 9px;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.04em;
-}
-
-.profile-card__edit {
-  min-height: 31px;
-  padding: 0 11px;
-  color: var(--paper-white);
-  font-family: inherit;
-  font-size: 10px;
-  cursor: pointer;
-  background: rgb(250 246 238 / 10%);
-  border: 1px solid var(--hairline-gold);
-  border-radius: 9px;
 }
 
 .profile-content {
@@ -417,11 +381,15 @@
 
 @media (max-width: 370px) {
   .profile-card {
-    grid-template-columns: auto 1fr;
+    gap: 10px;
   }
 
-  .profile-card__edit {
-    display: none;
+  .profile-hero__actions {
+    gap: 5px;
+  }
+
+  .profile-hero__actions > button {
+    width: 34px;
   }
 
   .profile-feature {

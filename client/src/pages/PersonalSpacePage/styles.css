@@ -169,9 +169,9 @@
 .space-wallet {
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 12px;
+  gap: 11px;
   align-items: center;
-  padding: 13px 14px;
+  padding: 12px 14px;
   background: var(--paper-warm);
   border: 1px solid var(--hairline-ink);
   border-radius: 15px;
@@ -193,18 +193,63 @@
   margin: 0;
 }
 
+.space-wallet__copy {
+  min-width: 0;
+}
+
+.space-wallet__title {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
 .space-wallet p {
   color: var(--ink-green-600);
   font-size: 9px;
   letter-spacing: 0.08em;
 }
 
+.space-wallet__title > span {
+  padding: 2px 5px;
+  color: var(--sunset-gold-deep);
+  font-size: 8px;
+  font-weight: 700;
+  background: rgb(232 167 101 / 14%);
+  border: 1px solid rgb(208 140 70 / 18%);
+  border-radius: 999px;
+}
+
 .space-wallet strong {
   display: block;
-  margin-top: 3px;
+  margin-top: 2px;
   color: var(--ink-green-900);
   font-size: 12px;
   font-weight: 600;
+}
+
+.space-wallet__progress {
+  height: 4px;
+  margin-top: 7px;
+  overflow: hidden;
+  background: rgb(29 77 60 / 10%);
+  border-radius: 999px;
+}
+
+.space-wallet__progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--ink-green-700), var(--sunset-gold));
+  border-radius: inherit;
+}
+
+.space-wallet__copy small {
+  display: block;
+  margin-top: 5px;
+  overflow: hidden;
+  color: var(--ink-green-600);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .space-wallet > span {
@@ -259,8 +304,8 @@
   position: relative;
   display: grid;
   width: 100%;
-  min-height: 150px;
-  grid-template-columns: 1.2fr 0.8fr;
+  min-height: 108px;
+  grid-template-columns: 1.45fr 0.55fr;
   padding: 0;
   overflow: hidden;
   color: var(--paper-white);
@@ -284,7 +329,7 @@
 .space-featured-asset__copy {
   position: relative;
   z-index: 2;
-  padding: 20px;
+  padding: 13px 16px;
 }
 
 .space-featured-asset__copy > span {
@@ -299,15 +344,15 @@
 }
 
 .space-featured-asset h3 {
-  margin-top: 6px;
+  margin-top: 3px;
   font-family: var(--font-display);
-  font-size: 25px;
+  font-size: 21px;
   font-weight: 400;
   letter-spacing: 0.04em;
 }
 
 .space-featured-asset p {
-  margin-top: 5px;
+  margin-top: 3px;
   color: rgb(250 246 238 / 66%);
   font-size: 10px;
 }
@@ -316,7 +361,7 @@
   display: flex;
   gap: 3px;
   align-items: center;
-  margin-top: 17px;
+  margin-top: 9px;
   color: rgb(250 246 238 / 82%);
   font-size: 9px;
 }

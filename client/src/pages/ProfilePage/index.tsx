@@ -9,6 +9,7 @@ import {
   Map,
   MapPin,
   MessageCircleMore,
+  QrCode,
   Settings,
   ShieldCheck,
   Sparkles,
@@ -24,7 +25,7 @@ import "./styles.css";
 const avatarPhoto = westLakePortraits.heartMirrorGate;
 
 const overviewItems = [
-  { value: "3", label: "云游旅程" },
+  { value: "2,680", label: "旅行积分" },
   { value: "12", label: "到访景点" },
   { value: "4", label: "数字藏品" },
 ] as const;
@@ -56,17 +57,6 @@ export function ProfilePage() {
         <header className="profile-hero">
           <MobileStatusBar className="profile-status" />
 
-          <div className="profile-hero__heading">
-            <div>
-              <p>我的</p>
-              <h1>旅途有迹，山水有情</h1>
-            </div>
-            <button type="button" aria-label="打开消息">
-              <MessageCircleMore size={20} strokeWidth={1.8} />
-              <span aria-hidden="true" />
-            </button>
-          </div>
-
           <section className="profile-card" aria-label="用户资料">
             <div className="profile-avatar">
               <img
@@ -81,7 +71,15 @@ export function ProfilePage() {
               <p><MapPin size={13} /> 杭州 · 灵境旅人</p>
               <span>旅人号 20260814</span>
             </div>
-            <button className="profile-card__edit" type="button">编辑资料</button>
+            <div className="profile-hero__actions" aria-label="快捷操作">
+              <button type="button" aria-label="扫码">
+                <QrCode size={20} strokeWidth={1.8} />
+              </button>
+              <button className="profile-message-button" type="button" aria-label="打开消息">
+                <MessageCircleMore size={20} strokeWidth={1.8} />
+                <span aria-hidden="true" />
+              </button>
+            </div>
           </section>
         </header>
 

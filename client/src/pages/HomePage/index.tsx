@@ -11,7 +11,15 @@ import {
   Timer,
   User,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { Link } from "react-router";
 
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
@@ -34,7 +42,71 @@ interface ScenicAreaCard {
   readonly to?: string;
 }
 
-const heroPhoto = westLakePortraits.leifengSunset;
+interface CloudTour {
+  /** 对应 WEST_LAKE_IDS 里的景区 / 场景 ID */
+  readonly id: string;
+  readonly cta: string;
+  /** 大字标题分两行排，避免不同长度的句子折行位置乱跳 */
+  readonly heading: readonly [string, string];
+  readonly blurb: string;
+  readonly photo: Photo;
+  readonly spot: string;
+  readonly to: string;
+}
+
+/**
+ * 今日云游可切换的三处去向：景区总览 + 两个场景。
+ * 接入 `GET /api/client/config` 后应由 `scenes` 生成，不再写死。
+ */
+const cloudTours: readonly CloudTour[] = [
+  {
+    id: "hangzhou-west-lake",
+    spot: "西湖全景",
+    heading: ["水光山色，", "遇见西湖"],
+    blurb: "走进可探索、可互动的数字风景，在故事里重新认识一座城。",
+    cta: "进入景区",
+    photo: westLakePortraits.jixianPavilionSunset,
+    to: "/scenic/hangzhou-west-lake",
+  },
+  {
+    id: "scene-broken-bridge",
+    spot: "断桥残雪",
+    heading: ["断桥不断，", "故事未完"],
+    blurb: "白堤起处，听一段千年也没散场的相逢与等待。",
+    cta: "云游断桥",
+    photo: westLakeLandscapes.snowBridge,
+    to: "/scene/scene-broken-bridge/loading",
+  },
+  {
+    id: "scene-leifeng-pagoda",
+    spot: "雷峰夕照",
+    heading: ["塔影千年，", "夕照满湖"],
+    blurb: "登上雷峰塔向北望，把一整面湖的金光收进一眼里。",
+    cta: "登塔远眺",
+    photo: westLakePortraits.leifengSunset,
+    to: "/scene/scene-leifeng-pagoda/loading",
+  },
+];
+
+/** 横向拖动超过该像素判定为一次切换 */
+const SWIPE_THRESHOLD = 52;
+
+/** 位移不到该像素仍算点击，免得点 CTA 时被判成拖动 */
+const DRAG_SLOP = 8;
+
+/** 用于换算「下一张卡浮上来」的进度，与切换阈值解耦 */
+const DRAG_RANGE = 130;
+
+/** 每加深一层，卡片下移的像素数（transform-origin 在底边，所以就是露出的高度） */
+const DECK_PEEK = 10;
+
+interface DeckDrag {
+  readonly pointerId: number;
+  readonly x: number;
+  readonly y: number;
+  /** 首次超过 slop 时锁定方向：横向自己接管，纵向交还给页面滚动 */
+  axis: "" | "x" | "y";
+}
 
 /** 中秋猜灯谜投放在断桥场景（interaction-mid-autumn-riddle） */
 const festivalSceneId = "scene-broken-bridge";
@@ -108,6 +180,197 @@ function formatCountdown(remaining: number) {
   };
 }
 
+/**
+ * 今日云游卡组：三张卡叠成一摞，横向拖动或点圆点切换，
+ * 后面卡片露出的下边缘用来提示「还有下一处」。
+ *
+ * 单独拆成组件是为了让拖动时的高频重渲染止步于此，
+ * 不去带动首页里逐秒跳动的倒计时与「湖山此刻」。
+ */
+function CloudTourDeck() {
+  const total = cloudTours.length;
+  const [index, setIndex] = useState(0);
+  const [drag, setDrag] = useState(0);
+  const dragRef = useRef<DeckDrag | null>(null);
+  /** 本次按下是否已经拖动过，用来决定抬手后那次 click 要不要吃掉 */
+  const movedRef = useRef(false);
+
+  const go = useCallback(
+    (next: number) => setIndex(((next % total) + total) % total),
+    [total],
+  );
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!event.isPrimary) {
+      return;
+    }
+
+    dragRef.current = {
+      axis: "",
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+    };
+    movedRef.current = false;
+  };
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = dragRef.current;
+
+    if (!start || start.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+
+    if (start.axis === "") {
+      if (Math.abs(dx) < DRAG_SLOP && Math.abs(dy) < DRAG_SLOP) {
+        return;
+      }
+
+      start.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+
+      // 锁定横向后接管指针，手指滑出卡片范围也能继续跟手
+      if (start.axis === "x") {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }
+    }
+
+    if (start.axis !== "x") {
+      return;
+    }
+
+    movedRef.current = true;
+    setDrag(dx);
+  };
+
+  const handlePointerEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = dragRef.current;
+
+    if (!start || start.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const dx = event.clientX - start.x;
+
+    dragRef.current = null;
+    setDrag(0);
+
+    if (start.axis !== "x") {
+      return;
+    }
+
+    if (dx <= -SWIPE_THRESHOLD) {
+      go(index + 1);
+    } else if (dx >= SWIPE_THRESHOLD) {
+      go(index - 1);
+    }
+  };
+
+  /** 拖完抬手时浏览器还会补一次 click，吃掉它，免得顺手打开了卡片链接 */
+  const handleClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (!movedRef.current) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    movedRef.current = false;
+  };
+
+  const dragging = drag !== 0;
+  /**
+   * 0 → 1：向左拖得越远，牌堆里下一张越接近顶层的位置和尺寸。
+   * 向右拖是「倒回上一张」，此时浮起来的应是牌堆最底那张、不是紧邻的下一张，
+   * 与叠卡的视觉顺序对不上，所以不做浮起，只让顶层卡跟手。
+   */
+  const lift = drag < 0 ? Math.min(1, -drag / DRAG_RANGE) : 0;
+  const current = cloudTours[index];
+
+  return (
+    <section className="cloud-tour" aria-label="今日云游" aria-roledescription="卡片轮播">
+      <div
+        className={`cloud-tour__deck${dragging ? " is-dragging" : ""}`}
+        onClickCapture={handleClickCapture}
+        onPointerCancel={handlePointerEnd}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerEnd}
+      >
+        {cloudTours.map((tour, position) => {
+          const depth = (position - index + total) % total;
+          const active = depth === 0;
+          const layer = depth - lift;
+
+          return (
+            <article
+              className={`cloud-tour-card${active ? "" : " is-behind"}`}
+              inert={!active}
+              key={tour.id}
+              style={
+                active
+                  ? {
+                      transform: `translate3d(${drag}px, 0, 0) rotate(${drag * 0.016}deg)`,
+                      zIndex: 3,
+                    }
+                  : {
+                      opacity: depth > 2 ? 0 : 1,
+                      transform: `translate3d(0, ${layer * DECK_PEEK}px, 0) scale(${1 - layer * 0.045})`,
+                      zIndex: Math.max(0, 3 - depth),
+                    }
+              }
+            >
+              <div className="cloud-tour-card__copy">
+                <p className="cloud-tour-card__eyebrow">今日云游 · {tour.spot}</p>
+                <h2 className="cloud-tour-card__title">
+                  {tour.heading[0]}
+                  <br />
+                  {tour.heading[1]}
+                </h2>
+                <p>{tour.blurb}</p>
+                <Link className="cloud-tour-card__cta" to={tour.to}>
+                  {tour.cta}
+                  <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+                </Link>
+              </div>
+              <figure className="cloud-tour-card__art">
+                <img
+                  alt={tour.photo.alt}
+                  src={tour.photo.src}
+                  style={{ objectPosition: tour.photo.focus }}
+                />
+              </figure>
+            </article>
+          );
+        })}
+      </div>
+
+      <div className="cloud-tour__pager">
+        <div className="cloud-tour__dots">
+          {cloudTours.map((tour, position) => (
+            <button
+              aria-current={position === index || undefined}
+              aria-label={`切换到第 ${position + 1} 处：${tour.spot}`}
+              className="cloud-tour__dot"
+              key={tour.id}
+              onClick={() => go(position)}
+              type="button"
+            >
+              <i aria-hidden="true" />
+            </button>
+          ))}
+        </div>
+        <small className="cloud-tour__hint">滑动切换</small>
+      </div>
+
+      <p aria-live="polite" className="sr-only">
+        今日云游第 {index + 1} 处，共 {total} 处：{current.spot}
+      </p>
+    </section>
+  );
+}
+
 export function HomePage() {
   const now = useSecondTick();
   const deadline = useFestivalDeadline();
@@ -130,7 +393,7 @@ export function HomePage() {
           <MobileStatusBar className="app-status" />
 
           <div className="app-brand-row">
-            <p className="app-brand">灵境奇旅</p>
+            <h1 className="app-brand">灵境奇旅</h1>
             <p className="app-brand__slogan">让每一处风景，都成为故事。</p>
           </div>
 
@@ -148,24 +411,7 @@ export function HomePage() {
         </header>
 
         <div className="app-home__content">
-          <section className="cloud-tour-card" aria-labelledby="cloud-tour-title">
-            <div className="cloud-tour-card__copy">
-              <p className="cloud-tour-card__eyebrow">今日云游</p>
-              <h1 id="cloud-tour-title">
-                水光山色，
-                <br />
-                遇见西湖
-              </h1>
-              <p>走进可探索、可互动的数字风景，在故事里重新认识一座城。</p>
-              <Link className="cloud-tour-card__cta" to="/scenic/hangzhou-west-lake">
-                进入景区
-                <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
-              </Link>
-            </div>
-            <figure className="cloud-tour-card__art">
-              <img alt={heroPhoto.alt} src={heroPhoto.src} style={{ objectPosition: heroPhoto.focus }} />
-            </figure>
-          </section>
+          <CloudTourDeck />
 
           <section className="scenic-area-rail" aria-labelledby="scenic-area-title">
             <div className="app-section-title">
