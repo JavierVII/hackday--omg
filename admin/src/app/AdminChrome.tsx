@@ -27,16 +27,19 @@ const navigation: NavItem[] = [
   { to: "/operations/publish", label: "预览并发布", icon: Rocket },
 ];
 
-/** 互动运营分组自身与子模块路径（不含 /operations/publish，避免父项误亮）。 */
-const OPERATIONS_ACTIVE_PATHS = new Set(["/operations", "/operations/interactions", "/operations/games"]);
-
 export function AdminChrome({ children }: { children: ReactNode }) {
   const { mode, toggleMode } = useTheme();
   const [collapsed, setCollapsed] = useState(false);
   const [onlineTheme, setOnlineTheme] = useState("默认西湖");
   const [hasChanges, setHasChanges] = useState(false);
   const { pathname } = useLocation();
-  const operationsActive = OPERATIONS_ACTIVE_PATHS.has(pathname.replace(/\/+$/, ""));
+  const normalizedPath = pathname.replace(/\/+$/, "");
+  // 父项仅在自己或真实子模块（互动点配置 / 玩法库）激活时高亮；
+  // 「预览并发布」是顶级项，不在 children 里，因此与父项不会同时亮。
+  const operationsItem = navigation.find((item) => item.to === "/operations");
+  const operationsActive =
+    (operationsItem?.children?.some((child) => child.to === normalizedPath) ?? false) ||
+    normalizedPath === "/operations";
   useEffect(() => { configService.getAdminConfig().then((state) => { setOnlineTheme(state.publishedConfig.themes.find((theme) => theme.id === state.publishedConfig.activeThemeId)?.name ?? "默认西湖"); setHasChanges(state.hasUnpublishedChanges); }).catch(() => undefined); }, []);
   return <div className={`desktop-app ${collapsed ? "sidebar-collapsed" : ""}`}>
     <aside className="desktop-sidebar">
@@ -47,7 +50,8 @@ export function AdminChrome({ children }: { children: ReactNode }) {
           return <NavLink key={item.to} to={item.to} className={({ isActive }) => isActive ? "active" : ""}><Icon size={19}/><span>{item.label}</span></NavLink>;
         }
         return <div className="nav-group" key={item.to}>
-          <NavLink to={item.to} className={operationsActive ? "active" : ""}><Icon size={19}/><span>{item.label}</span></NavLink>
+          {/* 函数形式 className：完全由 operationsActive 决定，避免 NavLink 按前缀自动合并 "active"，误亮「预览并发布」。 */}
+          <NavLink to={item.to} className={() => operationsActive ? "active" : ""}><Icon size={19}/><span>{item.label}</span></NavLink>
           <div className="nav-children">
             {item.children.map((child) => {
               const ChildIcon = child.icon;
