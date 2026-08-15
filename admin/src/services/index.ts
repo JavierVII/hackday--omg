@@ -1,12 +1,4 @@
-import type { Asset3D, ThemeConfig } from "@hackday/contracts";
-import { seedAssets, seedThemes } from "../mocks/seed";
-import { createLocalStorageRepository } from "./storage/localStorageRepository";
-
-const PREFIX = "hackday-omg:admin:v1";
-export const repositories = {
-  assets: createLocalStorageRepository<Asset3D>(`${PREFIX}:assets`, seedAssets),
-  themes: createLocalStorageRepository<ThemeConfig>(`${PREFIX}:themes`, seedThemes),
-};
+export { repositories } from "./repositories";
 
 export interface DashboardSummary { visitors: number; assetCount: number; averageStay: string; participationRate: number }
 export const dashboardService = {

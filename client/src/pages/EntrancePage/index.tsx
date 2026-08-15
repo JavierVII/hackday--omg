@@ -185,9 +185,13 @@ export function EntrancePage() {
               →
             </span>
           </Link>
-          <button className="entrance__button entrance__button--secondary" type="button">
+          <a
+            className="entrance__button entrance__button--secondary"
+            href="/admin/"
+            aria-label="进入管理端"
+          >
             进入管理端
-          </button>
+          </a>
         </div>
 
         <div className="entrance__scenes">

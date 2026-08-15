@@ -1,0 +1,12 @@
+{
+  "name": "@hackday/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Admin / Client / Backend 唯一共享的数据协议与固定 ID。真实 contracts 源码在本工作树之外，此包为本地占位实现，补齐真实包后应整体替换。",
+  "main": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    ".": "./index.ts"
+  }
+}

@@ -1,8 +1,21 @@
 import type { AdminConfigState, ScenicExperienceConfig } from "@hackday/contracts";
+import { seedAdminConfig } from "../../mocks/seedConfig";
 import type { ConfigService } from "./types";
 
 const KEY = "hackday-omg:admin:v1:shared-config";
-const read = (): AdminConfigState => { const value = localStorage.getItem(KEY); if (!value) throw new Error("Mock Config 尚未初始化，请使用 API 模式或注入统一 Seed"); return JSON.parse(value) as AdminConfigState; };
+const read = (): AdminConfigState => {
+  const value = localStorage.getItem(KEY);
+  if (!value) {
+    const seeded = seedAdminConfig();
+    localStorage.setItem(KEY, JSON.stringify(seeded));
+    return seeded;
+  }
+  try { return JSON.parse(value) as AdminConfigState; } catch {
+    const seeded = seedAdminConfig();
+    localStorage.setItem(KEY, JSON.stringify(seeded));
+    return seeded;
+  }
+};
 const write = (state: AdminConfigState) => { localStorage.setItem(KEY, JSON.stringify(state)); return structuredClone(state); };
 const draft = (mutate: (config: ScenicExperienceConfig) => void) => { const state = read(); mutate(state.draftConfig); state.draftConfig.updatedAt = new Date().toISOString(); state.hasUnpublishedChanges = true; state.status = "unpublished_changes"; return write(state); };
 export const mockConfigService: ConfigService = {

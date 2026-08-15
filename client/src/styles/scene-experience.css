@@ -74,7 +74,7 @@
 
 .explore-page::before {
   background:
-    linear-gradient(180deg, rgb(15 39 33 / 36%) 0%, transparent 23%),
+    linear-gradient(180deg, rgb(15 39 33 / 14%) 0%, transparent 16%),
     radial-gradient(90% 58% at 50% 100%, rgb(15 39 33 / 30%), transparent 68%);
 }
 
@@ -101,13 +101,36 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 18px 18px 34px;
+  padding: 18px 18px 30px;
   color: var(--paper);
   pointer-events: none;
-  background: linear-gradient(180deg, rgb(15 39 33 / 48%), transparent);
+  /* 与 app 端首页 / 个人空间同一款墨绿渐变头部，下缘渐隐进场景 */
+  background: linear-gradient(
+    158deg,
+    rgb(29 77 60 / 96%) 0%,
+    rgb(20 52 44 / 92%) 46%,
+    rgb(15 39 33 / 76%) 78%,
+    transparent 100%
+  );
+  border-bottom: 1px solid rgb(232 167 101 / 22%);
+}
+
+/* 右上角晚霞光晕，与 app 端头部同一手法 */
+.topbar::before {
+  position: absolute;
+  top: -84px;
+  right: -70px;
+  width: 250px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgb(232 167 101 / 32%) 0%, rgb(226 121 95 / 12%) 46%, transparent 72%);
+  pointer-events: none;
+  content: "";
 }
 
 .brand-lockup {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -122,49 +145,72 @@
   border-radius: 5px;
   background: var(--seal);
   box-shadow: 0 8px 18px -8px rgb(180 64 47 / 70%);
-  font-family: STKaiti, KaiTi, "Kaiti SC", serif;
+  font-family: var(--font-display);
   font-size: 12px;
   line-height: 1.05;
   writing-mode: vertical-rl;
 }
 
 .topbar-brand {
-  font-family: STKaiti, KaiTi, "Kaiti SC", serif;
-  font-size: 15px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
   letter-spacing: 0.12em;
+  color: var(--paper);
+  text-shadow: 0 1px 12px rgb(15 39 33 / 46%);
 }
 
 .topbar-brand span {
-  margin-left: 5px;
-  color: rgb(250 246 238 / 54%);
+  margin-left: 6px;
+  color: rgb(232 167 101 / 82%);
   font-family: Inter, sans-serif;
-  font-size: 6px;
-  letter-spacing: 0.18em;
+  font-size: 7px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-shadow: 0 1px 8px rgb(15 39 33 / 40%);
 }
 
 .topbar-scene {
-  margin-top: 2px;
-  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.16em;
+  color: rgb(250 246 238 / 92%);
+  text-shadow: 0 1px 8px rgb(15 39 33 / 40%);
+}
+
+.topbar-scene::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 3px rgb(232 167 101 / 24%);
 }
 
 .topbar-area {
-  margin-top: 2px;
+  margin-top: 3px;
   color: rgb(250 246 238 / 60%);
-  font-size: 8px;
-  letter-spacing: 0.08em;
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
 }
 
 .loc-badge {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 7px 10px;
-  border: 1px solid rgb(250 246 238 / 23%);
+  border: 1px solid rgb(232 167 101 / 34%);
   border-radius: 999px;
-  background: rgb(250 246 238 / 14%);
-  box-shadow: inset 0 0 0 1px rgb(15 39 33 / 9%);
+  color: rgb(250 246 238 / 92%);
+  background: rgb(15 39 33 / 30%);
+  box-shadow: inset 0 0 0 1px rgb(250 246 238 / 10%);
   backdrop-filter: blur(12px);
   font-size: 9px;
   letter-spacing: 0.08em;
@@ -235,10 +281,10 @@
 
 .taskbar-title {
   margin-top: 6px;
-  font-family: STKaiti, KaiTi, "Kaiti SC", serif;
-  font-size: 16px;
+  font-family: var(--font-display);
+  font-size: 17px;
   font-weight: 400;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
 }
 
 .taskbar-hint {
@@ -276,21 +322,65 @@
 .backpack-button {
   top: 225px;
   left: 16px;
+  position: relative;
   display: grid;
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   place-items: center;
   padding: 0;
+  border: 1px solid rgb(232 167 101 / 36%);
+  border-radius: 50%;
+  color: var(--ink-strong);
+  background: rgb(250 246 238 / 68%);
+  box-shadow: 0 12px 26px -16px rgb(15 39 33 / 72%), inset 0 0 0 1px rgb(15 39 33 / 6%);
+  backdrop-filter: blur(12px);
 }
 
 .backpack-button .utility-icon {
-  width: 32px;
-  height: 32px;
+  width: 22px;
+  height: 22px;
+  color: var(--gold-deep);
+  border-radius: 0;
+  background: none;
+  transition: color 0.28s var(--ease), filter 0.28s var(--ease);
+}
+
+.backpack-button:hover .utility-icon {
+  color: var(--gold);
+  filter: drop-shadow(0 0 5px rgb(232 167 101 / 60%));
+}
+
+/* 藏品数量角标：key={count} 变化时重挂载以播放弹出动画 */
+.backpack-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  z-index: 2;
+  display: grid;
+  min-width: 17px;
+  height: 17px;
+  place-items: center;
+  padding: 0 4px;
+  border: 1px solid rgb(250 246 238 / 78%);
+  border-radius: 999px;
+  color: var(--paper);
+  background: linear-gradient(160deg, #1d4d3c, #0f2721);
+  box-shadow: 0 4px 10px -4px rgb(15 39 33 / 70%);
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+  animation: backpackPop 0.32s var(--ease);
+}
+
+@keyframes backpackPop {
+  0% { transform: scale(0.4); opacity: 0; }
+  70% { transform: scale(1.18); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .backpack-button .utility-icon svg {
-  width: 18px;
-  height: 18px;
+  width: 21px;
+  height: 21px;
 }
 
 .utility-icon {
@@ -330,7 +420,7 @@
 
 .utility-copy strong {
   margin-top: 1px;
-  font-family: STKaiti, KaiTi, serif;
+  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 400;
 }
@@ -347,58 +437,65 @@
 
 .compass-dial {
   position: relative;
-  width: 54px;
-  height: 54px;
-  border: 1px solid rgb(250 246 238 / 62%);
+  width: 64px;
+  height: 64px;
+  border: 1px solid rgb(250 246 238 / 70%);
   border-radius: 50%;
-  background: rgb(250 246 238 / 82%);
-  box-shadow: 0 12px 26px -14px rgb(15 39 33 / 72%), inset 0 0 0 4px rgb(15 39 33 / 7%);
+  background: rgb(250 246 238 / 78%);
+  box-shadow:
+    0 12px 26px -14px rgb(15 39 33 / 72%),
+    inset 0 0 0 4px rgb(15 39 33 / 6%),
+    inset 0 0 0 5px rgb(232 167 101 / 26%);
   backdrop-filter: blur(12px);
 }
 
-.compass-dial::before,
-.compass-dial::after {
-  content: "";
+/* 罗盘刻度环：细刻度经 mask 收敛成环带，避免整面刻度糊在表盘上 */
+.compass-ticks {
   position: absolute;
-  background: rgb(15 39 33 / 16%);
+  inset: 4px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgb(15 39 33 / 38%) 0deg 3deg, transparent 3deg 6deg);
+  -webkit-mask: radial-gradient(circle 32px at 50% 50%, transparent 0 24px, #000 24px 26px, transparent 26px);
+  mask: radial-gradient(circle 32px at 50% 50%, transparent 0 24px, #000 24px 26px, transparent 26px);
 }
 
-.compass-dial::before {
-  top: 7px;
-  bottom: 7px;
-  left: 50%;
-  width: 1px;
-}
-
-.compass-dial::after {
-  top: 50%;
-  right: 7px;
-  left: 7px;
-  height: 1px;
+.compass-cardinal {
+  position: absolute;
+  z-index: 3;
+  font-family: var(--font-display);
+  font-size: 8px;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .compass-n {
-  position: absolute;
-  top: 3px;
+  top: 5px;
   left: 50%;
-  z-index: 2;
   transform: translateX(-50%);
   color: var(--seal);
-  font-family: STKaiti, KaiTi, serif;
-  font-size: 9px;
+  font-weight: 600;
+  text-shadow: 0 0 6px rgb(250 246 238 / 85%);
 }
 
-.compass-center {
-  position: absolute;
+.compass-e {
   top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  color: var(--ink-muted);
+}
+
+.compass-s {
+  bottom: 5px;
   left: 50%;
-  z-index: 3;
-  width: 5px;
-  height: 5px;
-  transform: translate(-50%, -50%);
-  border: 1px solid var(--paper);
-  border-radius: 50%;
-  background: var(--ink);
+  transform: translateX(-50%);
+  color: var(--ink-muted);
+}
+
+.compass-w {
+  top: 50%;
+  left: 6px;
+  transform: translateY(-50%);
+  color: var(--ink-muted);
 }
 
 .compass-needle {
@@ -406,26 +503,94 @@
   top: 50%;
   left: 50%;
   z-index: 2;
-  width: 3px;
-  height: 18px;
-  border-radius: 2px 2px 0 0;
-  background: linear-gradient(var(--seal) 0 48%, var(--ink) 48%);
-  transform-origin: 50% 100%;
+  width: 8px;
+  height: 30px;
+  transform-origin: 50% 50%;
+  transition: transform 0.6s var(--ease);
+}
+
+.compass-needle i {
+  position: absolute;
+  left: 50%;
+  width: 7px;
+  height: 14px;
+  transform: translateX(-50%);
+}
+
+.needle-north {
+  top: 1px;
+  background: linear-gradient(180deg, #e2795f, var(--seal));
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  filter: drop-shadow(0 1px 2px rgb(180 64 47 / 45%));
+}
+
+.needle-south {
+  bottom: 1px;
+  background: linear-gradient(0deg, #14342c, var(--ink));
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.compass-hub {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  width: 7px;
+  height: 7px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--paper);
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 0 0 1px rgb(232 167 101 / 60%);
+}
+
+.compass-readout {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.compass-heading {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 4px 9px 4px 8px;
+  border-radius: 999px;
+  color: var(--paper);
+  background: rgb(15 39 33 / 64%);
+  box-shadow: inset 0 0 0 1px rgb(250 246 238 / 24%);
+  backdrop-filter: blur(8px);
+}
+
+.compass-heading b {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.compass-heading em {
+  font-style: normal;
+  font-size: 8px;
+  color: rgb(250 246 238 / 66%);
+  letter-spacing: 0.04em;
 }
 
 .compass-target {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  padding: 6px 9px;
+  gap: 1px;
+  padding: 5px 9px;
   border: 1px solid rgb(250 246 238 / 52%);
   border-radius: 9px;
   color: var(--ink-muted);
-  background: rgb(250 246 238 / 80%);
+  background: rgb(250 246 238 / 82%);
+  box-shadow: 0 8px 18px -12px rgb(15 39 33 / 55%), inset 0 0 0 1px rgb(15 39 33 / 6%);
   backdrop-filter: blur(10px);
 }
 
-.compass-target span {
+.compass-target small {
   font-size: 6px;
   letter-spacing: 0.16em;
 }
@@ -434,6 +599,8 @@
   margin-top: 2px;
   color: var(--ink-strong);
   font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
 }
 
 .hotspot-layer {
@@ -541,7 +708,7 @@
 }
 
 .hotspot-mainline strong {
-  font-family: STKaiti, KaiTi, "Kaiti SC", serif;
+  font-family: var(--font-display);
   font-size: 13px;
   font-weight: 400;
   letter-spacing: 0.05em;
@@ -658,11 +825,11 @@
   align-items: center;
   gap: 8px;
   padding: 6px 10px 6px 6px;
-  border: 1px solid rgb(250 246 238 / 62%);
+  border: 1px solid rgb(232 167 101 / 36%);
   border-radius: 999px;
   color: var(--ink-strong);
   background: rgb(250 246 238 / 88%);
-  box-shadow: 0 14px 28px -16px rgb(15 39 33 / 76%);
+  box-shadow: 0 14px 28px -16px rgb(15 39 33 / 76%), inset 0 0 0 1px rgb(250 246 238 / 46%);
   backdrop-filter: blur(12px);
   cursor: pointer;
   transition: transform 0.28s var(--ease), border-color 0.28s;
@@ -679,24 +846,68 @@
 .ai-orb {
   position: relative;
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   place-items: center;
-  border: 1px solid rgb(232 167 101 / 58%);
+  border: 1px solid rgb(232 167 101 / 62%);
   border-radius: 50%;
   color: var(--gold);
   background: linear-gradient(145deg, #2a6650, #0f2721);
+  box-shadow: 0 4px 14px -6px rgb(15 39 33 / 70%), inset 0 0 8px rgb(232 167 101 / 22%);
+  animation: aiOrbFloat 6s ease-in-out infinite;
 }
 
-.ai-orb i {
+.ai-orb-core {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+}
+
+/* 呼吸光晕：扩散的金色圆环，营造「灵」的灵动感 */
+.ai-orb-halo {
+  position: absolute;
+  inset: -7px;
+  border: 1px solid rgb(232 167 101 / 55%);
+  border-radius: 50%;
+  opacity: 0;
+  animation: aiHaloPulse 2.6s ease-out infinite;
+}
+
+.ai-orb-dot {
   position: absolute;
   top: 1px;
   right: 1px;
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border: 1px solid var(--paper);
   border-radius: 50%;
   background: var(--gold);
+  animation: aiDotPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes aiOrbFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes aiHaloPulse {
+  0% { transform: scale(0.82); opacity: 0.7; }
+  70%, 100% { transform: scale(1.16); opacity: 0; }
+}
+
+@keyframes aiDotPulse {
+  0%, 100% { box-shadow: 0 0 4px rgb(232 167 101 / 55%); }
+  50% { box-shadow: 0 0 9px rgb(232 167 101 / 95%); }
+}
+
+/* 唤起后节奏加快，作为「在线应答」的反馈 */
+.ai-button.active .ai-orb-halo {
+  animation-duration: 1.4s;
+}
+
+.ai-button.active .ai-orb {
+  border-color: var(--gold);
 }
 
 .ai-button > span:last-child {
@@ -713,7 +924,7 @@
 
 .ai-button strong {
   margin-top: 1px;
-  font-family: STKaiti, KaiTi, serif;
+  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 400;
 }
@@ -789,7 +1000,7 @@
   min-height: 430px;
   flex-direction: column;
   overflow: hidden;
-  border: 2px solid #3a7f64;
+  border: 1px solid rgb(232 167 101 / 36%);
   border-bottom: 0;
   border-radius: 24px 24px 0 0;
   color: var(--ink-strong);
@@ -869,7 +1080,7 @@
 
 .assistant-hero h2 {
   margin-top: 3px;
-  font-family: STKaiti, KaiTi, serif;
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 600;
   line-height: 1.2;
@@ -975,11 +1186,11 @@
 .assistant-suggestions button {
   min-height: 36px;
   padding: 6px 10px;
-  border: 1px solid rgb(250 246 238 / 85%);
+  border: 1px solid rgb(232 167 101 / 30%);
   border-radius: 999px;
   color: var(--paper);
-  background: #4f9d70;
-  box-shadow: 0 0 0 1px rgb(15 39 33 / 16%);
+  background: linear-gradient(150deg, #2a6650, #0f2721);
+  box-shadow: 0 6px 16px -8px rgb(15 39 33 / 60%), inset 0 0 0 1px rgb(250 246 238 / 10%);
   cursor: pointer;
   font-size: 9px;
   line-height: 1.35;
@@ -1036,7 +1247,7 @@
 .assistant-current-task strong {
   display: block;
   margin-top: 4px;
-  font-family: STKaiti, KaiTi, serif;
+  font-family: var(--font-display);
   font-size: 13px;
   font-weight: 400;
 }
@@ -1059,11 +1270,11 @@
   align-items: center;
   gap: 8px;
   padding: 7px 8px 7px 14px;
-  border: 3px solid var(--ink);
+  border: 1px solid rgb(250 246 238 / 24%);
   border-radius: 999px;
   color: var(--paper);
-  background: #4f9d70;
-  box-shadow: 0 16px 30px -16px rgb(15 39 33 / 72%);
+  background: linear-gradient(140deg, #1d4d3c, #0f2721);
+  box-shadow: 0 16px 30px -16px rgb(15 39 33 / 72%), inset 0 0 0 1px rgb(250 246 238 / 10%);
 }
 
 .composer-search {
@@ -1158,7 +1369,7 @@
 
 .utility-panel h2 {
   margin-top: 3px;
-  font-family: STKaiti, KaiTi, serif;
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 400;
 }
@@ -1196,7 +1407,7 @@
   border-radius: 10px;
   color: var(--gold);
   background: radial-gradient(circle at 50% 42%, #e8a765 0 10%, transparent 11%), linear-gradient(155deg, #3a7f64, #0f2721);
-  font-family: STKaiti, KaiTi, serif;
+  font-family: var(--font-display);
   font-size: 44px;
 }
 
@@ -1216,7 +1427,7 @@
 }
 
 .asset-card > small { color: var(--ink-faint); font-size: 7px; letter-spacing: 0.18em; }
-.asset-card > strong { display: block; margin-top: 3px; font-family: STKaiti, KaiTi, serif; font-size: 16px; font-weight: 400; }
+.asset-card > strong { display: block; margin-top: 3px; font-family: var(--font-display); font-size: 16px; font-weight: 400; }
 .asset-card > p { margin-top: 4px; color: var(--ink-muted); font-size: 9px; line-height: 1.6; }
 
 .asset-empty {
@@ -1230,7 +1441,7 @@
 }
 
 .asset-empty svg { width: 34px; height: 34px; }
-.asset-empty strong { margin-top: 12px; color: var(--ink-muted); font-family: STKaiti, KaiTi, serif; font-size: 17px; font-weight: 400; }
+.asset-empty strong { margin-top: 12px; color: var(--ink-muted); font-family: var(--font-display); font-size: 17px; font-weight: 400; }
 .asset-empty p { margin-top: 5px; font-size: 9px; }
 
 .photo-flash {
@@ -1326,14 +1537,14 @@
   color: var(--paper);
   background: linear-gradient(135deg, #3a7f64, #0f2721);
   box-shadow: inset 0 0 0 1px rgb(15 39 33 / 22%);
-  font-family: STKaiti, KaiTi, serif;
+  font-family: var(--font-display);
   font-size: 26px;
   letter-spacing: 0.18em;
 }
 
 .overlay-title {
   margin-bottom: 8px;
-  font-family: STKaiti, KaiTi, serif;
+  font-family: var(--font-display);
   font-size: 21px;
   font-weight: 400;
 }
@@ -1443,7 +1654,7 @@
   box-shadow: var(--shadow-float);
 }
 
-.loading-brand { font-family: STKaiti, KaiTi, serif; font-size: 18px; letter-spacing: 0.28em; }
+.loading-brand { font-family: var(--font-display); font-size: 18px; letter-spacing: 0.28em; }
 .loading-scene { font-size: 14px; font-weight: 500; letter-spacing: 0.1em; }
 .loading-bar { width: 210px; height: 4px; overflow: hidden; border-radius: 999px; background: rgb(15 39 33 / 10%); }
 .loading-bar-inner { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--ink-muted), var(--gold)); transition: width 0.15s; }

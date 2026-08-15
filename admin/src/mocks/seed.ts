@@ -1,3 +1,4 @@
+import { WEST_LAKE_IDS } from "@hackday/contracts";
 import type { Asset3D, ThemeConfig } from "@hackday/contracts";
 
 const now = "2026-08-13T09:00:00.000Z";
@@ -19,6 +20,6 @@ export const seedAssets: Asset3D[] = [
 ];
 
 export const seedThemes: ThemeConfig[] = [
-  { id: "theme-default", name: "默认景观", preset: "default", scenicAreaId: "hangzhou-west-lake", params: { cloudDensity: 30, particleSpeed: 20, ambientIntensity: 55, colorTemperature: 50, decorationDensity: 20 }, isActive: true, createdAt: now, updatedAt: now },
-  { id: "theme-mid-autumn", name: "中秋月圆", preset: "mid_autumn", scenicAreaId: "hangzhou-west-lake", params: { cloudDensity: 70, particleSpeed: 45, ambientIntensity: 60, colorTemperature: 65, decorationDensity: 55 }, isActive: false, createdAt: now, updatedAt: now },
+  { id: WEST_LAKE_IDS.themes.default, name: "默认景观", preset: "default", scenicAreaId: "hangzhou-west-lake", params: { cloudDensity: 30, particleSpeed: 20, ambientIntensity: 55, colorTemperature: 50, decorationDensity: 20 }, isActive: true, createdAt: now, updatedAt: now },
+  { id: WEST_LAKE_IDS.themes.midAutumn, name: "中秋月圆", preset: "mid_autumn", scenicAreaId: "hangzhou-west-lake", params: { cloudDensity: 70, particleSpeed: 45, ambientIntensity: 60, colorTemperature: 65, decorationDensity: 55 }, isActive: false, createdAt: now, updatedAt: now },
 ];

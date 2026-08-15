@@ -18,6 +18,8 @@ export function TopBar({ areaName, sceneName }: { areaName: string; sceneName: s
   );
 }
 
+const CARDINAL_NAMES = ["北", "东北", "东", "东南", "南", "西南", "西", "西北"];
+
 export function Compass({
   heading,
   targetName,
@@ -28,22 +30,37 @@ export function Compass({
   targetDistance: number | null;
 }) {
   const deg = Math.round((heading * 180) / Math.PI);
+  const norm = ((deg % 360) + 360) % 360;
+  const cardinal = CARDINAL_NAMES[Math.round(norm / 45) % 8];
   return (
     <div className="hud compass">
       <div className="compass-dial">
-        <span className="compass-n">北</span>
-        <span className="compass-center" />
+        <span className="compass-ticks" aria-hidden="true" />
+        <span className="compass-cardinal compass-n">北</span>
+        <span className="compass-cardinal compass-e">东</span>
+        <span className="compass-cardinal compass-s">南</span>
+        <span className="compass-cardinal compass-w">西</span>
         <div
           className="compass-needle"
-          style={{ transform: `translate(-50%, -100%) rotate(${-deg}deg)` }}
-        />
-      </div>
-      {targetName && targetDistance !== null && (
-        <div className="compass-target">
-          <span>距最近游点</span>
-          <strong>{shortPointName(targetName)} · {Math.round(targetDistance)}m</strong>
+          style={{ transform: `translate(-50%, -50%) rotate(${-deg}deg)` }}
+        >
+          <i className="needle-north" />
+          <i className="needle-south" />
         </div>
-      )}
+        <span className="compass-hub" aria-hidden="true" />
+      </div>
+      <div className="compass-readout">
+        <span className="compass-heading">
+          <b>{cardinal}</b>
+          <em>{norm}°</em>
+        </span>
+        {targetName && targetDistance !== null && (
+          <span className="compass-target">
+            <small>最近游点</small>
+            <strong>{shortPointName(targetName)} · {Math.round(targetDistance)}m</strong>
+          </span>
+        )}
+      </div>
     </div>
   );
 }
@@ -78,6 +95,9 @@ export function BackpackButton({ count, onClick }: { count: number; onClick: () 
   return (
     <button className="hud utility-button backpack-button" onClick={onClick} aria-label={`数字资产背包，${count}件藏品`}>
       <span className="utility-icon"><BackpackIcon /></span>
+      {count > 0 && (
+        <span className="backpack-count" key={count} aria-hidden="true">{count}</span>
+      )}
     </button>
   );
 }
@@ -94,7 +114,11 @@ export function PhotoButton({ onClick }: { onClick: () => void }) {
 export function AiAssistantButton({ onClick, active }: { onClick: () => void; active: boolean }) {
   return (
     <button className={`hud ai-button${active ? " active" : ""}`} onClick={onClick} aria-expanded={active}>
-      <span className="ai-orb"><AssistantIcon /><i /></span>
+      <span className="ai-orb">
+        <span className="ai-orb-halo" aria-hidden="true" />
+        <span className="ai-orb-core"><AssistantIcon /></span>
+        <i className="ai-orb-dot" aria-hidden="true" />
+      </span>
       <span><small>AI 导游</small><strong>小灵</strong></span>
     </button>
   );
