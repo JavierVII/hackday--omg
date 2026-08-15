@@ -424,23 +424,24 @@
   box-shadow: var(--shadow-card);
 }
 
-/* —— 探索分类 —— */
+/* —— 三种游法 —— */
 
-.discovery-grid {
+.play-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
 
-.discovery-card {
+.play-card {
   display: flex;
   min-width: 0;
-  min-height: 158px;
+  min-height: 152px;
   flex-direction: column;
   padding: 14px 12px 12px;
   color: var(--ink-green-900);
   font-family: inherit;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
   background: var(--paper-white);
   border: 1px solid var(--hairline-ink);
@@ -449,18 +450,18 @@
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
-.discovery-card:hover {
+.play-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-raised);
 }
 
-.discovery-card__heading {
+.play-card__heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.discovery-card__heading strong {
+.play-card__heading strong {
   color: var(--ink-green-950);
   font-family: var(--font-display);
   font-size: 22px;
@@ -468,7 +469,7 @@
   letter-spacing: 0.06em;
 }
 
-.discovery-card__heading > span {
+.play-card__heading > span {
   display: grid;
   width: 27px;
   aspect-ratio: 1;
@@ -476,22 +477,22 @@
   border-radius: 9px;
 }
 
-.discovery-card--ink .discovery-card__heading > span {
+.play-card--ink .play-card__heading > span {
   color: var(--ink-green-700);
   background: rgb(42 102 80 / 12%);
 }
 
-.discovery-card--gold .discovery-card__heading > span {
+.play-card--gold .play-card__heading > span {
   color: var(--sunset-gold-deep);
   background: rgb(232 167 101 / 20%);
 }
 
-.discovery-card--mist .discovery-card__heading > span {
+.play-card--mist .play-card__heading > span {
   color: var(--mist-ink);
   background: rgb(185 194 222 / 30%);
 }
 
-.discovery-card__items {
+.play-card__items {
   display: grid;
   gap: 5px;
   margin-top: 12px;
@@ -499,35 +500,52 @@
   font-size: 12px;
 }
 
-.discovery-card__more {
+/* 主操作文案：一卡一动作，比原先统一的「探索更多」更明确 */
+.play-card__action {
   display: flex;
   gap: 1px;
   align-items: center;
   margin-top: auto;
   padding-top: 12px;
-  color: var(--ink-green-600);
   font-size: 10px;
-  opacity: 0.8;
+  letter-spacing: 0.02em;
 }
 
-/* —— 节庆入口 —— */
+.play-card--ink .play-card__action {
+  color: var(--ink-green-700);
+}
 
-.festival-banner {
+.play-card--gold .play-card__action {
+  color: var(--sunset-gold-deep);
+}
+
+.play-card--mist .play-card__action {
+  color: var(--mist-ink);
+}
+
+.play-card__action svg {
+  transition: transform 180ms ease;
+}
+
+.play-card:hover .play-card__action svg {
+  transform: translateX(2px);
+}
+
+/* —— 限时活动 —— */
+
+/* 票券式活动卡：状态 + 倒计时 / 文案 + 奖励预览 / 限量进度 + 参与按钮，
+   三段用虚线分隔，做出「活动」而非「广告位」的观感。 */
+.festival-event {
   position: relative;
   display: grid;
-  min-height: 104px;
-  grid-template-columns: auto 1fr auto;
-  gap: 12px;
-  align-items: center;
+  gap: 13px;
   overflow: hidden;
-  padding: 17px 18px;
+  padding: 14px 16px 15px;
   color: var(--paper-white);
-  font-family: inherit;
-  text-align: left;
-  cursor: pointer;
+  text-decoration: none;
   background:
-    radial-gradient(circle at 86% 14%, rgb(232 167 101 / 30%), transparent 44%),
-    radial-gradient(circle at 8% 96%, rgb(185 194 222 / 16%), transparent 40%),
+    radial-gradient(circle at 88% 4%, rgb(232 167 101 / 26%), transparent 46%),
+    radial-gradient(circle at 4% 98%, rgb(185 194 222 / 16%), transparent 44%),
     linear-gradient(140deg, var(--ink-green-800), var(--ink-green-950));
   border: 1px solid var(--hairline-gold);
   border-radius: 18px;
@@ -535,50 +553,250 @@
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
-.festival-banner:hover {
+.festival-event:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-float);
 }
 
-.festival-banner__edition {
-  padding: 5px 8px;
+/* 右上角满月光晕 */
+.festival-event__moon {
+  position: absolute;
+  top: -38px;
+  right: -26px;
+  width: 136px;
+  aspect-ratio: 1;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgb(250 246 238 / 20%) 0%,
+    rgb(232 167 101 / 15%) 44%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* 状态行 */
+
+.festival-event__status {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.festival-event__live {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  flex: none;
+  padding: 4px 9px;
+  color: var(--sunset-gold);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  background: rgb(232 167 101 / 14%);
+  border: 1px solid rgb(232 167 101 / 34%);
+  border-radius: 999px;
+}
+
+.festival-event__live i {
+  width: 5px;
+  flex: none;
+  aspect-ratio: 1;
+  background: var(--sunset-gold);
+  border-radius: 50%;
+  animation: festival-pulse 2.2s ease-out infinite;
+}
+
+@keyframes festival-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(232 167 101 / 55%);
+  }
+
+  72% {
+    box-shadow: 0 0 0 6px rgb(232 167 101 / 0%);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgb(232 167 101 / 0%);
+  }
+}
+
+.festival-event__timer {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  color: rgb(250 246 238 / 70%);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.festival-event__timer > svg {
+  color: var(--sunset-gold);
+}
+
+/* 等宽数字，秒数跳动时宽度不抖 */
+.festival-event__timer time {
+  padding: 2px 5px;
+  color: var(--paper-white);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  background: rgb(250 246 238 / 10%);
+  border-radius: 5px;
+}
+
+/* 文案 + 奖励预览 */
+
+.festival-event__main {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.festival-event__copy {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+  min-width: 0;
+}
+
+.festival-event__tag {
+  padding: 3px 7px;
   color: var(--ink-green-950);
   font-size: 10px;
   letter-spacing: 0.1em;
   background: var(--sunset-gold);
-  border-radius: 7px;
+  border-radius: 6px;
 }
 
-.festival-banner__copy {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  gap: 5px;
-}
-
-.festival-banner__copy strong {
+.festival-event__copy strong {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 23px;
   font-weight: 400;
   letter-spacing: 0.06em;
 }
 
-.festival-banner__copy small {
-  color: rgb(250 246 238 / 68%);
+.festival-event__copy small {
+  color: rgb(250 246 238 / 70%);
   font-size: 10px;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
-.festival-banner__stamp {
+/* 纪念卡预览：竖幅小卡 + 金线 + 月徽，让奖励看得见 */
+.festival-event__prize {
   position: relative;
-  z-index: 1;
+  display: block;
+  width: 58px;
+  flex: none;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border: 1px solid rgb(232 167 101 / 55%);
+  border-radius: 10px;
+  box-shadow: 0 10px 20px -12px rgb(15 39 33 / 82%);
+}
+
+.festival-event__prize img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.88) brightness(0.84);
+}
+
+.festival-event__prize-moon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
   display: grid;
-  width: 46px;
+  width: 18px;
   aspect-ratio: 1;
   place-items: center;
   color: var(--sunset-gold);
-  border: 1px solid rgb(232 167 101 / 50%);
+  background: rgb(15 39 33 / 64%);
   border-radius: 50%;
+}
+
+.festival-event__prize-name {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 9px 3px 4px;
+  color: var(--paper-white);
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  text-align: center;
+  background: linear-gradient(to top, rgb(15 39 33 / 92%), transparent);
+}
+
+/* 限量进度 + 参与按钮 */
+
+.festival-event__footer {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px dashed rgb(232 167 101 / 26%);
+}
+
+.festival-event__quota {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.festival-event__quota-bar {
+  display: block;
+  height: 4px;
+  overflow: hidden;
+  background: rgb(250 246 238 / 14%);
+  border-radius: 999px;
+}
+
+.festival-event__quota-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--sunset-gold-deep), var(--sunset-gold));
+  border-radius: 999px;
+}
+
+.festival-event__quota small {
+  color: rgb(250 246 238 / 62%);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.festival-event__cta {
+  display: inline-flex;
+  min-height: 34px;
+  gap: 5px;
+  align-items: center;
+  flex: none;
+  padding: 0 14px;
+  color: var(--ink-green-950);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  background: linear-gradient(140deg, var(--sunset-gold), var(--sunset-gold-deep));
+  border-radius: 999px;
+  box-shadow: 0 10px 20px -12px rgb(15 39 33 / 82%);
+}
+
+.festival-event__cta svg {
+  transition: transform 180ms ease;
+}
+
+.festival-event:hover .festival-event__cta svg {
+  transform: translateX(3px);
 }
 
 /* —— 底部导航（三页共用） —— */
@@ -693,29 +911,43 @@
     font-size: 23px;
   }
 
-  .discovery-card {
-    min-height: 150px;
+  .play-card {
+    min-height: 146px;
     padding: 12px 10px 10px;
   }
 
-  .discovery-card__heading strong {
+  .play-card__heading strong {
     font-size: 19px;
   }
 
-  .festival-banner {
-    grid-template-columns: 1fr auto;
+  .festival-event__status {
+    flex-wrap: wrap;
+    gap: 7px;
   }
 
-  .festival-banner__edition {
-    display: none;
+  .festival-event__copy strong {
+    font-size: 21px;
+  }
+
+  .festival-event__prize {
+    width: 52px;
+  }
+
+  .festival-event__footer {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 11px;
+  }
+
+  .festival-event__cta {
+    justify-content: center;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .cloud-tour-card__cta,
   .scenic-area-card,
-  .discovery-card,
-  .festival-banner {
+  .play-card,
+  .festival-event {
     transition: none;
   }
 
@@ -727,8 +959,22 @@
 
   .cloud-tour-card__cta:hover,
   .scenic-area-card:hover,
-  .discovery-card:hover,
-  .festival-banner:hover {
+  .play-card:hover,
+  .festival-event:hover {
+    transform: none;
+  }
+
+  .festival-event__live i {
+    animation: none;
+  }
+
+  .play-card__action svg,
+  .festival-event__cta svg {
+    transition: none;
+  }
+
+  .play-card:hover .play-card__action svg,
+  .festival-event:hover .festival-event__cta svg {
     transform: none;
   }
 }

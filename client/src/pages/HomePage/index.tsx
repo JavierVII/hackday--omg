@@ -1,34 +1,41 @@
 import {
   ArrowLeft,
   ArrowRight,
+  Box,
   ChevronRight,
-  Compass,
+  Gem,
   Home,
-  LayoutGrid,
   MapPin,
   Moon,
+  Navigation,
   Search,
   Sparkles,
+  Timer,
   User,
-  Users,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
 import {
   palaceMuseumPhotos,
   pingyaoPhotos,
+  westLakeLandscapes,
   westLakePortraits,
   type Photo,
 } from "../../lib/assets";
 
 import "./styles.css";
 
-interface DiscoverySection {
+/** 首页三张能力卡：对应本产品真正提供的三种游法，而不是内容社区式的频道分类 */
+interface PlayStyle {
+  /** 卡片底部的主操作文案，与 CLAUDE.md 的「主操作文案」约定一致：一卡一动作 */
+  readonly action: string;
   readonly icon: LucideIcon;
   readonly items: readonly string[];
   readonly label: string;
+  readonly to: string;
   readonly tone: "ink" | "gold" | "mist";
 }
 
@@ -42,24 +49,36 @@ interface ScenicAreaCard {
 
 const heroPhoto = westLakePortraits.leifengSunset;
 
-const discoverySections: readonly DiscoverySection[] = [
+/** 中秋猜灯谜投放在断桥场景（interaction-mid-autumn-riddle） */
+const festivalSceneId = "scene-broken-bridge";
+
+/** 纪念卡限量额度，Demo 写死；接入后端后应由活动配置下发 */
+const festivalQuota = { claimed: 1286, total: 5000 } as const;
+
+const playStyles: readonly PlayStyle[] = [
   {
-    label: "推荐",
-    icon: Compass,
-    items: ["热门去处", "今日限定", "附近好玩"],
+    label: "云游",
+    icon: Box,
+    items: ["3D 场景", "主题氛围", "自由探索"],
+    action: "开始云游",
+    to: "/scenic/hangzhou-west-lake",
     tone: "ink",
   },
   {
-    label: "主题",
-    icon: LayoutGrid,
-    items: ["中秋雅集", "国庆主题", "四时西湖"],
-    tone: "gold",
+    label: "向导",
+    icon: Navigation,
+    items: ["实时定位", "沿途讲解", "路线推荐"],
+    action: "开启向导",
+    to: "/guide",
+    tone: "mist",
   },
   {
-    label: "社区",
-    icon: Users,
-    items: ["达人游记", "瞬间分享", "纪念卡墙"],
-    tone: "mist",
+    label: "藏品",
+    icon: Gem,
+    items: ["数字资产", "纪念卡", "游玩瞬间"],
+    action: "打开背包",
+    to: "/space",
+    tone: "gold",
   },
 ];
 
@@ -89,7 +108,48 @@ const bottomNavigation = [
   { label: "我的", icon: User, to: "/profile" },
 ] as const;
 
+const pad = (value: number) => String(value).padStart(2, "0");
+
+/**
+ * 活动倒计时。
+ *
+ * 截止时刻按「打开页面时刻 + 3 天」的零点算，而不是写死日期 ——
+ * Demo 无论哪天演示都在活动期内，不会出现负数倒计时。
+ */
+function useFestivalCountdown() {
+  const deadline = useMemo(() => {
+    const end = new Date();
+    end.setHours(0, 0, 0, 0);
+    end.setDate(end.getDate() + 3);
+
+    return end.getTime();
+  }, []);
+
+  const [remaining, setRemaining] = useState(() => Math.max(0, deadline - Date.now()));
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setRemaining(Math.max(0, deadline - Date.now()));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [deadline]);
+
+  const totalSeconds = Math.floor(remaining / 1000);
+
+  return {
+    days: Math.floor(totalSeconds / 86400),
+    hours: pad(Math.floor((totalSeconds % 86400) / 3600)),
+    minutes: pad(Math.floor((totalSeconds % 3600) / 60)),
+    seconds: pad(totalSeconds % 60),
+  };
+}
+
 export function HomePage() {
+  const countdown = useFestivalCountdown();
+  const claimedPercent = Math.round((festivalQuota.claimed / festivalQuota.total) * 100);
+  const rewardPhoto = westLakeLandscapes.snowBridge;
+
   return (
     <main className="app-home-stage demo-app-stage">
       <Link className="app-home-demo-back" to="/" aria-label="返回进入页">
@@ -184,46 +244,110 @@ export function HomePage() {
             </ul>
           </section>
 
-          <section className="discovery-grid" aria-label="探索分类">
-            {discoverySections.map((section) => {
-              const Icon = section.icon;
+          <section className="play-style-section" aria-labelledby="play-style-title">
+            <div className="app-section-title">
+              <h2 id="play-style-title">三种游法</h2>
+              <span>云游 · 向导 · 藏品</span>
+            </div>
 
-              return (
-                <button
-                  className={`discovery-card discovery-card--${section.tone}`}
-                  key={section.label}
-                  type="button"
-                >
-                  <span className="discovery-card__heading">
-                    <strong>{section.label}</strong>
-                    <span aria-hidden="true">
-                      <Icon size={16} strokeWidth={1.9} />
+            <div className="play-grid">
+              {playStyles.map((style) => {
+                const Icon = style.icon;
+
+                return (
+                  <Link
+                    className={`play-card play-card--${style.tone}`}
+                    key={style.label}
+                    to={style.to}
+                  >
+                    <span className="play-card__heading">
+                      <strong>{style.label}</strong>
+                      <span aria-hidden="true">
+                        <Icon size={16} strokeWidth={1.9} />
+                      </span>
                     </span>
-                  </span>
-                  <span className="discovery-card__items">
-                    {section.items.map((item) => (
-                      <span key={item}>{item}</span>
-                    ))}
-                  </span>
-                  <span className="discovery-card__more">
-                    探索更多
-                    <ChevronRight size={12} strokeWidth={2} aria-hidden="true" />
-                  </span>
-                </button>
-              );
-            })}
+                    <span className="play-card__items">
+                      {style.items.map((item) => (
+                        <span key={item}>{item}</span>
+                      ))}
+                    </span>
+                    <span className="play-card__action">
+                      {style.action}
+                      <ChevronRight size={12} strokeWidth={2} aria-hidden="true" />
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
           </section>
 
-          <button className="festival-banner" type="button">
-            <span className="festival-banner__edition">中秋限定</span>
-            <span className="festival-banner__copy">
-              <strong>中秋猜灯谜</strong>
-              <small>在断桥答对灯谜，解锁「月映断桥」数字纪念卡</small>
-            </span>
-            <span className="festival-banner__stamp" aria-hidden="true">
-              <Moon size={20} strokeWidth={1.7} />
-            </span>
-          </button>
+          <section className="festival-section" aria-labelledby="festival-section-title">
+            <div className="app-section-title">
+              <h2 id="festival-section-title">限时活动</h2>
+              <span>中秋雅集 · 限时开放</span>
+            </div>
+
+            <Link
+              className="festival-event"
+              to={`/scene/${festivalSceneId}/loading`}
+              aria-label={`参与中秋猜灯谜活动，解锁限量纪念卡「月映断桥」，距结束 ${countdown.days} 天`}
+            >
+              <span className="festival-event__moon" aria-hidden="true" />
+
+              <span className="festival-event__status">
+                <span className="festival-event__live">
+                  <i aria-hidden="true" />
+                  活动进行中
+                </span>
+                <span className="festival-event__timer">
+                  <Timer size={12} strokeWidth={2} aria-hidden="true" />
+                  距结束 {countdown.days} 天
+                  <time>
+                    {countdown.hours}:{countdown.minutes}:{countdown.seconds}
+                  </time>
+                </span>
+              </span>
+
+              <span className="festival-event__main">
+                <span className="festival-event__copy">
+                  <span className="festival-event__tag">中秋限定</span>
+                  <strong>中秋猜灯谜</strong>
+                  <small>在断桥答对三道灯谜，赢走限量数字纪念卡</small>
+                </span>
+
+                <span className="festival-event__prize">
+                  <img
+                    alt=""
+                    aria-hidden="true"
+                    decoding="async"
+                    loading="lazy"
+                    src={rewardPhoto.src}
+                    style={{ objectPosition: rewardPhoto.focus }}
+                  />
+                  <span className="festival-event__prize-moon" aria-hidden="true">
+                    <Moon size={12} strokeWidth={1.8} />
+                  </span>
+                  <span className="festival-event__prize-name">月映断桥</span>
+                </span>
+              </span>
+
+              <span className="festival-event__footer">
+                <span className="festival-event__quota">
+                  <span className="festival-event__quota-bar">
+                    <i style={{ width: `${claimedPercent}%` }} />
+                  </span>
+                  <small>
+                    限量 {festivalQuota.total.toLocaleString("en-US")} 张 · 已有{" "}
+                    {festivalQuota.claimed.toLocaleString("en-US")} 位旅人解锁
+                  </small>
+                </span>
+                <span className="festival-event__cta">
+                  立即参与
+                  <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
+                </span>
+              </span>
+            </Link>
+          </section>
         </div>
 
         <nav className="app-bottom-nav" aria-label="游客端主导航">

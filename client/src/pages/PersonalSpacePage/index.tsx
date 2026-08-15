@@ -1,21 +1,28 @@
 import {
   Backpack,
   BadgeCheck,
+  Box,
   CalendarDays,
   Camera,
   ChevronRight,
-  Drama,
+  Coffee,
+  Flower2,
   Gem,
   Home,
   Image,
-  Lamp,
   Landmark,
+  Maximize2,
   MapPin,
-  MoonStar,
+  Rabbit,
+  RotateCcw,
   Sparkles,
+  Squirrel,
+  Umbrella,
   User,
+  X,
 } from "lucide-react";
-import { useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router";
 
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
@@ -25,40 +32,70 @@ import "./styles.css";
 
 type SpaceView = "assets" | "moments";
 
-const demoDigitalAssets = [
+const AssetPreviewCanvas = lazy(() =>
+  import("../../three/AssetPreviewCanvas").then((module) => ({
+    default: module.AssetPreviewCanvas,
+  })),
+);
+
+const digitalAssets = [
   {
-    name: "月映断桥",
-    type: "限定纪念卡",
-    source: "杭州西湖",
-    date: "2026.08.14",
-    icon: MoonStar,
-    tone: "moon",
-  },
-  {
-    name: "白蛇传·相逢",
-    type: "故事徽章",
-    source: "断桥残雪",
-    date: "2026.08.14",
-    icon: Drama,
-    tone: "story",
-  },
-  {
-    name: "雷峰拾光",
-    type: "场景模型",
-    source: "雷峰塔",
-    date: "2026.08.12",
+    name: "雷峰塔",
+    type: "景观模型",
+    source: "雷峰夕照",
+    date: "2026.08.15",
     icon: Landmark,
     tone: "pagoda",
+    modelUrl: encodeURI("/assets/models_glb/雷峰塔.glb"),
   },
   {
-    name: "三潭印月灯",
+    name: "荷花",
+    type: "自然收藏",
+    source: "曲院风荷",
+    date: "2026.08.15",
+    icon: Flower2,
+    tone: "story",
+    modelUrl: encodeURI("/assets/models_glb/荷花.glb"),
+  },
+  {
+    name: "油纸伞",
     type: "互动道具",
-    source: "小瀛洲",
-    date: "2026.08.10",
-    icon: Lamp,
+    source: "烟雨西湖",
+    date: "2026.08.14",
+    icon: Umbrella,
     tone: "lantern",
+    modelUrl: encodeURI("/assets/models_glb/油纸伞.glb"),
+  },
+  {
+    name: "茶具",
+    type: "文化器物",
+    source: "龙井问茶",
+    date: "2026.08.13",
+    icon: Coffee,
+    tone: "moon",
+    modelUrl: encodeURI("/assets/models_glb/茶具.glb"),
+  },
+  {
+    name: "松鼠",
+    type: "生态精灵",
+    source: "西湖群山",
+    date: "2026.08.12",
+    icon: Squirrel,
+    tone: "story",
+    modelUrl: encodeURI("/assets/models_glb/松鼠.glb"),
+  },
+  {
+    name: "兔子",
+    type: "灵境伙伴",
+    source: "湖畔草木",
+    date: "2026.08.12",
+    icon: Rabbit,
+    tone: "moon",
+    modelUrl: encodeURI("/assets/models_glb/兔子.glb"),
   },
 ] as const;
+
+type DigitalAsset = (typeof digitalAssets)[number];
 
 const demoTravelMoments = [
   {
@@ -92,7 +129,91 @@ const bottomNavigation = [
   { label: "我的", icon: User, to: "/profile" },
 ] as const;
 
+function AssetViewer({ asset, onClose }: { asset: DigitalAsset; onClose: () => void }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
+  const handleReady = useCallback(() => setIsLoaded(true), []);
+  const handleError = useCallback(() => setHasError(true), []);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div className="asset-viewer" role="dialog" aria-modal="true" aria-label={`${asset.name} 3D 预览`}>
+      <button className="asset-viewer__backdrop" type="button" aria-label="关闭预览" onClick={onClose} />
+      <section className="asset-viewer__panel">
+        <header className="asset-viewer__header">
+          <div>
+            <small>{asset.type} · {asset.source}</small>
+            <h2>{asset.name}</h2>
+          </div>
+          <button className="asset-viewer__close" type="button" aria-label="关闭 3D 预览" onClick={onClose} autoFocus>
+            <X size={20} />
+          </button>
+        </header>
+
+        <div className="asset-viewer__stage">
+          <Suspense fallback={null}>
+            <AssetPreviewCanvas
+              modelUrl={asset.modelUrl}
+              resetKey={resetKey}
+              onReady={handleReady}
+              onError={handleError}
+            />
+          </Suspense>
+          {!isLoaded && !hasError && (
+            <div className="asset-viewer__loading" role="status">
+              <span />
+              <p>正在打开数字藏品…</p>
+            </div>
+          )}
+          {hasError && (
+            <div className="asset-viewer__error" role="alert">
+              <Box size={28} />
+              <strong>模型暂时无法打开</strong>
+              <p>请检查 GLB 文件是否完整后重试</p>
+            </div>
+          )}
+          <button
+            className="asset-viewer__reset"
+            type="button"
+            onClick={() => setResetKey((value) => value + 1)}
+            aria-label="重置观察视角"
+          >
+            <RotateCcw size={16} />
+            重置视角
+          </button>
+        </div>
+
+        <footer className="asset-viewer__footer">
+          <span><RotateCcw size={14} /> 拖动旋转</span>
+          <span>滚轮或双指缩放</span>
+          <time>{asset.date} 获得</time>
+        </footer>
+      </section>
+    </div>,
+    document.body,
+  );
+}
+
 function DigitalAssets() {
+  const [selectedAsset, setSelectedAsset] = useState<DigitalAsset | null>(null);
+  const featuredAsset = digitalAssets[0];
+
   return (
     <div className="space-view" role="tabpanel" aria-label="数字资产">
       <section className="space-wallet" aria-label="旅人背包概览">
@@ -101,46 +222,65 @@ function DigitalAssets() {
           <p>旅人背包</p>
           <strong>收藏每一段真实到过的风景</strong>
         </div>
-        <span>4 / 12</span>
+        <span>6 / 12</span>
       </section>
 
       <div className="space-section-heading">
         <div>
           <h2>我的数字资产</h2>
-          <p>来自 3 个景区的旅途收获</p>
+          <p>6 件可以互动查看的旅途收藏</p>
         </div>
         <button type="button">筛选 <ChevronRight size={14} /></button>
       </div>
 
-      <section className="space-featured-asset" aria-label="最近获得的数字资产">
+      <button
+        className="space-featured-asset"
+        type="button"
+        aria-label={`查看${featuredAsset.name} 3D 模型`}
+        onClick={() => setSelectedAsset(featuredAsset)}
+      >
         <div className="space-featured-asset__copy">
           <span>最近获得</span>
-          <h3>月映断桥</h3>
-          <p>完成中秋灯谜挑战后获得</p>
-          <small><MapPin size={12} /> 杭州西湖</small>
+          <h3>{featuredAsset.name}</h3>
+          <p>完成雷峰夕照探索后获得</p>
+          <small><MapPin size={12} /> {featuredAsset.source}</small>
         </div>
         <div className="space-featured-asset__art" aria-hidden="true">
-          <MoonStar size={46} strokeWidth={1.3} />
+          <Landmark size={46} strokeWidth={1.3} />
           <span />
         </div>
-      </section>
+        <Maximize2 className="space-featured-asset__open" size={15} aria-hidden="true" />
+      </button>
 
       <section className="space-asset-grid" aria-label="数字资产列表">
-        {demoDigitalAssets.map(({ name, type, source, date, icon: Icon, tone }) => (
-          <button className={`space-asset-card space-asset-card--${tone}`} key={name} type="button">
+        {digitalAssets.map((asset) => {
+          const Icon = asset.icon;
+
+          return (
+          <button
+            className={`space-asset-card space-asset-card--${asset.tone}`}
+            key={asset.name}
+            type="button"
+            aria-label={`查看${asset.name} 3D 模型`}
+            onClick={() => setSelectedAsset(asset)}
+          >
             <span className="space-asset-card__art">
               <Icon size={34} strokeWidth={1.45} />
               <BadgeCheck className="space-asset-card__verified" size={16} fill="currentColor" />
+              <span className="space-asset-card__view"><Maximize2 size={11} /> 查看 3D</span>
             </span>
             <span className="space-asset-card__copy">
-              <small>{type}</small>
-              <strong>{name}</strong>
-              <span>{source}</span>
-              <time>{date}</time>
+              <small>{asset.type}</small>
+              <strong>{asset.name}</strong>
+              <span>{asset.source}</span>
+              <time>{asset.date}</time>
             </span>
           </button>
-        ))}
+          );
+        })}
       </section>
+
+      {selectedAsset && <AssetViewer asset={selectedAsset} onClose={() => setSelectedAsset(null)} />}
     </div>
   );
 }
@@ -215,7 +355,7 @@ export function PersonalSpacePage() {
           </div>
 
           <section className="space-overview" aria-label="个人空间概览">
-            <div><Gem size={18} /><strong>4</strong><span>数字资产</span></div>
+            <div><Gem size={18} /><strong>6</strong><span>数字资产</span></div>
             <div><Camera size={18} /><strong>8</strong><span>游玩瞬间</span></div>
             <div><Landmark size={18} /><strong>3</strong><span>到访景区</span></div>
           </section>
