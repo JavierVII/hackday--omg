@@ -4,6 +4,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { DevTouhuPage } from './touhu/DevTouhuPage'
 import { DevBeadsPage } from './beads/DevBeadsPage'
 import { DevLanternRiddlePage } from './lantern-riddle/DevLanternRiddlePage'
+import { IntegrationDevPage } from './minigame/IntegrationDevPage'
 import './styles.css'
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
     <Route path="/dev/minigame/lantern-riddle" element={<DevLanternRiddlePage />} />
     <Route path="/dev/minigame/touhu" element={<DevTouhuPage />} />
     <Route path="/dev/minigame/beads" element={<DevBeadsPage />} />
+    <Route path="/dev/minigame/integration" element={<IntegrationDevPage />} />
     <Route path="*" element={<Navigate to="/dev/minigame/lantern-riddle" replace />} />
   </Routes></BrowserRouter>
 }

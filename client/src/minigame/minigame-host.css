@@ -1,0 +1,1 @@
+.minigame-host-overlay{position:fixed;inset:0;z-index:10000;overflow:auto;background:#0009;overscroll-behavior:contain}.minigame-host-fallback{width:min(90vw,420px);margin:20vh auto;padding:24px;border-radius:16px;background:#fff;color:#222;text-align:center}.minigame-host-fallback button{padding:10px 20px}
