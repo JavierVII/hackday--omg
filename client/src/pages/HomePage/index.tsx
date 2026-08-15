@@ -94,17 +94,24 @@ const SWIPE_THRESHOLD = 48;
 /** 位移不到该像素仍算点击，免得点 CTA 时被判成拖动 */
 const DRAG_SLOP = 8;
 
-/** 相邻卡中心相对视口中心的偏移（占视口宽度的百分比） */
-const NEIGHBOR_OFFSET = 60;
+/** 中间卡宽度占视口宽度的百分比（同时写在卡片的内联样式上，保证与位移换算一致）。 */
+const CARD_WIDTH_PCT = 88;
+
+/** 相邻卡中心相对视口中心的偏移（占视口宽度百分比）：只让一条细边露出视口 */
+const NEIGHBOR_OFFSET_PCT = 81;
+
+/** translateX 的百分比相对卡片自身宽度，换算成相对视口的位移后直接交给 transform */
+const NEIGHBOR_TRANSLATE = (NEIGHBOR_OFFSET_PCT / CARD_WIDTH_PCT) * 100;
 
 /** 相邻卡相对当前卡的缩放，让中间的卡更醒目 */
-const NEIGHBOR_SCALE = 0.82;
+const NEIGHBOR_SCALE = 0.84;
 
-/** 相邻卡轻微压暗，视线落点始终在中间卡上 */
-const NEIGHBOR_DIM = 0.92;
+/** 相邻卡明显压暗，视线落点始终在中间卡上，交接处不再像两张卡硬拼 */
+const NEIGHBOR_DIM = 0.8;
 
 /**
- * 按「距当前卡的环状距离」算出每张卡的居中偏移 / 缩放 / 压暗 / 层级。
+ * 按「距当前卡的环状距离」算出每张卡的位移 / 缩放 / 压暗 / 层级。
+ * 全部用 transform 表达，切换动画只走 GPU 合成，不触发布局。
  * 三张卡时左右相邻各露一截；更多张时更远的卡移出视口，不干扰。
  */
 function coverflowPose(depth: number, total: number) {
@@ -113,15 +120,15 @@ function coverflowPose(depth: number, total: number) {
   }
 
   if (depth === 1) {
-    return { offset: NEIGHBOR_OFFSET, opacity: NEIGHBOR_DIM, scale: NEIGHBOR_SCALE, zIndex: 2 };
+    return { offset: NEIGHBOR_TRANSLATE, opacity: NEIGHBOR_DIM, scale: NEIGHBOR_SCALE, zIndex: 2 };
   }
 
   if (depth === total - 1) {
-    return { offset: -NEIGHBOR_OFFSET, opacity: NEIGHBOR_DIM, scale: NEIGHBOR_SCALE, zIndex: 2 };
+    return { offset: -NEIGHBOR_TRANSLATE, opacity: NEIGHBOR_DIM, scale: NEIGHBOR_SCALE, zIndex: 2 };
   }
 
   return {
-    offset: depth < total / 2 ? NEIGHBOR_OFFSET * 2 : -NEIGHBOR_OFFSET * 2,
+    offset: depth < total / 2 ? NEIGHBOR_TRANSLATE * 2 : -NEIGHBOR_TRANSLATE * 2,
     opacity: 0,
     scale: 0.7,
     zIndex: 1,
@@ -332,9 +339,9 @@ function CloudTourDeck() {
                 inert={!active}
                 key={tour.id}
                 style={{
-                  marginLeft: `${offset}%`,
                   opacity,
-                  transform: `scale(${scale})`,
+                  transform: `translateX(${offset}%) scale(${scale})`,
+                  width: `${CARD_WIDTH_PCT}%`,
                   zIndex,
                 }}
               >

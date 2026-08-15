@@ -238,15 +238,16 @@
 .cloud-tour__track {
   display: grid;
   grid-template-areas: "card";
-  transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition: transform 480ms cubic-bezier(0.25, 0.65, 0.2, 1);
   will-change: transform;
 }
 
 /* 照片铺满整张卡（绝对定位），文字列在正常文档流里撑开卡高，
-   按钮永远落在卡片内，结构上不会再溢出底边。 */
+   按钮永远落在卡片内，结构上不会再溢出底边。
+   宽度与位移都由 JS 内联写入（CARD_WIDTH_PCT / coverflowPose），
+   这里只保留定位与外观。 */
 .cloud-tour-card {
   position: relative;
-  width: 70%;
   min-height: 236px;
   overflow: hidden;
   background: linear-gradient(150deg, var(--paper-white) 0%, var(--paper-warm) 100%);
@@ -256,12 +257,14 @@
   grid-area: card;
   justify-self: center;
   align-self: center;
-  /* margin 的百分比相对视口宽度，正好用作「居中后再偏移」的单位 */
   transform-origin: center;
+  /* 位移 / 缩放 / 压暗全部走 transform + opacity，只触发合成层，不触发布局；
+     描边与模糊随状态平滑过渡，避免相邻卡翻正时「啪」地出现硬边 */
   transition:
-    margin-left 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    opacity 300ms ease;
+    transform 480ms cubic-bezier(0.25, 0.65, 0.2, 1),
+    opacity 480ms cubic-bezier(0.25, 0.65, 0.2, 1),
+    border-color 480ms ease,
+    filter 480ms ease;
   will-change: transform;
 }
 
@@ -271,9 +274,14 @@
   transition: none;
 }
 
-/* inert 已经挡掉交互，这里再兜一层，照顾不支持 inert 的浏览器 */
+/* inert 已经挡掉交互，这里再兜一层，照顾不支持 inert 的浏览器。
+   同时弱化相邻卡的边界：去描边、去投影、轻微模糊，再叠加 JS 侧的压暗 ——
+   两张卡交接处是「渐隐」，而不是一条清晰的卡边。 */
 .cloud-tour-card.is-behind {
   pointer-events: none;
+  border-color: transparent;
+  box-shadow: none;
+  filter: blur(0.8px);
 }
 
 .cloud-tour-card__copy {

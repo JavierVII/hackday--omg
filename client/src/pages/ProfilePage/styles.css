@@ -144,8 +144,9 @@
 /* —— 旅程数据 —— */
 
 .profile-overview {
-  position: relative;
-  z-index: 2;
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   padding: 16px 8px;
@@ -220,9 +221,9 @@
 .profile-feature {
   display: grid;
   min-width: 0;
-  gap: 5px;
+  gap: 6px;
   justify-items: start;
-  padding: 14px 11px;
+  padding: 9px 9px 12px;
   color: var(--ink-green-900);
   font-family: inherit;
   text-align: left;
@@ -240,18 +241,71 @@
 }
 
 .profile-feature__icon {
+  position: relative;
   display: grid;
-  width: 34px;
-  aspect-ratio: 1;
-  margin-bottom: 3px;
+  width: 100%;
+  height: 62px;
+  overflow: hidden;
   place-items: center;
-  border-radius: 11px;
+  border: 1px solid rgb(255 255 255 / 56%);
+  border-radius: 12px;
 }
 
-/* 三种功能色：墨绿 / 金橘 / 远山雾紫，与首页发现卡同一组 */
-.profile-feature--ink .profile-feature__icon { color: var(--ink-green-700); background: rgb(42 102 80 / 12%); }
-.profile-feature--gold .profile-feature__icon { color: var(--sunset-gold-deep); background: rgb(232 167 101 / 20%); }
-.profile-feature--mist .profile-feature__icon { color: var(--mist-ink); background: rgb(185 194 222 / 30%); }
+.profile-feature__icon::before,
+.profile-feature__icon::after {
+  position: absolute;
+  content: "";
+  pointer-events: none;
+}
+
+.profile-feature__icon::before {
+  right: -15px;
+  bottom: -23px;
+  width: 68px;
+  aspect-ratio: 1;
+  background: currentColor;
+  border-radius: 50%;
+  opacity: 0.08;
+}
+
+.profile-feature__icon::after {
+  top: 11px;
+  right: 10px;
+  width: 6px;
+  aspect-ratio: 1;
+  background: currentColor;
+  border-radius: 50%;
+  box-shadow: -48px 28px 0 -1px currentColor;
+  opacity: 0.42;
+}
+
+.profile-feature__icon svg {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 3px 6px rgb(15 39 33 / 10%));
+}
+
+/* 三幅小插画：湖水路线 / 暖金藏品 / 雾紫足迹 */
+.profile-feature--ink .profile-feature__icon {
+  color: var(--ink-green-700);
+  background:
+    linear-gradient(145deg, rgb(42 102 80 / 7%), transparent 52%),
+    linear-gradient(180deg, #eaf3ec, #dfece5);
+}
+
+.profile-feature--gold .profile-feature__icon {
+  color: var(--sunset-gold-deep);
+  background:
+    radial-gradient(circle at 28% 18%, rgb(255 255 255 / 70%), transparent 30%),
+    linear-gradient(145deg, #f8eddc, #f1dcc0);
+}
+
+.profile-feature--mist .profile-feature__icon {
+  color: var(--mist-ink);
+  background:
+    linear-gradient(145deg, rgb(122 132 166 / 5%), transparent 50%),
+    linear-gradient(180deg, #efedf3, #e2e3ed);
+}
 
 .profile-feature strong {
   font-size: 12px;
@@ -269,29 +323,55 @@
 /* —— 本月回忆 —— */
 
 .profile-memory {
+  position: relative;
   display: grid;
+  min-height: 72px;
   grid-template-columns: auto 1fr auto;
   gap: 12px;
   align-items: center;
-  padding: 14px;
-  color: var(--paper-white);
+  padding: 13px 14px;
+  overflow: hidden;
+  color: var(--ink-green-900);
   background:
-    radial-gradient(circle at 88% 16%, rgb(232 167 101 / 26%), transparent 38%),
-    linear-gradient(120deg, var(--ink-green-800), var(--ink-green-950));
-  border: 1px solid var(--hairline-gold);
+    radial-gradient(circle at 8% 20%, rgb(232 167 101 / 18%), transparent 32%),
+    linear-gradient(135deg, #fffaf1, var(--paper-white) 56%, #f2f6f1);
+  border: 1px solid rgb(181 146 94 / 24%);
   border-radius: 16px;
   box-shadow: var(--shadow-card);
 }
 
+.profile-memory::after {
+  position: absolute;
+  right: -26px;
+  bottom: -38px;
+  width: 112px;
+  aspect-ratio: 1;
+  background: rgb(42 102 80 / 5%);
+  border: 1px solid rgb(42 102 80 / 6%);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
 .profile-memory__mark {
+  position: relative;
+  z-index: 1;
   display: grid;
-  width: 39px;
+  width: 43px;
   aspect-ratio: 1;
   place-items: center;
-  color: var(--sunset-coral);
-  background: rgb(250 246 238 / 10%);
-  border: 1px solid rgb(232 167 101 / 30%);
+  color: var(--sunset-gold-deep);
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 76%), transparent 55%),
+    #f4e2c7;
+  border: 1px solid rgb(181 146 94 / 20%);
   border-radius: 12px;
+  box-shadow: 0 5px 12px rgb(91 67 39 / 9%);
+}
+
+.profile-memory > div:nth-child(2) {
+  position: relative;
+  z-index: 1;
 }
 
 .profile-memory p,
@@ -300,8 +380,9 @@
 }
 
 .profile-memory p {
-  color: rgb(250 246 238 / 68%);
+  color: var(--sunset-gold-deep);
   font-size: 9px;
+  font-weight: 600;
   letter-spacing: 0.08em;
 }
 
@@ -315,7 +396,10 @@
 }
 
 .profile-memory > svg:last-child {
-  color: rgb(250 246 238 / 64%);
+  position: relative;
+  z-index: 1;
+  color: var(--ink-green-600);
+  opacity: 0.62;
 }
 
 /* —— 更多服务 —— */

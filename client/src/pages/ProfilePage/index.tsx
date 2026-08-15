@@ -4,8 +4,8 @@ import {
   CircleHelp,
   Footprints,
   Gem,
-  Heart,
   Home,
+  Images,
   Map,
   MapPin,
   MessageCircleMore,
@@ -101,7 +101,9 @@ export function ProfilePage() {
             <div className="profile-feature-grid">
               {featureItems.map(({ label, description, icon: Icon, tone }) => (
                 <button className={`profile-feature profile-feature--${tone}`} key={label} type="button">
-                  <span className="profile-feature__icon"><Icon size={21} strokeWidth={1.8} /></span>
+                  <span className="profile-feature__icon" aria-hidden="true">
+                    <Icon size={29} strokeWidth={1.6} />
+                  </span>
                   <strong>{label}</strong>
                   <small>{description}</small>
                 </button>
@@ -110,9 +112,9 @@ export function ProfilePage() {
           </section>
 
           <section className="profile-memory" aria-label="本月旅途回忆">
-            <div className="profile-memory__mark"><Heart size={20} fill="currentColor" /></div>
+            <div className="profile-memory__mark"><Images size={22} strokeWidth={1.6} /></div>
             <div>
-              <p>本月旅途回忆</p>
+              <p>西湖影集 · 本月</p>
               <strong>你在西湖留下了 8 个瞬间</strong>
             </div>
             <ChevronRight size={18} aria-hidden="true" />
