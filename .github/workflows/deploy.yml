@@ -1,6 +1,7 @@
 # 静态部署到 GitHub Pages
 # 触发: 推送到 main / Scenic-Detail（本分支工作树），或手动 workflow_dispatch
-# 产物: client/dist（相对路径 + HashRouter，可直接在 <user>.github.io/<repo>/ 子路径下运行）
+# 产物: client/dist（相对路径 + HashRouter），内含独立静态构建的管理端（dist/admin/）
+# 管理端 base 注入仓库名 → 部署地址: <user>.github.io/<repo>/admin/
 name: Deploy to GitHub Pages
 
 on:
@@ -29,15 +30,33 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: client/package-lock.json
+          cache-dependency-path: |
+            client/package-lock.json
+            admin/package-lock.json
 
-      - name: Install dependencies
+      # 管理端：独立静态应用，mock 配置模式，base 注入 /<repo>/admin/
+      - name: Install admin dependencies
+        working-directory: admin
+        run: npm ci
+
+      - name: Build admin
+        working-directory: admin
+        env:
+          VITE_CONFIG_MODE: mock
+          VITE_ADMIN_BASE_PATH: /${{ github.event.repository.name }}/admin
+        run: npm run build
+
+      # 游客端
+      - name: Install client dependencies
         working-directory: client
         run: npm ci
 
-      - name: Build
+      - name: Build client
         working-directory: client
         run: npm run build
+
+      - name: 合并管理端到部署目录
+        run: mkdir -p client/dist/admin && cp -r admin/dist/. client/dist/admin/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

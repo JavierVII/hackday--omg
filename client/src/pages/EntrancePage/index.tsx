@@ -186,16 +186,14 @@ export function EntrancePage() {
               →
             </span>
           </Link>
-          {/* 管理端是独立 dev 应用，GitHub Pages 静态部署下没有 /admin/，正式构建里隐藏 */}
-          {!import.meta.env.PROD && (
-            <a
-              className="entrance__button entrance__button--secondary"
-              href="/admin/"
-              aria-label="进入管理端"
-            >
-              进入管理端
-            </a>
-          )}
+          {/* 管理端单独静态构建进 dist/admin/，用 base-aware 路径保证 GitHub Pages 子路径下也能直达 */}
+          <a
+            className="entrance__button entrance__button--secondary"
+            href={assetUrl("/admin/")}
+            aria-label="进入管理端"
+          >
+            进入管理端
+          </a>
         </div>
 
         <div className="entrance__scenes">
