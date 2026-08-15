@@ -152,7 +152,8 @@ export function AssetPreviewCanvas({
         gl={{ antialias: true, alpha: true, outputColorSpace: SRGBColorSpace }}
         shadows
       >
-        <color attach="background" args={["#e9e2d7"]} />
+        {/* 不设 <color attach="background">：画布保持透明，
+            由 .asset-viewer__stage 的宣纸底与展台装饰透上来 */}
         <ambientLight intensity={1.5 * brightness} />
         <hemisphereLight args={["#fff7e9", "#587064", 1.35 * brightness]} />
         <directionalLight

@@ -588,13 +588,126 @@
   border-radius: 12px;
 }
 
-.asset-viewer__stage {
+/* 滚动体：上半展台、下半藏品说明 */
+.asset-viewer__body {
   position: relative;
   min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--paper-white);
+  scrollbar-color: rgb(42 102 80 / 32%) transparent;
+  scrollbar-width: thin;
+}
+
+/* 展台：上方天光 + 下方晚霞余晖 + 宣纸底，画布透明后由此透上来 */
+.asset-viewer__stage {
+  position: relative;
+  height: clamp(228px, 38svh, 330px);
   overflow: hidden;
   background:
-    radial-gradient(circle at 52% 30%, rgb(250 246 238 / 96%), transparent 48%),
-    linear-gradient(155deg, #ede8de, #d8d2c7);
+    radial-gradient(120% 74% at 50% 6%, rgb(255 250 240 / 96%), transparent 60%),
+    radial-gradient(68% 42% at 50% 102%, rgb(232 167 101 / 22%), transparent 72%),
+    linear-gradient(158deg, #efeae0 0%, #e4ded2 56%, #d6cfc2 100%);
+  border-bottom: 1px solid var(--hairline-ink);
+  isolation: isolate;
+}
+
+.asset-viewer__canvas {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+}
+
+/* 展台投影：把模型「放」在纸面上，而不是浮在空中 */
+.asset-viewer__pedestal {
+  position: absolute;
+  bottom: 11%;
+  left: 50%;
+  width: 64%;
+  aspect-ratio: 3.6;
+  background: radial-gradient(closest-side, rgb(15 39 33 / 20%), rgb(15 39 33 / 8%) 52%, transparent 76%);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* 地平线：两端渐隐，不要硬边 */
+.asset-viewer__pedestal::after {
+  position: absolute;
+  bottom: 50%;
+  left: -18%;
+  width: 136%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(208 140 70 / 36%) 26%, rgb(208 140 70 / 36%) 74%, transparent);
+  content: "";
+}
+
+/* 四角裱框：金色发丝短线只点四角，不围整圈 */
+.asset-viewer__frame {
+  --corner: rgb(208 140 70 / 50%);
+  --corner-len: 20px;
+
+  position: absolute;
+  z-index: 2;
+  inset: 12px;
+  background:
+    linear-gradient(var(--corner), var(--corner)) left top / var(--corner-len) 1px no-repeat,
+    linear-gradient(var(--corner), var(--corner)) left top / 1px var(--corner-len) no-repeat,
+    linear-gradient(var(--corner), var(--corner)) right top / var(--corner-len) 1px no-repeat,
+    linear-gradient(var(--corner), var(--corner)) right top / 1px var(--corner-len) no-repeat,
+    linear-gradient(var(--corner), var(--corner)) left bottom / var(--corner-len) 1px no-repeat,
+    linear-gradient(var(--corner), var(--corner)) left bottom / 1px var(--corner-len) no-repeat,
+    linear-gradient(var(--corner), var(--corner)) right bottom / var(--corner-len) 1px no-repeat,
+    linear-gradient(var(--corner), var(--corner)) right bottom / 1px var(--corner-len) no-repeat;
+  pointer-events: none;
+}
+
+/* 颗粒层：压掉大面积渐变的塑料感，与进入页同一张噪声 */
+.asset-viewer__grain {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* 题跋 + 落款：竖排题句，下压一枚朱红印 */
+.asset-viewer__inscription {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  z-index: 2;
+  display: grid;
+  gap: 9px;
+  justify-items: center;
+  pointer-events: none;
+}
+
+.asset-viewer__inscription p {
+  margin: 0;
+  color: var(--ink-green-800);
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  writing-mode: vertical-rl;
+  opacity: 0.82;
+}
+
+.asset-viewer__inscription span {
+  display: grid;
+  width: 28px;
+  padding: 6px 0;
+  place-items: center;
+  color: var(--paper-white);
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  writing-mode: vertical-rl;
+  background: var(--seal-red);
+  border-radius: 5px;
+  box-shadow: 0 5px 12px -7px rgb(180 64 47 / 76%);
 }
 
 .asset-viewer__stage canvas {
@@ -612,6 +725,7 @@
 .asset-viewer__loading,
 .asset-viewer__error {
   position: absolute;
+  z-index: 3;
   inset: 0;
   display: grid;
   place-content: center;
@@ -644,10 +758,12 @@
   font-weight: 400;
 }
 
+/* 落到左下：右上让给题跋落款 */
 .asset-viewer__reset {
   position: absolute;
-  right: 14px;
   bottom: 14px;
+  left: 14px;
+  z-index: 4;
   gap: 5px;
   min-height: 34px;
   padding: 0 11px;
@@ -656,6 +772,104 @@
   background: var(--glass-ink);
   border-radius: 10px;
   backdrop-filter: var(--glass-blur);
+}
+
+/* —— 藏品说明 —— */
+
+.asset-viewer__intro {
+  padding: 15px 18px 20px;
+}
+
+.asset-viewer__intro-head {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.asset-viewer__eyebrow {
+  color: var(--ink-green-700);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+}
+
+.asset-viewer__serial {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 4px 9px;
+  color: var(--sunset-gold-deep);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  background: var(--paper-warm);
+  border: 1px solid var(--hairline-gold);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* 与游玩瞬间纪念卡同一手法的分隔短线 */
+.asset-viewer__rule {
+  display: flex;
+  align-items: center;
+  margin: 12px 0;
+}
+
+.asset-viewer__rule::before,
+.asset-viewer__rule::after {
+  height: 1px;
+  flex: 1;
+  background: rgb(29 77 60 / 14%);
+  content: "";
+}
+
+.asset-viewer__rule span {
+  width: 5px;
+  aspect-ratio: 1;
+  margin: 0 8px;
+  background: var(--sunset-gold-deep);
+  transform: rotate(45deg);
+}
+
+.asset-viewer__intro > p {
+  margin: 0;
+  color: var(--ink-green-800);
+  font-size: 11.5px;
+  line-height: 1.9;
+  text-align: justify;
+}
+
+.asset-viewer__facts {
+  display: grid;
+  gap: 7px;
+  margin: 15px 0 0;
+  padding: 12px 13px;
+  background: var(--paper-warm);
+  border: 1px solid var(--hairline-ink);
+  border-radius: 14px;
+}
+
+.asset-viewer__facts > div {
+  display: grid;
+  grid-template-columns: 66px 1fr;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.asset-viewer__facts dt {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  color: var(--ink-green-600);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+}
+
+.asset-viewer__facts dd {
+  margin: 0;
+  color: var(--ink-green-900);
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.04em;
 }
 
 .asset-viewer__footer {
@@ -791,11 +1005,28 @@
 .space-moment-card {
   display: grid;
   grid-template-columns: 120px 1fr;
+  width: 100%;
+  padding: 0;
   overflow: hidden;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   background: var(--paper-white);
   border: 1px solid var(--hairline-ink);
   border-radius: 16px;
   box-shadow: var(--shadow-card);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.space-moment-card:hover {
+  border-color: rgb(184 132 72 / 35%);
+  box-shadow: 0 14px 30px -22px rgb(15 39 33 / 55%);
+  transform: translateY(-2px);
+}
+
+.space-moment-card:active {
+  transform: scale(0.99);
 }
 
 .space-moment-card__media {
@@ -869,6 +1100,276 @@
   -webkit-line-clamp: 1;
 }
 
+/* —— 游玩瞬间：纪念卡 —— */
+
+.moment-memory-viewer {
+  position: absolute;
+  z-index: 120;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px 20px;
+}
+
+.moment-memory-viewer__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  cursor: default;
+  background:
+    linear-gradient(180deg, rgb(11 31 26 / 68%), rgb(11 31 26 / 88%)),
+    rgb(15 39 33 / 70%);
+  border: 0;
+  backdrop-filter: blur(13px) saturate(0.78);
+}
+
+.moment-memory-card {
+  position: relative;
+  width: min(100%, 376px);
+  max-height: calc(100% - 4px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 10% 85%, rgb(232 167 101 / 10%), transparent 26%),
+    linear-gradient(110deg, rgb(255 255 255 / 34%), transparent 42%),
+    var(--paper-warm);
+  border: 1px solid rgb(244 226 194 / 74%);
+  border-radius: 5px;
+  box-shadow:
+    0 32px 76px -24px rgb(5 20 16 / 88%),
+    0 0 0 7px rgb(250 246 238 / 7%);
+  scrollbar-width: none;
+  animation: moment-memory-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.moment-memory-card::-webkit-scrollbar {
+  display: none;
+}
+
+.moment-memory-card__close {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  z-index: 4;
+  display: grid;
+  width: 38px;
+  aspect-ratio: 1;
+  padding: 0;
+  place-items: center;
+  color: var(--paper-white);
+  cursor: pointer;
+  background: rgb(15 39 33 / 42%);
+  border: 1px solid rgb(250 246 238 / 30%);
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+}
+
+.moment-memory-card__media {
+  position: relative;
+  height: clamp(260px, 46vh, 390px);
+  overflow: hidden;
+  background: var(--ink-green-950);
+}
+
+.moment-memory-card__media img,
+.moment-memory-card__media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.moment-memory-card__media.is-zine {
+  height: clamp(420px, 56vh, 560px);
+  background: #e9dcc2;
+}
+
+.moment-memory-card__media.is-zine img {
+  object-fit: contain;
+}
+
+.moment-memory-card__media-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(15 39 33 / 10%) 48%, rgb(15 39 33 / 74%) 100%);
+  pointer-events: none;
+}
+
+.moment-memory-card__media-label,
+.moment-memory-card__place {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  color: var(--paper-white);
+}
+
+.moment-memory-card__media-label {
+  top: 16px;
+  left: 16px;
+  padding: 6px 9px;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  background: rgb(15 39 33 / 42%);
+  border: 1px solid rgb(250 246 238 / 24%);
+  border-radius: 9px;
+  backdrop-filter: blur(10px);
+}
+
+.moment-memory-card__place {
+  right: 18px;
+  bottom: 17px;
+  left: 18px;
+  font-size: 10px;
+  text-shadow: 0 1px 8px rgb(15 39 33 / 72%);
+}
+
+.moment-memory-card__body {
+  position: relative;
+  padding: 23px 23px 20px;
+}
+
+.moment-memory-card__body::before {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  bottom: 10px;
+  left: 12px;
+  border: 1px solid rgb(184 132 72 / 12%);
+  content: "";
+  pointer-events: none;
+}
+
+.moment-memory-card__eyebrow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--sunset-gold-deep);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
+
+.moment-memory-card__eyebrow time {
+  color: var(--ink-green-600);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.moment-memory-card h2 {
+  position: relative;
+  margin: 10px 0 0;
+  color: var(--ink-green-950);
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+
+.moment-memory-card__rule {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 15px 0;
+}
+
+.moment-memory-card__rule::before,
+.moment-memory-card__rule::after {
+  height: 1px;
+  flex: 1;
+  background: rgb(29 77 60 / 14%);
+  content: "";
+}
+
+.moment-memory-card__rule span {
+  width: 6px;
+  aspect-ratio: 1;
+  margin: 0 8px;
+  background: var(--sunset-gold-deep);
+  transform: rotate(45deg);
+}
+
+.moment-memory-card__note {
+  position: relative;
+  margin: 0;
+  color: var(--ink-green-700);
+  font-size: 11px;
+  line-height: 1.75;
+}
+
+.moment-memory-card__mood {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 17px 0 0;
+  padding: 13px 14px;
+  color: #b86459;
+  background: rgb(226 121 95 / 9%);
+  border: 1px solid rgb(226 121 95 / 16%);
+  border-radius: 3px;
+}
+
+.moment-memory-card__mood > svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.moment-memory-card__mood small,
+.moment-memory-card__mood p {
+  margin: 0;
+}
+
+.moment-memory-card__mood small {
+  color: #9d5a51;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
+
+.moment-memory-card__mood p {
+  margin-top: 4px;
+  color: var(--ink-green-800);
+  font-family: var(--font-display);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.moment-memory-card__footer {
+  position: relative;
+  display: flex;
+  min-height: 45px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 17px;
+  color: rgb(29 77 60 / 46%);
+  font-size: 7px;
+  letter-spacing: 0.12em;
+}
+
+.moment-memory-card__seal {
+  display: grid;
+  width: 43px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: rgb(154 72 60 / 72%);
+  font-family: var(--font-display);
+  font-size: 10px;
+  line-height: 1.15;
+  text-align: center;
+  letter-spacing: 0.08em;
+  border: 1px solid rgb(154 72 60 / 48%);
+  transform: rotate(-7deg);
+}
+
+@keyframes moment-memory-enter {
+  from { opacity: 0; transform: translateY(18px) scale(0.96) rotate(-0.7deg); }
+  to { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+}
+
 @keyframes space-view-enter {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
@@ -881,6 +1382,14 @@
 
   .space-moment-card {
     grid-template-columns: 104px 1fr;
+  }
+
+  .asset-viewer__inscription p {
+    font-size: 12px;
+  }
+
+  .asset-viewer__facts > div {
+    grid-template-columns: 58px 1fr;
   }
 }
 
@@ -898,6 +1407,14 @@
 
   .asset-viewer__header {
     padding: max(14px, env(safe-area-inset-top)) 16px 14px;
+  }
+
+  .asset-viewer__stage {
+    height: clamp(210px, 32svh, 300px);
+  }
+
+  .asset-viewer__intro {
+    padding: 14px 16px 18px;
   }
 
   .asset-viewer__footer {
@@ -925,8 +1442,13 @@
     transform: none;
   }
 
+  .space-moment-card:hover {
+    transform: none;
+  }
+
   .asset-viewer__panel,
-  .asset-viewer__loading span {
+  .asset-viewer__loading span,
+  .moment-memory-card {
     animation: none;
   }
 }

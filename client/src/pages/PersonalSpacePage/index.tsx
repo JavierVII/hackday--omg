@@ -6,10 +6,13 @@ import {
   Camera,
   ChevronRight,
   Gem,
+  Heart,
   Image,
   Landmark,
+  Layers,
   Maximize2,
   MapPin,
+  Play,
   RotateCcw,
   Sparkles,
   X,
@@ -19,7 +22,7 @@ import { createPortal } from "react-dom";
 
 import { AppBottomNav } from "../../components/common/AppBottomNav";
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
-import { westLakePortraits } from "../../lib/assets";
+import { westLakePortraits, type Photo } from "../../lib/assets";
 
 import "./styles.css";
 
@@ -38,6 +41,12 @@ const digitalAssets = [
     source: "雷峰夕照",
     date: "2026.08.15",
     tone: "pagoda",
+    serial: "西湖藏 · 001",
+    verse: "塔影入湖，夕照成金",
+    form: "八面楼阁式塔",
+    acquire: "完成雷峰夕照探索",
+    intro:
+      "雷峰塔立在西湖南岸的夕照山上，与北岸的保俶塔隔湖相望。日落时塔身被夕照染成暖金，影子一直铺到湖心去。这一件按塔身逐层建模，绕塔一周可以看清檐角、斗拱与自下而上的收分。",
     thumbnailUrl: "/assets/digital_assets/leifeng-pagoda.jpg",
     modelUrl: encodeURI("/assets/models_glb/雷峰塔.glb"),
   },
@@ -47,6 +56,12 @@ const digitalAssets = [
     source: "曲院风荷",
     date: "2026.08.15",
     tone: "story",
+    serial: "西湖藏 · 002",
+    verse: "风过曲院，一池新荷",
+    form: "重瓣红荷 · 单枝",
+    acquire: "夏夜赏荷路线",
+    intro:
+      "曲院风荷的名字来自宋时酒坊边的那片荷塘，荷风里曾混着酒香。这一枝取自岳湖水域的重瓣红荷，花瓣的翻卷、叶面的起伏与叶脉走向都照实景采集，凑近看能见到边缘那层淡粉。",
     thumbnailUrl: "/assets/digital_assets/lotus.jpg",
     modelUrl: encodeURI("/assets/models_glb/荷花.glb"),
   },
@@ -56,9 +71,15 @@ const digitalAssets = [
     source: "烟雨西湖",
     date: "2026.08.14",
     tone: "lantern",
-    thumbnailUrl: "/assets/digital_assets/oil-paper-umbrella.jpg",
+    serial: "西湖藏 · 003",
+    verse: "一伞在手，收尽湖雨",
+    form: "竹骨 · 桐油皮纸面",
+    acquire: "雨天漫游触发",
     previewScale: 0.78,
     modelUrl: encodeURI("/assets/models_glb/油纸伞.glb"),
+    intro:
+      "以竹为骨、皮纸为面，桐油反复刷上十余道，是江南梅雨天里的旧物。撑开时伞面透光，雨点落上去声音细密。收进数字空间后可作随身道具，在雨天的漫游里遮雨，也遮晴日的晒。",
+    thumbnailUrl: "/assets/digital_assets/oil-paper-umbrella.jpg",
   },
   {
     name: "茶具",
@@ -66,6 +87,12 @@ const digitalAssets = [
     source: "龙井问茶",
     date: "2026.08.13",
     tone: "moon",
+    serial: "西湖藏 · 004",
+    verse: "一盏龙井，半日清闲",
+    form: "青瓷壶盏一组",
+    acquire: "龙井问茶茶席",
+    intro:
+      "龙井茶产在西湖西南的龙井、翁家山与满觉陇一带，明前采、当日炒，讲究的是一盏一盏慢慢喝。这一组含壶、盏与茶则，釉色照着青瓷的冷青调，壶身上留着窑变的浅痕。",
     thumbnailUrl: "/assets/digital_assets/tea-set.jpg",
     modelUrl: encodeURI("/assets/models_glb/茶具.glb"),
   },
@@ -75,9 +102,15 @@ const digitalAssets = [
     source: "西湖群山",
     date: "2026.08.12",
     tone: "story",
-    thumbnailUrl: "/assets/digital_assets/squirrel.jpg",
+    serial: "西湖藏 · 005",
+    verse: "林间一闪，尾梢先到",
+    form: "赤腹松鼠 · 带动作",
+    acquire: "群山步道偶遇",
     brightness: 1.38,
     modelUrl: encodeURI("/assets/models_glb/松鼠.glb"),
+    intro:
+      "赤腹松鼠常出没在西湖群山的樟树与马尾松间，尾巴几乎和身子一样长。遇见它多在清早，抱着松果沿枝干竖着跑。这一件保留了原始动作，安静看一会儿，它会在原地理毛。",
+    thumbnailUrl: "/assets/digital_assets/squirrel.jpg",
   },
   {
     name: "兔子",
@@ -85,9 +118,15 @@ const digitalAssets = [
     source: "湖畔草木",
     date: "2026.08.12",
     tone: "moon",
-    thumbnailUrl: "/assets/digital_assets/rabbit.jpg",
+    serial: "西湖藏 · 006",
+    verse: "月色微凉，有兔跟来",
+    form: "灵境伙伴 · 可随行",
+    acquire: "中秋雅集夜访",
     previewScale: 0.78,
     modelUrl: encodeURI("/assets/models_glb/兔子.glb"),
+    intro:
+      "中秋雅集那夜从草丛里跟出来的一只，被同行的人认作月宫来客。它是湖畔草木间最安静的伙伴，收进数字空间后可以陪着漫游——你走它走，你停下看景，它也在脚边停下。",
+    thumbnailUrl: "/assets/digital_assets/rabbit.jpg",
   },
 ] as const;
 
@@ -149,6 +188,143 @@ const demoTravelMoments = [
 
 const momentCoverPhoto = westLakePortraits.jixianPavilionSunset;
 
+const travelMomentPosters = [
+  {
+    src: "/assets/travel_moments/moon-over-water-zine.png",
+    alt: "三潭印月石塔与湖面被重绘成暖色撕纸旅行纪念画",
+    focus: "50% 50%",
+  },
+  {
+    src: "/assets/travel_moments/lanterns-after-dusk-zine.png",
+    alt: "暮色集贤亭与荷叶被重绘成黄色光线贯穿的撕纸旅行纪念画",
+    focus: "50% 50%",
+  },
+  {
+    src: "/assets/travel_moments/golden-hour-drifts-zine.png",
+    alt: "雷峰塔与湖上游船被重绘成蓝色线条连接的撕纸旅行纪念画",
+    focus: "50% 50%",
+  },
+] as const satisfies readonly Photo[];
+
+const travelMomentDetails = [
+  {
+    fullDate: "2026年8月14日 · 19:32",
+    mood: "今晚的西湖很安静，像把月光轻轻收进了口袋。",
+    mediaType: "photo",
+    mediaCount: 3,
+    memoryNumber: "0814-01",
+  },
+  {
+    fullDate: "2026年8月14日 · 20:06",
+    mood: "答对灯谜的那一刻，开心得想把月亮也一起带回家。",
+    mediaType: "photo",
+    mediaCount: 1,
+    memoryNumber: "0814-02",
+  },
+  {
+    fullDate: "2026年8月12日 · 17:48",
+    mood: "夕阳把整座塔染成金色，今天的好运刚好有了形状。",
+    mediaType: "photo",
+    mediaCount: 1,
+    memoryNumber: "0812-01",
+  },
+] as const;
+
+type TravelMomentMediaType = "photo" | "selfie" | "video";
+
+type TravelMoment = (typeof demoTravelMoments)[number] & {
+  poster: Photo;
+  fullDate: string;
+  mood: string;
+  mediaType: TravelMomentMediaType;
+  mediaCount: number;
+  memoryNumber: string;
+  isZine: boolean;
+  videoSrc?: string;
+};
+
+const travelMoments: readonly TravelMoment[] = demoTravelMoments.map((moment, index) => ({
+  ...moment,
+  ...travelMomentDetails[index],
+  poster: travelMomentPosters[index],
+  isZine: true,
+}));
+
+function MomentMemoryCard({ moment, onClose }: { moment: TravelMoment; onClose: () => void }) {
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
+  const mediaLabel = moment.mediaType === "video" ? "旅途视频" : moment.mediaType === "selfie" ? "旅途自拍" : "旅途照片";
+
+  return createPortal(
+    <div className="moment-memory-viewer" role="dialog" aria-modal="true" aria-labelledby="moment-memory-title">
+      <button className="moment-memory-viewer__backdrop" type="button" aria-label="关闭纪念卡" onClick={onClose} />
+      <article className="moment-memory-card">
+        <button className="moment-memory-card__close" type="button" aria-label="关闭纪念卡" onClick={onClose} autoFocus>
+          <X size={19} />
+        </button>
+
+        <div className={`moment-memory-card__media${moment.isZine ? " is-zine" : ""}`}>
+          {moment.mediaType === "video" && moment.videoSrc ? (
+            <video controls playsInline poster={moment.poster.src}>
+              <source src={moment.videoSrc} />
+            </video>
+          ) : (
+            <img
+              src={moment.poster.src}
+              alt={moment.poster.alt}
+              style={{ objectPosition: moment.poster.focus }}
+            />
+          )}
+          <div className="moment-memory-card__media-shade" />
+          <span className="moment-memory-card__media-label">
+            {moment.mediaType === "video" ? <Play size={12} fill="currentColor" /> : <Image size={13} />}
+            {mediaLabel}
+          </span>
+          <span className="moment-memory-card__place"><MapPin size={12} /> {moment.location}</span>
+        </div>
+
+        <div className="moment-memory-card__body">
+          <div className="moment-memory-card__eyebrow">
+            <span>灵境奇旅 · 旅途纪念</span>
+            <time>{moment.fullDate}</time>
+          </div>
+          <h2 id="moment-memory-title">{moment.title}</h2>
+          <div className="moment-memory-card__rule" aria-hidden="true"><span /></div>
+          <p className="moment-memory-card__note">{moment.note}</p>
+
+          <blockquote className="moment-memory-card__mood">
+            <Heart size={17} fill="currentColor" aria-hidden="true" />
+            <div>
+              <small>当时的心情</small>
+              <p>{moment.mood}</p>
+            </div>
+          </blockquote>
+
+          <footer className="moment-memory-card__footer">
+            <span>MEMORY NO. {moment.memoryNumber}</span>
+            <span className="moment-memory-card__seal" aria-hidden="true">西湖<br />留念</span>
+          </footer>
+        </div>
+      </article>
+    </div>,
+    document.querySelector(".space-page") ?? document.body,
+  );
+}
+
 function AssetViewer({ asset, onClose }: { asset: DigitalAsset; onClose: () => void }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -186,39 +362,77 @@ function AssetViewer({ asset, onClose }: { asset: DigitalAsset; onClose: () => v
           </button>
         </header>
 
-        <div className="asset-viewer__stage">
-          <Suspense fallback={null}>
-            <AssetPreviewCanvas
-              modelUrl={asset.modelUrl}
-              resetKey={resetKey}
-              modelScale={"previewScale" in asset ? asset.previewScale : 1}
-              brightness={"brightness" in asset ? asset.brightness : 1}
-              onReady={handleReady}
-              onError={handleError}
-            />
-          </Suspense>
-          {!isLoaded && !hasError && (
-            <div className="asset-viewer__loading" role="status">
-              <span />
-              <p>正在打开数字藏品…</p>
+        <div className="asset-viewer__body">
+          <div className="asset-viewer__stage">
+            <div className="asset-viewer__pedestal" aria-hidden="true" />
+
+            <div className="asset-viewer__canvas">
+              <Suspense fallback={null}>
+                <AssetPreviewCanvas
+                  modelUrl={asset.modelUrl}
+                  resetKey={resetKey}
+                  modelScale={"previewScale" in asset ? asset.previewScale : 1}
+                  brightness={"brightness" in asset ? asset.brightness : 1}
+                  onReady={handleReady}
+                  onError={handleError}
+                />
+              </Suspense>
             </div>
-          )}
-          {hasError && (
-            <div className="asset-viewer__error" role="alert">
-              <Box size={28} />
-              <strong>模型暂时无法打开</strong>
-              <p>请检查 GLB 文件是否完整后重试</p>
+
+            <div className="asset-viewer__frame" aria-hidden="true" />
+            <div className="asset-viewer__grain" aria-hidden="true" />
+            <div className="asset-viewer__inscription" aria-hidden="true">
+              <p>{asset.verse}</p>
+              <span>灵境</span>
             </div>
-          )}
-          <button
-            className="asset-viewer__reset"
-            type="button"
-            onClick={() => setResetKey((value) => value + 1)}
-            aria-label="重置观察视角"
-          >
-            <RotateCcw size={16} />
-            重置视角
-          </button>
+
+            {!isLoaded && !hasError && (
+              <div className="asset-viewer__loading" role="status">
+                <span />
+                <p>正在打开数字藏品…</p>
+              </div>
+            )}
+            {hasError && (
+              <div className="asset-viewer__error" role="alert">
+                <Box size={28} />
+                <strong>模型暂时无法打开</strong>
+                <p>请检查 GLB 文件是否完整后重试</p>
+              </div>
+            )}
+            <button
+              className="asset-viewer__reset"
+              type="button"
+              onClick={() => setResetKey((value) => value + 1)}
+              aria-label="重置观察视角"
+            >
+              <RotateCcw size={16} />
+              重置视角
+            </button>
+          </div>
+
+          <section className="asset-viewer__intro" aria-label={`${asset.name} 藏品说明`}>
+            <div className="asset-viewer__intro-head">
+              <span className="asset-viewer__eyebrow">藏品说明</span>
+              <span className="asset-viewer__serial"><Gem size={11} /> {asset.serial}</span>
+            </div>
+            <div className="asset-viewer__rule" aria-hidden="true"><span /></div>
+            <p>{asset.intro}</p>
+
+            <dl className="asset-viewer__facts">
+              <div>
+                <dt><Layers size={12} /> 形制</dt>
+                <dd>{asset.form}</dd>
+              </div>
+              <div>
+                <dt><MapPin size={12} /> 出处</dt>
+                <dd>{asset.source}</dd>
+              </div>
+              <div>
+                <dt><Sparkles size={12} /> 获得</dt>
+                <dd>{asset.acquire}</dd>
+              </div>
+            </dl>
+          </section>
         </div>
 
         <footer className="asset-viewer__footer">
@@ -280,7 +494,7 @@ function DigitalAssets() {
         <div className="space-featured-asset__copy">
           <span>最近获得</span>
           <h3>{featuredAsset.name}</h3>
-          <p>完成雷峰夕照探索后获得</p>
+          <p>{featuredAsset.acquire}</p>
           <small><MapPin size={12} /> {featuredAsset.source}</small>
         </div>
         <div className="space-featured-asset__art" aria-hidden="true">
@@ -321,6 +535,8 @@ function DigitalAssets() {
 }
 
 function TravelMoments() {
+  const [selectedMoment, setSelectedMoment] = useState<TravelMoment | null>(null);
+
   return (
     <div className="space-view" role="tabpanel" aria-label="游玩瞬间">
       <section className="space-moment-summary" aria-label="西湖旅途回忆">
@@ -347,8 +563,14 @@ function TravelMoments() {
       </div>
 
       <section className="space-moment-list" aria-label="游玩瞬间列表">
-        {demoTravelMoments.map((moment, index) => (
-          <article className="space-moment-card" key={moment.title}>
+        {travelMoments.map((moment) => (
+          <button
+            className="space-moment-card"
+            key={moment.title}
+            type="button"
+            aria-label={`打开纪念卡：${moment.title}`}
+            onClick={() => setSelectedMoment(moment)}
+          >
             <div className="space-moment-card__media">
               <img
                 src={moment.photo.src}
@@ -357,7 +579,7 @@ function TravelMoments() {
                 decoding="async"
                 style={{ objectPosition: moment.photo.focus }}
               />
-              <span><Image size={13} /> {index === 0 ? "3张" : "1张"}</span>
+              <span><Image size={13} /> {moment.mediaCount}张</span>
             </div>
             <div className="space-moment-card__copy">
               <time>{moment.date}</time>
@@ -365,9 +587,11 @@ function TravelMoments() {
               <p className="space-moment-card__location"><MapPin size={12} /> {moment.location}</p>
               <p>{moment.note}</p>
             </div>
-          </article>
+          </button>
         ))}
       </section>
+
+      {selectedMoment && <MomentMemoryCard moment={selectedMoment} onClose={() => setSelectedMoment(null)} />}
     </div>
   );
 }
