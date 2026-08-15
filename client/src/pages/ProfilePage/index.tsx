@@ -22,7 +22,7 @@ import { westLakePortraits } from "../../lib/assets";
 
 import "./styles.css";
 
-const avatarPhoto = westLakePortraits.heartMirrorGate;
+const avatarPhoto = westLakePortraits.leifengSunset;
 
 const overviewItems = [
   { value: "2,680", label: "旅行积分" },
@@ -61,13 +61,13 @@ export function ProfilePage() {
             <div className="profile-avatar">
               <img
                 src={avatarPhoto.src}
-                alt="头像：我心相印亭的月洞门"
+                alt={`头像：${avatarPhoto.alt}`}
                 style={{ objectPosition: avatarPhoto.focus }}
               />
               <span className="profile-avatar__ring" aria-hidden="true" />
             </div>
             <div className="profile-card__identity">
-              <h2>西湖漫游者</h2>
+              <h2>湖畔听风</h2>
               <p><MapPin size={13} /> 杭州 · 灵境旅人</p>
               <span>旅人号 20260814</span>
             </div>

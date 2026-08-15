@@ -89,16 +89,44 @@ const cloudTours: readonly CloudTour[] = [
 ];
 
 /** 横向拖动超过该像素判定为一次切换 */
-const SWIPE_THRESHOLD = 52;
+const SWIPE_THRESHOLD = 48;
 
 /** 位移不到该像素仍算点击，免得点 CTA 时被判成拖动 */
 const DRAG_SLOP = 8;
 
-/** 用于换算「下一张卡浮上来」的进度，与切换阈值解耦 */
-const DRAG_RANGE = 130;
+/** 相邻卡中心相对视口中心的偏移（占视口宽度的百分比） */
+const NEIGHBOR_OFFSET = 60;
 
-/** 每加深一层，卡片下移的像素数（transform-origin 在底边，所以就是露出的高度） */
-const DECK_PEEK = 10;
+/** 相邻卡相对当前卡的缩放，让中间的卡更醒目 */
+const NEIGHBOR_SCALE = 0.82;
+
+/** 相邻卡轻微压暗，视线落点始终在中间卡上 */
+const NEIGHBOR_DIM = 0.92;
+
+/**
+ * 按「距当前卡的环状距离」算出每张卡的居中偏移 / 缩放 / 压暗 / 层级。
+ * 三张卡时左右相邻各露一截；更多张时更远的卡移出视口，不干扰。
+ */
+function coverflowPose(depth: number, total: number) {
+  if (depth === 0) {
+    return { offset: 0, opacity: 1, scale: 1, zIndex: 3 };
+  }
+
+  if (depth === 1) {
+    return { offset: NEIGHBOR_OFFSET, opacity: NEIGHBOR_DIM, scale: NEIGHBOR_SCALE, zIndex: 2 };
+  }
+
+  if (depth === total - 1) {
+    return { offset: -NEIGHBOR_OFFSET, opacity: NEIGHBOR_DIM, scale: NEIGHBOR_SCALE, zIndex: 2 };
+  }
+
+  return {
+    offset: depth < total / 2 ? NEIGHBOR_OFFSET * 2 : -NEIGHBOR_OFFSET * 2,
+    opacity: 0,
+    scale: 0.7,
+    zIndex: 1,
+  };
+}
 
 interface DeckDrag {
   readonly pointerId: number;
@@ -280,70 +308,60 @@ function CloudTourDeck() {
   };
 
   const dragging = drag !== 0;
-  /**
-   * 0 → 1：向左拖得越远，牌堆里下一张越接近顶层的位置和尺寸。
-   * 向右拖是「倒回上一张」，此时浮起来的应是牌堆最底那张、不是紧邻的下一张，
-   * 与叠卡的视觉顺序对不上，所以不做浮起，只让顶层卡跟手。
-   */
-  const lift = drag < 0 ? Math.min(1, -drag / DRAG_RANGE) : 0;
   const current = cloudTours[index];
 
   return (
     <section className="cloud-tour" aria-label="今日云游" aria-roledescription="卡片轮播">
       <div
-        className={`cloud-tour__deck${dragging ? " is-dragging" : ""}`}
+        className={`cloud-tour__viewport${dragging ? " is-dragging" : ""}`}
         onClickCapture={handleClickCapture}
         onPointerCancel={handlePointerEnd}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
       >
-        {cloudTours.map((tour, position) => {
-          const depth = (position - index + total) % total;
-          const active = depth === 0;
-          const layer = depth - lift;
+        <div className="cloud-tour__track" style={{ transform: `translateX(${drag}px)` }}>
+          {cloudTours.map((tour, position) => {
+            const depth = (position - index + total) % total;
+            const active = depth === 0;
+            const { offset, opacity, scale, zIndex } = coverflowPose(depth, total);
 
-          return (
-            <article
-              className={`cloud-tour-card${active ? "" : " is-behind"}`}
-              inert={!active}
-              key={tour.id}
-              style={
-                active
-                  ? {
-                      transform: `translate3d(${drag}px, 0, 0) rotate(${drag * 0.016}deg)`,
-                      zIndex: 3,
-                    }
-                  : {
-                      opacity: depth > 2 ? 0 : 1,
-                      transform: `translate3d(0, ${layer * DECK_PEEK}px, 0) scale(${1 - layer * 0.045})`,
-                      zIndex: Math.max(0, 3 - depth),
-                    }
-              }
-            >
-              <div className="cloud-tour-card__copy">
-                <p className="cloud-tour-card__eyebrow">今日云游 · {tour.spot}</p>
-                <h2 className="cloud-tour-card__title">
-                  {tour.heading[0]}
-                  <br />
-                  {tour.heading[1]}
-                </h2>
-                <p>{tour.blurb}</p>
-                <Link className="cloud-tour-card__cta" to={tour.to}>
-                  {tour.cta}
-                  <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
-                </Link>
-              </div>
-              <figure className="cloud-tour-card__art">
-                <img
-                  alt={tour.photo.alt}
-                  src={tour.photo.src}
-                  style={{ objectPosition: tour.photo.focus }}
-                />
-              </figure>
-            </article>
-          );
-        })}
+            return (
+              <article
+                className={`cloud-tour-card${active ? "" : " is-behind"}`}
+                inert={!active}
+                key={tour.id}
+                style={{
+                  marginLeft: `${offset}%`,
+                  opacity,
+                  transform: `scale(${scale})`,
+                  zIndex,
+                }}
+              >
+                <div className="cloud-tour-card__copy">
+                  <p className="cloud-tour-card__eyebrow">今日云游 · {tour.spot}</p>
+                  <h2 className="cloud-tour-card__title">
+                    {tour.heading[0]}
+                    <br />
+                    {tour.heading[1]}
+                  </h2>
+                  <p>{tour.blurb}</p>
+                  <Link className="cloud-tour-card__cta" to={tour.to}>
+                    {tour.cta}
+                    <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+                  </Link>
+                </div>
+                <figure className="cloud-tour-card__art">
+                  <img
+                    alt={tour.photo.alt}
+                    src={tour.photo.src}
+                    style={{ objectPosition: tour.photo.focus }}
+                  />
+                </figure>
+              </article>
+            );
+          })}
+        </div>
       </div>
 
       <div className="cloud-tour__pager">
@@ -361,7 +379,6 @@ function CloudTourDeck() {
             </button>
           ))}
         </div>
-        <small className="cloud-tour__hint">滑动切换</small>
       </div>
 
       <p aria-live="polite" className="sr-only">

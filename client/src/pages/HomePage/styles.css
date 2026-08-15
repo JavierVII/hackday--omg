@@ -217,29 +217,36 @@
   letter-spacing: 0.08em;
 }
 
-/* —— 今日云游（可切换卡组） —— */
+/* —— 今日云游（coverflow 轮播） —— */
 
 .cloud-tour {
   display: grid;
-  gap: 4px;
+  gap: 12px;
 }
 
-/* 三张卡叠在同一个网格单元里：卡组高度由最高的一张撑开，
-   不用绝对定位，文案再长也不会被裁掉。
-   底部留出后面两张露出的边缘（2 层 × 10px）。 */
-.cloud-tour__deck {
+/* 视口只露出当前卡两侧的边，超出部分裁掉。
+   横向手势由 JS 判断，纵向滚动交还浏览器。 */
+.cloud-tour__viewport {
   position: relative;
-  display: grid;
-  padding-bottom: 22px;
-  grid-template-areas: "card";
-  /* 纵向滚动交还浏览器，横向留给自己判断 */
+  overflow: hidden;
   touch-action: pan-y;
+}
+
+/* 三张卡共用同一个网格单元：单元高度由最高的一张（当前卡）撑开，
+   不用绝对定位，文案再长也不会被裁掉。
+   相邻卡以 margin-left 居中偏移、scale 缩小，视觉上左右各露一截。 */
+.cloud-tour__track {
+  display: grid;
+  grid-template-areas: "card";
+  transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
 }
 
 /* 照片铺满整张卡（绝对定位），文字列在正常文档流里撑开卡高，
    按钮永远落在卡片内，结构上不会再溢出底边。 */
 .cloud-tour-card {
   position: relative;
+  width: 70%;
   min-height: 236px;
   overflow: hidden;
   background: linear-gradient(150deg, var(--paper-white) 0%, var(--paper-warm) 100%);
@@ -247,16 +254,20 @@
   border-radius: 20px;
   box-shadow: var(--shadow-card);
   grid-area: card;
-  /* 缩放以底边为基准，露出的高度就等于 translateY 的位移，视觉上可预期 */
-  transform-origin: bottom center;
+  justify-self: center;
+  align-self: center;
+  /* margin 的百分比相对视口宽度，正好用作「居中后再偏移」的单位 */
+  transform-origin: center;
   transition:
+    margin-left 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
     transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
     opacity 300ms ease;
   will-change: transform;
 }
 
 /* 跟手期间不能有过渡，否则卡片会滞后于手指 */
-.cloud-tour__deck.is-dragging .cloud-tour-card {
+.cloud-tour__viewport.is-dragging .cloud-tour__track,
+.cloud-tour__viewport.is-dragging .cloud-tour-card {
   transition: none;
 }
 
@@ -398,14 +409,6 @@
   outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
 }
-
-.cloud-tour__hint {
-  color: var(--sunset-gold-deep);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  opacity: 0.72;
-}
-
 
 .cloud-tour-card p:not(.cloud-tour-card__eyebrow) {
   margin: 10px 0 16px;
