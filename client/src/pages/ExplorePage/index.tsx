@@ -67,6 +67,8 @@ export function ExplorePage() {
   const managerRef = useRef<SceneManager | null>(null);
   const latestFrame = useRef<FrameState | null>(null);
   const loadedSceneRef = useRef<string | null>(null);
+  // 预热录屏（?prewarm=1）：轮询分块解码进度，收敛后提示"可开始录屏"。
+  const prewarmTimerRef = useRef<number | null>(null);
 
   const [config, setConfig] = useState<ScenicExperienceConfig | null>(null);
   // 场景来自路由 /scene/:sceneId/explore；场景内传送点会继续改写这个状态。
@@ -139,6 +141,10 @@ export function ExplorePage() {
     }, 120);
     return () => {
       clearInterval(timer);
+      if (prewarmTimerRef.current) {
+        window.clearInterval(prewarmTimerRef.current);
+        prewarmTimerRef.current = null;
+      }
       manager.dispose();
       managerRef.current = null;
     };
@@ -225,6 +231,11 @@ export function ExplorePage() {
     cfg: ScenicExperienceConfig,
     debugSpawn: string | null
   ) => {
+    // 切场景时停掉上一轮的预热轮询。
+    if (prewarmTimerRef.current) {
+      window.clearInterval(prewarmTimerRef.current);
+      prewarmTimerRef.current = null;
+    }
     const scene = cfg.scenes.find((s) => s.id === targetSceneId);
     const routeCfg = ROUTES[targetSceneId];
     if (!scene || !routeCfg) return;
@@ -251,13 +262,47 @@ export function ExplorePage() {
           }))
       );
       setAholoStatus("准备加载实景…");
-      // 乌龟潭高清：minLevel=0 允许细化到全细节层（默认下限如果等于 levels-1 会锁死最粗层）、
-      // 常驻点数预算从 4M 提到 6M、亚像素剔除阈值降到 0.5 保留草叶/枝桠细节。
+      // 乌龟潭清晰度平衡档：全细节 13.7M 点对演示机太重（加载慢 + 每帧渲染卡）。
+      // minLevel=1 允许细化到第二精细档（约一半数据），画面仍远超原粗块；
+      // 预算回 4M、亚像素阈值回 1，把渲染量也减半。配合并发参数，重进场景更快更稳。
+      const prewarm = new URLSearchParams(window.location.search).get("prewarm") === "1";
       void manager.enableAholo(AHOLO_LOD_URL, setAholoStatus, {
-        minLevel: 0,
-        maxBudget: 6_000_000,
-        detailCullingThreshold: 0.5,
+        minLevel: 1,
+        maxBudget: 4_000_000,
+        detailCullingThreshold: 1,
+        schedulerParallelCounts: 8,
+        schedulerExistingTaskLimit: 128,
+        schedulerMinDuration: 80,
+        // 预热录屏：从头无视视锥，把所有分块取回解码进内存，走位不再现抓现解。
+        frustumCullingEnabled: prewarm ? false : true,
       });
+      if (prewarm) {
+        let lastLoaded = -1;
+        let stableTicks = 0;
+        prewarmTimerRef.current = window.setInterval(() => {
+          const p = manager.getAholoPreloadProgress();
+          if (!p) return;
+          if (p.loaded === lastLoaded) {
+            stableTicks += 1;
+          } else {
+            lastLoaded = p.loaded;
+            stableTicks = 0;
+          }
+          // 收敛判据：连续 ~3s 无新分块取回解码，视为预热完成。
+          if (stableTicks >= 12) {
+            if (prewarmTimerRef.current) {
+              window.clearInterval(prewarmTimerRef.current);
+              prewarmTimerRef.current = null;
+            }
+            manager.setAholoPrewarm(false); // 恢复视锥剔除，省渲染
+            setAholoStatus("预热完成，可开始录屏");
+            // 提示 3 秒后自动消失，避免录进画面里。
+            window.setTimeout(() => setAholoStatus(""), 3000);
+          } else {
+            setAholoStatus(`预热中 ${p.loaded}/${p.total}…`);
+          }
+        }, 250);
+      }
     } else {
       manager.disableAholo();
       const spawn =

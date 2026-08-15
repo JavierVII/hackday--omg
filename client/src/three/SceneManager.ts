@@ -119,6 +119,11 @@ export class SceneManager {
   private aholoReady = false;
   private aholoSource: string | null = null;
   private aholoCoordinateSystem: "z-up" | "y-up" = "z-up";
+  // 预热录屏：统计已取回解码的 distinct 分块文件数，供页面轮询展示。
+  private aholoLodLoaded = 0;
+  private aholoLodLoadedSet = new Set<string>();
+  // 预热目标 = minLevel 及以上层级实际会引用的分块数（level-0 专属分块不加载，不能拿 files 总数当分母）。
+  private aholoLodPreloadTotal = 0;
   private themeLanternGlow = false;
   private themeShowMoon = false;
   private lastTheme: Theme | null = null;
@@ -577,6 +582,11 @@ export class SceneManager {
       frustumCullingEnabled?: boolean;
       // 亚像素剔除阈值：越小保留的高频小点越多（更清晰），1 = 剔除 <1px 斑点（省性能）。
       detailCullingThreshold?: number;
+      // 调度器并发/节奏：数值越高分块取数与解码越快（也更吃 CPU/内存）。
+      // 录屏演示可调高让场景更快变清晰；默认值偏保守，避免弱机卡顿。
+      schedulerParallelCounts?: number;
+      schedulerExistingTaskLimit?: number;
+      schedulerMinDuration?: number;
     } = {}
   ) {
     if (
@@ -653,11 +663,17 @@ export class SceneManager {
             : `${url}/${resUrl}`;
         const fileType = aholo.SplatLoader.detectSplatFileType(full, new Uint8Array());
         if (fileType === undefined) throw new Error("不支持的分块格式：" + full);
-        return aholo.SplatLoader.parseSplatData(
+        const data = await aholo.SplatLoader.parseSplatData(
           fileType,
           full,
           aholo.SplatLoader.SplatPackType.SuperCompressed
         );
+        // 同一文件被多个节点/层级引用时只记一次。
+        if (!this.aholoLodLoadedSet.has(full)) {
+          this.aholoLodLoadedSet.add(full);
+          this.aholoLodLoaded = this.aholoLodLoadedSet.size;
+        }
+        return data;
       };
       const lod = new aholo.SplatUtils.LodSplat(
         meta,
@@ -670,9 +686,9 @@ export class SceneManager {
           // 展厅 manifest 是 lossless SPZ 合并而来，forwardBox 只盖首块；不要按背景内容把其余走廊质量砍半。
           backgroundPenalty: options.galleryPriority ? 1 : 0.5,
           hysteresisTicks: 4,
-          schedulerParallelCounts: 4,
-          schedulerExistingTaskLimit: 64,
-          schedulerMinDuration: 160,
+          schedulerParallelCounts: options.schedulerParallelCounts ?? 4,
+          schedulerExistingTaskLimit: options.schedulerExistingTaskLimit ?? 64,
+          schedulerMinDuration: options.schedulerMinDuration ?? 160,
           // 优先加载可见块。展厅 110+ 节点全驻留会让首屏与移动明显变重。
           frustumCullingEnabled: options.frustumCullingEnabled ?? true,
         },
@@ -744,6 +760,15 @@ export class SceneManager {
       this.aholoLookTarget = new aholo.Vector3(0, 0, 0);
       this.aholoReady = true;
       this.aholoSource = url;
+      this.aholoLodLoaded = 0;
+      this.aholoLodLoadedSet.clear();
+      // 预热目标 = 调度器在 minLevel 及以上会引用的 distinct 分块数；
+      // 不能拿 meta.files 总数（含 level-0 专属分块）当分母，否则永远到不了 100%。
+      const prewarmTotal = new Set<number>();
+      for (let lv = options.minLevel ?? 0; lv < meta.levels; lv++) {
+        meta.tree.forEach((node) => prewarmTotal.add(node.lods[lv].file));
+      }
+      this.aholoLodPreloadTotal = prewarmTotal.size;
       // 创建 viewer 时容器尺寸可能还没稳定（布局、手机框），对齐一次绘制区。
       viewer.resize();
       onProgress?.("");
@@ -768,6 +793,21 @@ export class SceneManager {
     this.aholoContainer = null;
     this.aholoReady = false;
     this.aholoSource = null;
+    this.aholoLodLoaded = 0;
+    this.aholoLodLoadedSet.clear();
+    this.aholoLodPreloadTotal = 0;
+  }
+
+  // 预热录屏：返回已取回解码的分块数 / minLevel 及以上引用总数；未加载实景时为 null。
+  getAholoPreloadProgress(): { loaded: number; total: number } | null {
+    if (!this.aholoLod) return null;
+    return { loaded: this.aholoLodLoaded, total: this.aholoLodPreloadTotal };
+  }
+
+  // 预热：让调度器无视视锥、把全部分块都取回解码进资源缓存，
+  // 之后走位/转向不再现抓现解，录屏更稳。完成后传 false 恢复视锥剔除省渲染。
+  setAholoPrewarm(enabled: boolean) {
+    this.aholoLod?.setConfig({ frustumCullingEnabled: !enabled });
   }
 
   disableAholo() {
