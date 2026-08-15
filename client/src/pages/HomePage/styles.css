@@ -6,11 +6,12 @@
   min-height: 100svh;
   padding: 28px;
   color: var(--ink-green-900);
+  /* 深绿底色由根级 .demo-app-bg 统一提供，这里只保留透光氛围层，露出漂移实景。 */
   background:
     radial-gradient(circle at 16% 10%, rgb(232 167 101 / 20%), transparent 34%),
     radial-gradient(circle at 88% 88%, rgb(226 121 95 / 16%), transparent 30%),
     radial-gradient(circle at 76% 8%, rgb(185 194 222 / 12%), transparent 26%),
-    var(--ink-green-950);
+    transparent;
 }
 
 .app-home {

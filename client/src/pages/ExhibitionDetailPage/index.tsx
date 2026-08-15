@@ -17,6 +17,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
+import { CloudTourViewer } from "../../components/overlays/CloudTourViewer";
 import { exhibitionPhotos, type Photo } from "../../lib/assets";
 
 /* 详情页外壳（封面 / 工具栏 / 入口宫格 / 区块标题 / 横向卡带 / 点评 / 底部主操作）
@@ -29,6 +30,8 @@ interface ExploreEntry {
   readonly description: string;
   readonly icon: LucideIcon;
   readonly label: string;
+  /** 入口打开嵌入的线上 3D 云游（Aholo Viewer），而不是跳转路由 */
+  readonly opensCloudTour?: boolean;
   readonly to?: string;
 }
 
@@ -53,18 +56,18 @@ interface ExhibitionReview {
   readonly tag: string;
 }
 
-/** 展馆对应的 3D 场景，游客从这里进入云游 */
-const primarySceneId = "scene-art-gallery";
+/** Aholo 线上 3D 云游的嵌入地址（数字展馆 3D 场景） */
+const aholoViewerSrc = "https://studio.aholo3d.cn/viewer?projectId=3FO4K509ULL4&subSiteFrom=embed";
 
 const exploreEntries: readonly ExploreEntry[] = [
   {
     label: "线上 3D 云游",
     description: "走进数字展厅",
     icon: Box,
-    to: `/scene/${primarySceneId}/loading`,
+    opensCloudTour: true,
   },
   {
-    label: "语音导览讲解",
+    label: "线下导览",
     description: "逐幅听懂作品",
     icon: Headphones,
   },
@@ -132,6 +135,7 @@ const exhibitionReviews: readonly ExhibitionReview[] = [
 
 export function ExhibitionDetailPage() {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isCloudTourOpen, setIsCloudTourOpen] = useState(false);
   const cover = exhibitionPhotos.atriumStair;
 
   return (
@@ -199,11 +203,19 @@ export function ExhibitionDetailPage() {
                 </>
               );
 
-              return entry.to ? (
-                <Link key={entry.label} to={entry.to}>{body}</Link>
-              ) : (
-                <button key={entry.label} type="button">{body}</button>
-              );
+              if (entry.to) {
+                return <Link key={entry.label} to={entry.to}>{body}</Link>;
+              }
+
+              if (entry.opensCloudTour) {
+                return (
+                  <button key={entry.label} type="button" onClick={() => setIsCloudTourOpen(true)}>
+                    {body}
+                  </button>
+                );
+              }
+
+              return <button key={entry.label} type="button">{body}</button>;
             })}
           </section>
 
@@ -349,12 +361,20 @@ export function ExhibitionDetailPage() {
         </div>
 
         <footer className="scenic-cta-bar scenic-cta-bar--refined">
-          <Link to={`/scene/${primarySceneId}/loading`}>
+          <button type="button" onClick={() => setIsCloudTourOpen(true)}>
             <span className="scenic-cta-bar__icon" aria-hidden="true"><Box size={22} strokeWidth={1.8} /></span>
             <span>进馆云游看展</span>
             <ArrowRight size={20} strokeWidth={1.8} aria-hidden="true" />
-          </Link>
+          </button>
         </footer>
+
+        {isCloudTourOpen && (
+          <CloudTourViewer
+            src={aholoViewerSrc}
+            loadingText="正在进入数字展厅…"
+            onClose={() => setIsCloudTourOpen(false)}
+          />
+        )}
       </article>
     </main>
   );

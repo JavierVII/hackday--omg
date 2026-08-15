@@ -1,0 +1,102 @@
+/* —— 线上 3D 云游（Aholo Viewer 全屏嵌入） —— */
+
+.cloud-tour-viewer {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  overflow: hidden;
+  background: var(--ink-green-950);
+}
+
+.cloud-tour-viewer iframe {
+  display: block;
+  border: 0;
+}
+
+/* 左上角浮签：说明当前正处在云游场景里 */
+.cloud-tour-viewer__label {
+  position: absolute;
+  top: max(env(safe-area-inset-top, 0px), 16px);
+  left: 16px;
+  z-index: 2;
+  padding: 7px 13px;
+  color: var(--paper-white);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  background: var(--glass-ink-strong);
+  border: 1px solid rgb(250 246 238 / 26%);
+  border-radius: 999px;
+  backdrop-filter: var(--glass-blur);
+}
+
+.cloud-tour-viewer__close {
+  position: absolute;
+  top: max(env(safe-area-inset-top, 0px), 16px);
+  right: 16px;
+  z-index: 3;
+  display: grid;
+  width: 42px;
+  aspect-ratio: 1;
+  place-items: center;
+  padding: 0;
+  color: var(--paper-white);
+  cursor: pointer;
+  background: var(--glass-ink-strong);
+  border: 1px solid rgb(250 246 238 / 26%);
+  border-radius: 50%;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: var(--glass-blur);
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.cloud-tour-viewer__close:hover {
+  background: var(--glass-ink);
+  transform: translateY(-1px);
+}
+
+.cloud-tour-viewer__loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 14px;
+  color: var(--paper-white);
+  background: var(--ink-green-950);
+}
+
+.cloud-tour-viewer__loading span {
+  width: 34px;
+  height: 34px;
+  border: 2px solid rgb(250 246 238 / 20%);
+  border-top-color: var(--sunset-gold);
+  border-radius: 50%;
+  animation: cloud-tour-viewer-spin 800ms linear infinite;
+}
+
+.cloud-tour-viewer__loading p {
+  margin: 0;
+  color: var(--sunset-gold);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+@keyframes cloud-tour-viewer-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cloud-tour-viewer__loading span {
+    animation: none;
+  }
+
+  .cloud-tour-viewer__close {
+    transition: none;
+  }
+
+  .cloud-tour-viewer__close:hover {
+    transform: none;
+  }
+}

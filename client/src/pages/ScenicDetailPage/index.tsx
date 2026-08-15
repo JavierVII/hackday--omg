@@ -17,6 +17,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
+import { CloudTourViewer } from "../../components/overlays/CloudTourViewer";
 import { westLakeHero, westLakeLandscapes, westLakePortraits, type Photo } from "../../lib/assets";
 
 import "./styles.css";
@@ -25,6 +26,8 @@ interface ExploreEntry {
   readonly description: string;
   readonly icon: LucideIcon;
   readonly label: string;
+  /** 入口打开嵌入的线上 3D 云游（Aholo Viewer），而不是跳转路由 */
+  readonly opensCloudTour?: boolean;
   readonly to?: string;
 }
 
@@ -44,15 +47,15 @@ interface ScenicReview {
   readonly tag: string;
 }
 
-/** Demo 主线场景，游客从这里进入 3D 云游 */
-const primarySceneId = "scene-broken-bridge";
+/** Aholo 线上 3D 云游的嵌入地址（西湖 3D 场景） */
+const aholoViewerSrc = "https://studio.aholo3d.cn/viewer?projectId=3FO4K4WSS5J6&subSiteFrom=embed";
 
 const exploreEntries: readonly ExploreEntry[] = [
   {
     label: "线上 3D 云游",
     description: "足不出户云游西湖",
     icon: Box,
-    to: `/scene/${primarySceneId}/loading`,
+    opensCloudTour: true,
   },
   {
     label: "线下智游向导",
@@ -117,6 +120,7 @@ const scenicReviews: readonly ScenicReview[] = [
 
 export function ScenicDetailPage() {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isCloudTourOpen, setIsCloudTourOpen] = useState(false);
 
   return (
     <main className="scenic-stage scenic-stage--refined demo-app-stage">
@@ -183,11 +187,19 @@ export function ScenicDetailPage() {
                 </>
               );
 
-              return entry.to ? (
-                <Link key={entry.label} to={entry.to}>{body}</Link>
-              ) : (
-                <button key={entry.label} type="button">{body}</button>
-              );
+              if (entry.to) {
+                return <Link key={entry.label} to={entry.to}>{body}</Link>;
+              }
+
+              if (entry.opensCloudTour) {
+                return (
+                  <button key={entry.label} type="button" onClick={() => setIsCloudTourOpen(true)}>
+                    {body}
+                  </button>
+                );
+              }
+
+              return <button key={entry.label} type="button">{body}</button>;
             })}
           </section>
 
@@ -309,12 +321,20 @@ export function ScenicDetailPage() {
         </div>
 
         <footer className="scenic-cta-bar scenic-cta-bar--refined">
-          <Link to={`/scene/${primarySceneId}/loading`}>
+          <button type="button" onClick={() => setIsCloudTourOpen(true)}>
             <span className="scenic-cta-bar__icon" aria-hidden="true"><Box size={22} strokeWidth={1.8} /></span>
             <span>开启 3D 云游</span>
             <ArrowRight size={20} strokeWidth={1.8} aria-hidden="true" />
-          </Link>
+          </button>
         </footer>
+
+        {isCloudTourOpen && (
+          <CloudTourViewer
+            src={aholoViewerSrc}
+            loadingText="正在进入西湖…"
+            onClose={() => setIsCloudTourOpen(false)}
+          />
+        )}
       </article>
     </main>
   );

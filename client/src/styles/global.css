@@ -14,33 +14,49 @@ body {
   min-height: 100vh;
 }
 
-/* 桌面演示画布：实景图保持低对比度，缓慢漂移以增加空间层次。 */
+/* 桌面演示画布：实景图保持低对比度，缓慢漂移以增加空间层次。
+   背景层固定在 App 根（.demo-app-bg），跨页面复用同一元素，
+   切换路由时动画相位不中断；页面主体用透明背景露出这层。 */
 .demo-app-stage {
   position: relative;
   isolation: isolate;
   overflow: hidden;
 }
 
-.demo-app-stage::before,
-.demo-app-stage::after {
+.demo-app-bg {
   position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--ink-green-950);
+  transition: opacity 300ms ease;
+}
+
+.demo-app-bg[data-hidden="true"] {
+  opacity: 0;
+}
+
+.demo-app-bg::before,
+.demo-app-bg::after {
+  position: absolute;
   inset: 0;
   content: "";
   pointer-events: none;
 }
 
-.demo-app-stage::before {
+.demo-app-bg::before {
   z-index: -2;
   inset: -4vmax;
   background: url("/assets/background.png") center 54% / cover no-repeat;
   filter: saturate(0.9) contrast(0.98) brightness(1.04);
   opacity: 0.82;
-  transform: translate3d(-0.6%, -0.4%, 0) scale(1.05);
-  animation: demo-background-drift 24s ease-in-out infinite alternate;
+  transform: translate3d(-1.4%, -1%, 0) scale(1.08);
+  animation: demo-background-drift 22s ease-in-out infinite alternate;
   will-change: transform;
 }
 
-.demo-app-stage::after {
+.demo-app-bg::after {
   z-index: -1;
   background:
     radial-gradient(circle at 14% 22%, rgb(232 167 101 / 12%), transparent 34%),
@@ -49,22 +65,22 @@ body {
 
 @keyframes demo-background-drift {
   0% {
-    transform: translate3d(-0.6%, -0.4%, 0) scale(1.05);
+    transform: translate3d(-1.4%, -1%, 0) scale(1.08);
   }
 
   50% {
-    transform: translate3d(0.35%, 0.25%, 0) scale(1.075);
+    transform: translate3d(0.75%, 0.6%, 0) scale(1.12);
   }
 
   100% {
-    transform: translate3d(0.8%, -0.15%, 0) scale(1.06);
+    transform: translate3d(1.7%, -0.4%, 0) scale(1.1);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .demo-app-stage::before {
+  .demo-app-bg::before {
     animation: none;
-    transform: scale(1.05);
+    transform: scale(1.08);
   }
 }
 
