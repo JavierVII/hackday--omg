@@ -12,6 +12,7 @@ import {
   Route,
   Share2,
   Star,
+  ThumbsUp,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -31,14 +32,16 @@ interface ScenicScene {
   readonly caption: string;
   readonly name: string;
   readonly photo: Photo;
-  /** 已建好 3D 场景的才有 sceneId，其余显示「场景制作中」 */
-  readonly sceneId?: string;
 }
 
-interface TravelStory {
-  readonly photo: Photo;
-  readonly subtitle: string;
-  readonly title: string;
+interface ScenicReview {
+  readonly author: string;
+  readonly avatar: string;
+  readonly comment: string;
+  readonly date: string;
+  readonly likes: number;
+  readonly rating: number;
+  readonly tag: string;
 }
 
 /** Demo 主线场景，游客从这里进入 3D 云游 */
@@ -66,40 +69,49 @@ const exploreEntries: readonly ExploreEntry[] = [
 
 const scenicScenes: readonly ScenicScene[] = [
   {
-    // TODO 换图：这是西湖雪景，不是断桥本身。拿到断桥实拍后替换。
-    name: "断桥残雪",
-    caption: "雪后湖上桥亭",
-    photo: westLakeLandscapes.snowBridge,
-    sceneId: primarySceneId,
+    name: "乌龟潭",
+    caption: "曲水藏幽 · 云游画面",
+    photo: westLakeLandscapes.turtlePond,
   },
   {
     name: "雷峰塔",
-    caption: "隔湖望塔影",
+    caption: "隔湖望塔影 · 云游画面",
     photo: westLakePortraits.leifengPagodaDay,
-    sceneId: "scene-leifeng-pagoda",
   },
   {
     name: "三潭印月",
-    caption: "湖心石塔",
+    caption: "湖心石塔 · 云游画面",
     photo: westLakePortraits.threePools,
   },
 ];
 
-const travelStories: readonly TravelStory[] = [
+const scenicReviews: readonly ScenicReview[] = [
   {
-    title: "一窗湖山",
-    subtitle: "我心相印亭的圆门",
-    photo: westLakePortraits.heartMirrorGate,
+    author: "小陈不吃葱",
+    avatar: "陈",
+    comment: "本来只想散步十分钟，结果沿湖走了两万步。西湖负责美，我的腿负责记住它。",
+    date: "2 天前",
+    likes: 328,
+    rating: 5,
+    tag: "暴走型选手",
   },
   {
-    title: "落日集贤亭",
-    subtitle: "日头正落在亭顶",
-    photo: westLakePortraits.jixianPavilionSunset,
+    author: "杭州天气观察员",
+    avatar: "杭",
+    comment: "来之前：西湖不就是一个湖？来之后：这句话幸好没让白娘子听见。",
+    date: "5 天前",
+    likes: 216,
+    rating: 5,
+    tag: "真香现场",
   },
   {
-    title: "乌龟潭静水",
-    subtitle: "一潭绿水与茅亭",
-    photo: westLakeLandscapes.turtlePond,
+    author: "减肥从明天开始",
+    avatar: "吃",
+    comment: "在苏堤走掉一杯奶茶，转头在楼外楼吃回三杯。风景和热量都很圆满。",
+    date: "1 周前",
+    likes: 189,
+    rating: 4,
+    tag: "边走边吃",
   },
 ];
 
@@ -189,79 +201,109 @@ export function ScenicDetailPage() {
 
           <section className="scenic-content-section" aria-labelledby="scenic-scenes-title">
             <div className="scenic-section-title">
-              <h2 id="scenic-scenes-title">3D 场景</h2>
-              <button type="button" aria-label="查看全部 3D 场景">
+              <h2 id="scenic-scenes-title">云游秘境</h2>
+              <button type="button" aria-label="查看全部云游秘境">
                 查看全部 <ChevronRight size={16} aria-hidden="true" />
               </button>
             </div>
 
             <div className="scenic-spot-rail">
-              {scenicScenes.map((scene) => (
-                <article className="scenic-spot-card" key={scene.name}>
-                  <span className="scenic-spot-card__image">
-                    <img
-                      alt={scene.photo.alt}
-                      decoding="async"
-                      loading="lazy"
-                      src={scene.photo.src}
-                      style={{ objectPosition: scene.photo.focus }}
-                    />
-                  </span>
-                  <span className="scenic-spot-card__copy">
-                    <span>
-                      <strong>{scene.name}</strong>
-                      <small>{scene.caption}</small>
-                    </span>
-                  </span>
-                  {scene.sceneId ? (
-                    <Link
-                      className="scenic-spot-card__action"
-                      to={`/scene/${scene.sceneId}/loading`}
-                      aria-label={`进入${scene.name}的 3D 场景`}
+              <div className="scenic-rail__track">
+                {[...scenicScenes, ...scenicScenes].map((scene, index) => {
+                  const isClone = index >= scenicScenes.length;
+
+                  return (
+                    <article
+                      className={isClone ? "scenic-spot-card is-clone" : "scenic-spot-card"}
+                      key={`${scene.name}-${index}`}
+                      aria-hidden={isClone || undefined}
                     >
-                      <Box size={14} strokeWidth={1.8} aria-hidden="true" />
-                      <span>进入 3D 场景</span>
-                      <ArrowRight size={14} strokeWidth={1.8} aria-hidden="true" />
-                    </Link>
-                  ) : (
-                    <span className="scenic-spot-card__action is-pending">
-                      <Box size={14} strokeWidth={1.8} aria-hidden="true" />
-                      <span>场景制作中</span>
-                    </span>
-                  )}
-                </article>
-              ))}
+                      <span className="scenic-spot-card__image">
+                        <img
+                          alt={isClone ? "" : scene.photo.alt}
+                          decoding="async"
+                          loading="lazy"
+                          src={scene.photo.src}
+                          style={{ objectPosition: scene.photo.focus }}
+                        />
+                        <span className="scenic-spot-card__mask" aria-hidden="true" />
+                        <span className="scenic-spot-card__copy">
+                          <strong>{scene.name}</strong>
+                          <small>{scene.caption}</small>
+                        </span>
+                      </span>
+                    </article>
+                  );
+                })}
+              </div>
             </div>
           </section>
 
-          <section className="scenic-content-section" aria-labelledby="travel-stories-title">
+          <section className="scenic-content-section scenic-reviews" aria-labelledby="scenic-reviews-title">
             <div className="scenic-section-title">
-              <h2 id="travel-stories-title">热门游记</h2>
+              <h2 id="scenic-reviews-title">游客点评</h2>
               <button type="button">
-                更多游记 <ChevronRight size={16} aria-hidden="true" />
+                全部 2,368 条 <ChevronRight size={16} aria-hidden="true" />
               </button>
             </div>
 
-            <div className="scenic-story-rail">
-              {travelStories.map((story) => (
-                <article className="scenic-story-card" key={story.title}>
-                  <img
-                    alt={story.photo.alt}
-                    decoding="async"
-                    loading="lazy"
-                    src={story.photo.src}
-                    style={{ objectPosition: story.photo.focus }}
-                  />
-                  <span className="scenic-story-card__mask" aria-hidden="true" />
-                  <div className="scenic-story-card__copy">
-                    <strong>{story.title}</strong>
-                    <span>{story.subtitle}</span>
-                  </div>
-                  <button type="button" aria-label={`收藏游记：${story.title}`}>
-                    <Heart size={17} strokeWidth={1.8} />
-                  </button>
-                </article>
-              ))}
+            <div className="scenic-review-summary">
+              <div className="scenic-review-summary__score">
+                <strong>4.9</strong>
+                <span>
+                  <span className="scenic-review-stars" aria-label="游客评分 4.9 分">
+                    {Array.from({ length: 5 }, (_, index) => (
+                      <Star key={index} size={13} strokeWidth={1.5} fill="currentColor" aria-hidden="true" />
+                    ))}
+                  </span>
+                  <small>超出 98% 同类景区</small>
+                </span>
+              </div>
+              <div className="scenic-review-tags" aria-label="热门评价">
+                <span>景色很美 1284</span>
+                <span>适合散步 896</span>
+                <span>拍照出片 742</span>
+              </div>
+            </div>
+
+            <div className="scenic-review-rail">
+              <div className="scenic-rail__track">
+                {[...scenicReviews, ...scenicReviews].map((review, index) => {
+                  const isClone = index >= scenicReviews.length;
+
+                  return (
+                    <article
+                      className={isClone ? "scenic-review-card is-clone" : "scenic-review-card"}
+                      key={`${review.author}-${index}`}
+                      aria-hidden={isClone || undefined}
+                    >
+                      <header>
+                        <span className="scenic-review-card__avatar" aria-hidden="true">{review.avatar}</span>
+                        <span className="scenic-review-card__author">
+                          <strong>{review.author}</strong>
+                          <small>{review.date}</small>
+                        </span>
+                        <span className="scenic-review-stars" aria-label={isClone ? undefined : `评分 ${review.rating} 分`}>
+                          {Array.from({ length: 5 }, (_, starIndex) => (
+                            <Star
+                              key={starIndex}
+                              size={11}
+                              strokeWidth={1.5}
+                              fill={starIndex < review.rating ? "currentColor" : "none"}
+                              aria-hidden="true"
+                            />
+                          ))}
+                        </span>
+                      </header>
+                      <p>{review.comment}</p>
+                      <footer>
+                        <span>{review.tag}</span>
+                        <span><ThumbsUp size={12} strokeWidth={1.7} aria-hidden="true" /> {review.likes}</span>
+                      </footer>
+                    </article>
+                  );
+                })}
+              </div>
             </div>
           </section>
         </div>

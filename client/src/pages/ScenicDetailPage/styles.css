@@ -349,26 +349,47 @@
 /* —— 场景卡 / 游记卡 —— */
 
 .scenic-spot-rail,
-.scenic-story-rail {
-  display: flex;
+.scenic-review-rail {
   width: calc(100% - 22px);
-  gap: 12px;
-  overflow-x: auto;
+  overflow: hidden;
   margin-left: 22px;
-  padding: 0 22px 8px 0;
-  scroll-padding-right: 22px;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
+  mask-image: linear-gradient(to right, transparent 0, #000 18px, #000 calc(100% - 28px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 18px, #000 calc(100% - 28px), transparent 100%);
 }
 
-.scenic-spot-rail::-webkit-scrollbar,
-.scenic-story-rail::-webkit-scrollbar {
-  display: none;
+.scenic-rail__track {
+  display: flex;
+  width: max-content;
+  gap: 12px;
+  padding: 0 12px 8px 0;
+  animation: scenic-rail-marquee var(--rail-duration) linear infinite;
+  will-change: transform;
+}
+
+.scenic-spot-rail .scenic-rail__track {
+  --rail-duration: 24s;
+}
+
+.scenic-review-rail .scenic-rail__track {
+  --rail-duration: 36s;
+}
+
+.scenic-spot-rail:hover .scenic-rail__track,
+.scenic-review-rail:hover .scenic-rail__track,
+.scenic-spot-rail:focus-within .scenic-rail__track,
+.scenic-review-rail:focus-within .scenic-rail__track {
+  animation-play-state: paused;
+}
+
+@keyframes scenic-rail-marquee {
+  to {
+    transform: translateX(calc(-50% - 6px));
+  }
 }
 
 .scenic-spot-card {
-  width: 160px;
-  flex: 0 0 160px;
+  width: 184px;
+  flex: 0 0 184px;
   padding: 0;
   color: var(--ink-green-900);
   text-align: left;
@@ -377,9 +398,10 @@
 }
 
 .scenic-spot-card__image {
+  position: relative;
   display: block;
   width: 100%;
-  height: 96px;
+  height: 122px;
   overflow: hidden;
   border: 1px solid var(--hairline-ink);
   border-radius: 15px;
@@ -387,8 +409,7 @@
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
-.scenic-spot-card__image img,
-.scenic-story-card img {
+.scenic-spot-card__image img {
   display: block;
   width: 100%;
   height: 100%;
@@ -400,130 +421,173 @@
   box-shadow: var(--shadow-raised);
 }
 
-.scenic-spot-card__copy,
-.scenic-spot-card__copy > span {
-  display: flex;
-  align-items: center;
+.scenic-spot-card__mask {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgb(15 39 33 / 82%) 0%, rgb(15 39 33 / 14%) 52%, transparent 76%);
+  pointer-events: none;
 }
 
 .scenic-spot-card__copy {
-  justify-content: space-between;
-  padding: 10px 2px 0;
-}
-
-.scenic-spot-card__copy > span {
-  min-width: 0;
-  gap: 6px;
+  position: absolute;
+  right: 13px;
+  bottom: 12px;
+  left: 13px;
+  display: grid;
+  gap: 3px;
+  color: var(--paper-white);
 }
 
 .scenic-spot-card__copy strong {
-  font-size: 13px;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
   white-space: nowrap;
 }
 
 .scenic-spot-card__copy small {
-  color: var(--ink-green-600);
+  color: rgb(250 246 238 / 72%);
   font-size: 9px;
+  letter-spacing: 0.03em;
   white-space: nowrap;
 }
 
-.scenic-spot-card__action {
+.scenic-reviews {
+  padding-bottom: 32px;
+}
+
+.scenic-review-summary {
   display: grid;
-  width: 100%;
-  min-height: 34px;
-  grid-template-columns: auto 1fr auto;
-  gap: 5px;
-  align-items: center;
-  margin-top: 10px;
-  padding: 0 10px;
-  color: var(--ink-green-800);
-  font-size: 10px;
-  font-weight: 600;
-  text-align: left;
-  text-decoration: none;
-  cursor: pointer;
-  background: rgb(42 102 80 / 8%);
-  border: 1px solid var(--hairline-ink-strong);
-  border-radius: 10px;
-  transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease;
-}
-
-.scenic-spot-card__action:hover {
-  color: var(--paper-white);
-  background: linear-gradient(140deg, var(--ink-green-800), var(--ink-green-950));
-  border-color: transparent;
-}
-
-.scenic-spot-card__action.is-pending {
-  grid-template-columns: auto 1fr;
-  color: var(--ink-green-600);
-  cursor: default;
-  background: transparent;
-  border-style: dashed;
-}
-
-.scenic-spot-card__action.is-pending:hover {
-  color: var(--ink-green-600);
-  background: transparent;
-  border-color: var(--hairline-ink-strong);
-}
-
-.scenic-story-card {
-  position: relative;
-  width: 178px;
-  height: 142px;
-  flex: 0 0 178px;
-  overflow: hidden;
-  color: var(--paper-white);
+  gap: 15px;
+  margin: 0 22px 16px;
+  padding: 17px;
+  background: linear-gradient(145deg, var(--paper-warm), var(--paper-white));
   border: 1px solid var(--hairline-ink);
-  border-radius: 17px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.scenic-review-summary__score {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+}
+
+.scenic-review-summary__score > strong {
+  color: var(--ink-green-950);
+  font-family: var(--font-display);
+  font-size: 37px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.scenic-review-summary__score > span {
+  display: grid;
+  gap: 5px;
+}
+
+.scenic-review-summary__score small {
+  color: var(--ink-green-600);
+  font-size: 9px;
+}
+
+.scenic-review-stars {
+  display: inline-flex;
+  gap: 1px;
+  color: var(--sunset-gold-deep);
+}
+
+.scenic-review-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.scenic-review-tags span {
+  padding: 6px 9px;
+  color: var(--ink-green-700);
+  font-size: 9px;
+  background: rgb(42 102 80 / 7%);
+  border: 1px solid var(--hairline-ink);
+  border-radius: 999px;
+}
+
+.scenic-review-card {
+  width: 250px;
+  min-height: 156px;
+  flex: 0 0 250px;
+  padding: 15px;
+  color: var(--ink-green-900);
+  background: var(--paper-white);
+  border: 1px solid var(--hairline-ink);
+  border-radius: 16px;
   box-shadow: var(--shadow-card);
   scroll-snap-align: start;
 }
 
-.scenic-story-card__mask {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgb(15 39 33 / 86%) 0%, rgb(15 39 33 / 26%) 44%, transparent 72%);
-}
-
-.scenic-story-card__copy {
-  position: absolute;
-  right: 44px;
-  bottom: 13px;
-  left: 14px;
+.scenic-review-card header {
   display: grid;
-  gap: 4px;
+  grid-template-columns: auto 1fr auto;
+  gap: 9px;
+  align-items: center;
 }
 
-.scenic-story-card__copy strong {
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 400;
-  letter-spacing: 0.04em;
-}
-
-.scenic-story-card__copy span {
-  color: rgb(250 246 238 / 72%);
-  font-size: 10px;
-}
-
-.scenic-story-card > button {
-  position: absolute;
-  right: 11px;
-  bottom: 11px;
+.scenic-review-card__avatar {
   display: grid;
-  width: 30px;
+  width: 34px;
   aspect-ratio: 1;
   place-items: center;
-  padding: 0;
   color: var(--paper-white);
-  cursor: pointer;
-  background: var(--glass-ink);
-  border: 1px solid var(--hairline-gold);
+  font-family: var(--font-display);
+  font-size: 15px;
+  background: linear-gradient(145deg, var(--ink-green-700), var(--ink-green-900));
   border-radius: 50%;
-  backdrop-filter: blur(7px);
+}
+
+.scenic-review-card__author {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.scenic-review-card__author strong {
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scenic-review-card__author small {
+  color: var(--ink-green-600);
+  font-size: 8px;
+}
+
+.scenic-review-card p {
+  min-height: 54px;
+  margin: 13px 0 11px;
+  color: var(--ink-green-800);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.scenic-review-card footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--ink-green-600);
+  font-size: 9px;
+}
+
+.scenic-review-card footer > span:first-child {
+  color: var(--sunset-gold-deep);
+}
+
+.scenic-review-card footer > span:last-child {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
 }
 
 .scenic-content-section:last-child {
@@ -628,10 +692,30 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .scenic-spot-rail,
+  .scenic-review-rail {
+    overflow-x: auto;
+    mask-image: none;
+    -webkit-mask-image: none;
+    scrollbar-width: none;
+  }
+
+  .scenic-spot-rail::-webkit-scrollbar,
+  .scenic-review-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scenic-rail__track {
+    animation: none;
+  }
+
+  .scenic-rail__track .is-clone {
+    display: none;
+  }
+
   .scenic-icon-button,
   .scenic-explore-rail__icon,
   .scenic-spot-card__image,
-  .scenic-spot-card__action,
   .scenic-cta-bar--refined > :is(a, button) {
     transition: none;
   }
