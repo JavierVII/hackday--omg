@@ -1,0 +1,57 @@
+{
+  "version": "1.2",
+  "coordinateSystem": "y-up",
+  "gridBounds": {
+    "min": [
+      -20,
+      -10,
+      -25
+    ],
+    "max": [
+      31.200000000000003,
+      41.2,
+      26.200000000000003
+    ]
+  },
+  "occupiedBounds": {
+    "min": [
+      -7.799999999999999,
+      1.9000000000000004,
+      -11.549999999999999
+    ],
+    "max": [
+      13,
+      5.350000000000001,
+      6.650000000000002
+    ]
+  },
+  "sceneBounds": {
+    "min": [
+      -7.774658203125,
+      1.927734375,
+      -11.546875
+    ],
+    "max": [
+      12.988037109375,
+      5.33740234375,
+      6.60400390625
+    ]
+  },
+  "voxelResolution": 0.05,
+  "leafSize": 4,
+  "treeDepth": 8,
+  "numInteriorNodes": 10563,
+  "numMixedLeaves": 35139,
+  "nodeCount": 45716,
+  "leafDataCount": 70278,
+  "files": [
+    "voxel.bin"
+  ],
+  "nodeEncoding": "raw",
+  "compression": "none",
+  "sourcePointCount": 21821321,
+  "voxelizedPointCount": 21821321,
+  "occupiedVoxelCount": 467658,
+  "leafBlockCount": 35153,
+  "solidLeafCount": 14
+}

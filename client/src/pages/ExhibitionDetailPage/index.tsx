@@ -19,6 +19,7 @@ import type { LucideIcon } from "lucide-react";
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
 import { CloudTourViewer } from "../../components/overlays/CloudTourViewer";
 import { exhibitionPhotos, type Photo } from "../../lib/assets";
+import { GALLERY_SCENE_ID } from "../GalleryExplorePage";
 
 /* 详情页外壳（封面 / 工具栏 / 入口宫格 / 区块标题 / 横向卡带 / 点评 / 底部主操作）
    与景区详情页是同一套 `.scenic-*` 视觉，直接复用它的样式表，避免两份实现各自漂移。
@@ -70,6 +71,8 @@ const exploreEntries: readonly ExploreEntry[] = [
     label: "线下导览",
     description: "逐幅听懂作品",
     icon: Headphones,
+    // Demo 入口：进入室内艺术展厅 3D 场景（上线后该入口不再展示）。
+    to: `/scene/${GALLERY_SCENE_ID}/gallery`,
   },
   {
     label: "观展动线推荐",

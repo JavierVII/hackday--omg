@@ -73,6 +73,8 @@ export class SceneManager {
     Record<"idle" | "walk" | "run", THREE.AnimationAction>
   > = {};
   private charAnimState: "idle" | "walk" | "run" = "idle";
+  private characterModelUrl = "/assets/models/rogue_hooded.glb";
+  private characterLoadVersion = 0;
   private npcs: Array<{
     group: THREE.Group;
     anchor: Vec3;
@@ -96,6 +98,10 @@ export class SceneManager {
   private charY = 0;
   private voxel: VoxelGrid | null = null;
   private voxelActive = false;
+  private groundHeightProvider: ((x: number, z: number) => number) | null = null;
+  private smoothVoxelGround = false;
+  private cameraDistance = CAMERA_DISTANCE;
+  private cameraCollision = false;
 
   private points: InteractionPoint[] = [];
   private focusedId: string | null = null;
@@ -111,6 +117,8 @@ export class SceneManager {
   private aholoLodCamera: import("@manycore/aholo-viewer").PerspectiveCamera | null = null;
   private aholoLodTarget: import("@manycore/aholo-viewer").Vector3 | null = null;
   private aholoReady = false;
+  private aholoSource: string | null = null;
+  private aholoCoordinateSystem: "z-up" | "y-up" = "z-up";
   private themeLanternGlow = false;
   private themeShowMoon = false;
   private lastTheme: Theme | null = null;
@@ -153,8 +161,7 @@ export class SceneManager {
     this.buildAssistant();
     this.assistant.visible = false;
     this.scene.add(this.character, this.assistant);
-    void this.loadCharacterModel();
-
+    void this.loadCharacterModel(this.characterModelUrl);
 
     this.bindPointer();
     this.resizeObserver = new ResizeObserver(() => this.handleResize());
@@ -181,34 +188,50 @@ export class SceneManager {
     this.character.add(body, head, pack);
   }
 
-  private async loadCharacterModel() {
+  setCharacterModel(modelUrl: string) {
+    if (modelUrl === this.characterModelUrl && this.charMixer) return;
+    this.characterModelUrl = modelUrl;
+    void this.loadCharacterModel(modelUrl);
+  }
+
+  private async loadCharacterModel(modelUrl: string) {
+    const loadVersion = ++this.characterLoadVersion;
     try {
       const { GLTFLoader } = await import(
         "three/examples/jsm/loaders/GLTFLoader.js"
       );
-      const gltf = await new GLTFLoader().loadAsync(
-        "/assets/models/rogue_hooded.glb"
-      );
+      const gltf = await new GLTFLoader().loadAsync(modelUrl);
+      if (loadVersion !== this.characterLoadVersion || this.disposed) return;
       const model = gltf.scene;
       const box = new THREE.Box3().setFromObject(model);
-      const scale = CHARACTER_HEIGHT / box.max.y;
+      const modelHeight = box.max.y - box.min.y;
+      const scale = CHARACTER_HEIGHT / modelHeight;
       model.scale.setScalar(scale);
-      model.position.set(0, 0, 0);
+      model.position.set(0, -box.min.y * scale, 0);
       this.character.clear();
       this.character.add(model);
 
-      const findClip = (name: string) =>
-        gltf.animations.find((clip) => clip.name === name);
+      const findClip = (...names: string[]) =>
+        gltf.animations.find((clip) =>
+          names.some((name) => clip.name.toLowerCase() === name.toLowerCase())
+        );
+      this.charMixer?.stopAllAction();
+      this.charActions = {};
+      this.charAnimState = "idle";
       const mixer = new THREE.AnimationMixer(model);
+      const fallbackMotionClip = gltf.animations[0];
       const idleClip = findClip("Idle");
-      const walkClip = findClip("Walking_A");
-      const runClip = findClip("Running_A");
+      const walkClip = findClip("Walking_A", "Walk", "Walking") ?? fallbackMotionClip;
+      const runClip = findClip("Running_A", "Run", "Running") ?? walkClip;
       if (idleClip) {
         this.charActions.idle = mixer.clipAction(idleClip);
         this.charActions.idle.play();
       }
       if (walkClip) this.charActions.walk = mixer.clipAction(walkClip);
-      if (runClip) this.charActions.run = mixer.clipAction(runClip);
+      if (runClip) {
+        this.charActions.run = mixer.clipAction(runClip);
+        if (runClip === walkClip) this.charActions.run.timeScale = 1.55;
+      }
       this.charMixer = mixer;
     } catch {}
   }
@@ -267,9 +290,9 @@ export class SceneManager {
 
   private refreshNpcPlacement() {
     for (const npc of this.npcs) {
-      let y = npc.anchor.y;
+      let y = this.groundHeightProvider?.(npc.anchor.x, npc.anchor.z) ?? npc.anchor.y;
       if (this.voxelActive && this.voxel) {
-        const ground = this.voxel.groundHeight(
+        const ground = this.voxelGroundHeight(
           npc.anchor.x,
           npc.anchor.z,
           npc.anchor.y + 0.6,
@@ -460,6 +483,10 @@ export class SceneManager {
     if (sceneId.includes("leifeng")) this.buildLeifengPagoda();
     else this.buildBrokenBridge();
 
+    this.groundHeightProvider = null;
+    this.smoothVoxelGround = false;
+    this.cameraDistance = CAMERA_DISTANCE;
+    this.cameraCollision = false;
     this.setPoints(points);
     this.setRoute(route);
     this.bounds = bounds;
@@ -508,16 +535,26 @@ export class SceneManager {
     points: InteractionPoint[],
     route: Vec3[],
     bounds: Bounds,
-    camYaw = 0
+    camYaw = 0,
+    groundHeightProvider: ((x: number, z: number) => number) | null = null,
+    tuning: {
+      smoothVoxelGround?: boolean;
+      cameraDistance?: number;
+      cameraCollision?: boolean;
+    } = {}
   ) {
     this.clearGroup(this.envGroup);
     this.clearGroup(this.lanternGroup);
+    this.groundHeightProvider = groundHeightProvider;
+    this.smoothVoxelGround = tuning.smoothVoxelGround ?? false;
+    this.cameraDistance = tuning.cameraDistance ?? CAMERA_DISTANCE;
+    this.cameraCollision = tuning.cameraCollision ?? false;
     this.setPoints(points);
     this.setRoute(route);
     this.bounds = bounds;
-    this.charY = 0;
-    this.character.position.set(spawn.x, 0, spawn.z);
-    this.assistant.position.set(spawn.x + 1, 1.3, spawn.z - 1.2);
+    this.charY = groundHeightProvider?.(spawn.x, spawn.z) ?? spawn.y;
+    this.character.position.set(spawn.x, this.charY, spawn.z);
+    this.assistant.position.set(spawn.x + 1, this.charY + 1.3, spawn.z - 1.2);
     this.camYaw = camYaw;
     this.charHeading = camYaw + Math.PI;
     this.aholoActive = true;
@@ -527,11 +564,28 @@ export class SceneManager {
     this.snapCamera();
   }
 
-  async enableAholo(url: string, onProgress?: (text: string) => void) {
-    if ((this.aholoReady && this.aholoViewer) || this.aholoLoading) return;
+  async enableAholo(
+    url: string,
+    onProgress?: (text: string) => void,
+    options: {
+      name?: string;
+      voxelUrl?: string;
+      minLevel?: number;
+      maxBudget?: number;
+      galleryPriority?: boolean;
+      coordinateSystem?: "z-up" | "y-up";
+      frustumCullingEnabled?: boolean;
+    } = {}
+  ) {
+    if (
+      (this.aholoReady && this.aholoViewer && this.aholoSource === url) ||
+      this.aholoLoading
+    )
+      return;
     this.aholoLoading = true;
     try {
       const aholo = await import("@manycore/aholo-viewer");
+      if (this.aholoViewer) this.destroyAholoRenderer();
       if (!this.aholoContainer) {
         const el = document.createElement("div");
         el.style.position = "absolute";
@@ -542,7 +596,7 @@ export class SceneManager {
         this.aholoContainer = el;
         this.updateVisibility();
       }
-      const viewer = aholo.createViewer("wuguitan", this.aholoContainer, {});
+      const viewer = aholo.createViewer(options.name ?? "wuguitan", this.aholoContainer, {});
       const camera = new aholo.PerspectiveCamera(
         55,
         this.container.clientWidth / Math.max(1, this.container.clientHeight),
@@ -568,7 +622,8 @@ export class SceneManager {
               sortedLayoutEnabled: true,
             },
             raster: {
-              detailCullingThreshold: 1,
+              // 展厅保留高频小斑点（画框边缘、木条墙），不按亚像素噪点剔除。
+              detailCullingThreshold: options.galleryPriority ? 0.35 : 1,
               maxStdDev: Math.sqrt(8),
             },
             sort: {
@@ -604,18 +659,23 @@ export class SceneManager {
       const lod = new aholo.SplatUtils.LodSplat(
         meta,
         {
-          minLevel: meta.levels - 1,
-          maxBudget: 4_000_000,
-          backgroundPenalty: 0.5,
+          // 最后一层只是粗预览。乌龟潭沿用原 minLevel（粗起再细化），展厅显式传 0 保持画作细节。
+          minLevel: options.minLevel ?? meta.levels - 1,
+          maxBudget: options.maxBudget ?? 4_000_000,
+          // 展厅 manifest 是 lossless SPZ 合并而来，forwardBox 只盖首块；不要按背景内容把其余走廊质量砍半。
+          backgroundPenalty: options.galleryPriority ? 1 : 0.5,
           hysteresisTicks: 4,
           schedulerParallelCounts: 4,
           schedulerExistingTaskLimit: 64,
           schedulerMinDuration: 160,
+          // 优先加载可见块。展厅 110+ 节点全驻留会让首屏与移动明显变重。
+          frustumCullingEnabled: options.frustumCullingEnabled ?? true,
         },
         aholo.createViewerContext(viewer),
         loadResource
       );
-      lod.container.rotation.x = -Math.PI / 2;
+      const coordinateSystem = options.coordinateSystem ?? "z-up";
+      lod.container.rotation.x = coordinateSystem === "y-up" ? 0 : -Math.PI / 2;
       viewer.getScene().add(lod.container);
       const lodCamera = new aholo.PerspectiveCamera(55, camera.aspect, 0.1, 8000);
       const lodTarget = new aholo.Vector3(0, 0, 0);
@@ -624,13 +684,23 @@ export class SceneManager {
       const worldPos = this.camera.position;
       const worldDir = new THREE.Vector3();
       this.camera.getWorldDirection(worldDir);
-      lodCamera.position.set(worldPos.x, -worldPos.z, worldPos.y);
-      lodCamera.up.set(0, 0, 1);
-      lodTarget.set(
-        worldPos.x + worldDir.x,
-        -(worldPos.z + worldDir.z),
-        worldPos.y + worldDir.y
-      );
+      if (coordinateSystem === "y-up") {
+        lodCamera.position.set(worldPos.x, worldPos.y, worldPos.z);
+        lodCamera.up.set(0, 1, 0);
+        lodTarget.set(
+          worldPos.x + worldDir.x,
+          worldPos.y + worldDir.y,
+          worldPos.z + worldDir.z
+        );
+      } else {
+        lodCamera.position.set(worldPos.x, -worldPos.z, worldPos.y);
+        lodCamera.up.set(0, 0, 1);
+        lodTarget.set(
+          worldPos.x + worldDir.x,
+          -(worldPos.z + worldDir.z),
+          worldPos.y + worldDir.y
+        );
+      }
       lodCamera.lookAt(lodTarget);
       lodCamera.fov = this.camera.fov;
       lodCamera.aspect = this.camera.aspect;
@@ -638,6 +708,7 @@ export class SceneManager {
       lod.tick(lodCamera);
       lod.start();
       this.aholoLod = lod;
+      this.aholoCoordinateSystem = coordinateSystem;
       // 分块调度是异步的，失败原本被静默吞掉，页面会停在深色空场景上没有任何提示。
       void lod
         .onFinishSchedule()
@@ -646,9 +717,11 @@ export class SceneManager {
         );
 
       onProgress?.("加载碰撞体素…");
-      this.voxel = await VoxelGrid.load("/assets/wuguitan-voxel/wuguitan");
+      this.voxel = await VoxelGrid.load(
+        options.voxelUrl ?? "/assets/wuguitan-voxel/wuguitan"
+      );
       this.voxelActive = this.aholoActive;
-      const initialGround = this.voxel.groundHeight(
+      const initialGround = this.voxelGroundHeight(
         this.character.position.x,
         this.character.position.z,
         this.charY + 0.35,
@@ -665,6 +738,7 @@ export class SceneManager {
       this.aholoCamera = camera;
       this.aholoLookTarget = new aholo.Vector3(0, 0, 0);
       this.aholoReady = true;
+      this.aholoSource = url;
       // 创建 viewer 时容器尺寸可能还没稳定（布局、手机框），对齐一次绘制区。
       viewer.resize();
       onProgress?.("");
@@ -673,6 +747,22 @@ export class SceneManager {
     } finally {
       this.aholoLoading = false;
     }
+  }
+
+  private destroyAholoRenderer() {
+    this.aholoLod?.destroy();
+    this.aholoLod = null;
+    this.aholoLodCamera = null;
+    this.aholoLodTarget = null;
+    this.aholoCoordinateSystem = "z-up";
+    this.aholoViewer?.destroy();
+    this.aholoViewer = null;
+    this.aholoCamera = null;
+    this.aholoLookTarget = null;
+    this.aholoContainer?.remove();
+    this.aholoContainer = null;
+    this.aholoReady = false;
+    this.aholoSource = null;
   }
 
   disableAholo() {
@@ -700,18 +790,27 @@ export class SceneManager {
       bounds: this.bounds,
       voxelLoaded: this.voxel !== null,
       voxelActive: this.voxelActive,
-      ground:
-        this.voxel?.groundHeight(
-          this.character.position.x,
-          this.character.position.z,
-          this.charY + MAX_STEP_HEIGHT,
-          MAX_STEP_HEIGHT + MAX_DROP_HEIGHT
-        ) ?? null,
+      ground: this.voxelGroundHeight(
+        this.character.position.x,
+        this.character.position.z,
+        this.charY + MAX_STEP_HEIGHT,
+        MAX_STEP_HEIGHT + MAX_DROP_HEIGHT
+      ),
       blocked: this.isBlockedWorld(
         this.character.position.x,
         this.character.position.z
       ),
     };
+  }
+
+  debugTeleport(x: number, z: number, camYaw = this.camYaw) {
+    this.character.position.x = x;
+    this.character.position.z = z;
+    this.charY = this.groundHeightProvider?.(x, z) ?? 0;
+    this.character.position.y = this.charY;
+    this.camYaw = camYaw;
+    this.charHeading = camYaw + Math.PI;
+    this.snapCamera();
   }
   setInputProvider(
     provider: () => { forward: number; strafe: number; sprint: boolean }
@@ -786,11 +885,20 @@ export class SceneManager {
     this.refreshRouteHeights();
   }
 
+  private voxelGroundHeight(x: number, z: number, fromY: number, maxDrop: number) {
+    const fixedGround = this.groundHeightProvider?.(x, z);
+    if (fixedGround !== undefined) return fixedGround;
+    if (!this.voxel) return null;
+    return this.smoothVoxelGround
+      ? this.voxel.smoothGroundHeight(x, z, fromY, maxDrop)
+      : this.voxel.groundHeight(x, z, fromY, maxDrop);
+  }
+
   private refreshRouteHeights() {
     for (const arrow of this.routeArrows) {
-      let y = 0.06;
+      let y = (this.groundHeightProvider?.(arrow.position.x, arrow.position.z) ?? 0) + 0.06;
       if (this.voxelActive && this.voxel) {
-        const g = this.voxel.groundHeight(
+        const g = this.voxelGroundHeight(
           arrow.position.x,
           arrow.position.z,
           this.charY + MAX_STEP_HEIGHT,
@@ -806,7 +914,7 @@ export class SceneManager {
 
   private isBlockedWorld(wx: number, wz: number) {
     if (!this.voxel) return false;
-    const ground = this.voxel.groundHeight(
+    const ground = this.voxelGroundHeight(
       wx,
       wz,
       this.charY + MAX_STEP_HEIGHT,
@@ -827,7 +935,7 @@ export class SceneManager {
       [0, CHARACTER_RADIUS],
       [0, -CHARACTER_RADIUS],
     ];
-    return footprint.some(([offsetX, offsetZ]) => {
+    const blockedSamples = footprint.filter(([offsetX, offsetZ]) => {
       const lowerBodyBlocked = this.voxel!.occupiedWorld(
         wx + offsetX,
         feetY + 0.28,
@@ -839,19 +947,52 @@ export class SceneManager {
         wz + offsetZ
       );
       return lowerBodyBlocked && upperBodyBlocked;
-    });
+    }).length;
+    // 整面墙会占满大部分足迹；孤立扫描噪点与薄地面边缘斑点不会。取多数派防止室内点云噪点挡住移动。
+    return blockedSamples >= 3;
+  }
+
+  private resolveCameraPosition(desired: THREE.Vector3) {
+    if (!this.cameraCollision || !this.voxelActive || !this.voxel) return desired;
+    const anchor = new THREE.Vector3(
+      this.character.position.x,
+      this.charY + CAMERA_LOOK_HEIGHT,
+      this.character.position.z
+    );
+    const direction = desired.clone().sub(anchor);
+    const distance = direction.length();
+    if (distance < 0.01) return desired;
+    direction.divideScalar(distance);
+    const safe = anchor.clone().addScaledVector(direction, 0.55);
+    const probe = new THREE.Vector3();
+    for (let travelled = 0.65; travelled <= distance; travelled += 0.1) {
+      probe.copy(anchor).addScaledVector(direction, travelled);
+      const occupiedSamples = [
+        [0, 0, 0],
+        [0.12, 0, 0],
+        [-0.12, 0, 0],
+        [0, 0.12, 0],
+        [0, -0.12, 0],
+      ].filter(([dx, dy, dz]) =>
+        this.voxel!.occupiedWorld(probe.x + dx, probe.y + dy, probe.z + dz)
+      ).length;
+      if (occupiedSamples >= 2) return safe;
+      safe.copy(probe);
+    }
+    return desired;
   }
 
   private snapCamera() {
     const yaw = this.camYaw;
-    const horiz = CAMERA_DISTANCE * Math.cos(this.camPitch);
+    const horiz = this.cameraDistance * Math.cos(this.camPitch);
     const height =
-      this.charY + CAMERA_BASE_HEIGHT + CAMERA_DISTANCE * Math.sin(this.camPitch);
-    this.camera.position.set(
+      this.charY + CAMERA_BASE_HEIGHT + this.cameraDistance * Math.sin(this.camPitch);
+    const desired = new THREE.Vector3(
       this.character.position.x + Math.sin(yaw) * horiz,
       height,
       this.character.position.z + Math.cos(yaw) * horiz
     );
+    this.camera.position.copy(this.resolveCameraPosition(desired));
     this.camera.lookAt(
       this.character.position.x + Math.sin(this.camYaw + Math.PI) * CAMERA_LOOK_AHEAD,
       this.charY + CAMERA_LOOK_HEIGHT,
@@ -991,13 +1132,15 @@ export class SceneManager {
 
     let targetY = this.charY;
     if (this.voxelActive && this.voxel) {
-      const g = this.voxel.groundHeight(
+      const g = this.voxelGroundHeight(
         this.character.position.x,
         this.character.position.z,
         this.charY + MAX_STEP_HEIGHT,
         MAX_STEP_HEIGHT + MAX_DROP_HEIGHT
       );
       if (g !== null) targetY = g + 0.02;
+    } else if (this.groundHeightProvider) {
+      targetY = this.groundHeightProvider(this.character.position.x, this.character.position.z);
     }
     const groundDelta = targetY - this.charY;
     if (Math.abs(groundDelta) < 0.002) {
@@ -1073,20 +1216,25 @@ export class SceneManager {
     );
 
     const yaw = this.camYaw;
-    const horiz = CAMERA_DISTANCE * Math.cos(this.camPitch);
+    const horiz = this.cameraDistance * Math.cos(this.camPitch);
     const height =
-      this.charY + CAMERA_BASE_HEIGHT + CAMERA_DISTANCE * Math.sin(this.camPitch);
+      this.charY + CAMERA_BASE_HEIGHT + this.cameraDistance * Math.sin(this.camPitch);
     const camFollow = 1 - Math.exp(-5 * dt);
-    this.camera.position.x +=
-      (this.character.position.x + Math.sin(yaw) * horiz - this.camera.position.x) * camFollow;
-    const cameraYDelta = height - this.camera.position.y;
+    const desiredCamera = this.resolveCameraPosition(
+      new THREE.Vector3(
+        this.character.position.x + Math.sin(yaw) * horiz,
+        height,
+        this.character.position.z + Math.cos(yaw) * horiz
+      )
+    );
+    this.camera.position.x += (desiredCamera.x - this.camera.position.x) * camFollow;
+    const cameraYDelta = desiredCamera.y - this.camera.position.y;
     if (Math.abs(cameraYDelta) < 0.0005) {
-      this.camera.position.y = height;
+      this.camera.position.y = desiredCamera.y;
     } else {
       this.camera.position.y += cameraYDelta * camFollow;
     }
-    this.camera.position.z +=
-      (this.character.position.z + Math.cos(yaw) * horiz - this.camera.position.z) * camFollow;
+    this.camera.position.z += (desiredCamera.z - this.camera.position.z) * camFollow;
     this.camera.lookAt(
       this.character.position.x + Math.sin(this.camYaw + Math.PI) * CAMERA_LOOK_AHEAD,
       this.charY + CAMERA_LOOK_HEIGHT,
@@ -1119,9 +1267,15 @@ export class SceneManager {
       ) {
         const p = this.aholoCamera.position;
         const t = this.aholoLookTarget;
-        this.aholoLodCamera.position.set(p.x, -p.z, p.y);
-        this.aholoLodCamera.up.set(0, 0, 1);
-        this.aholoLodTarget.set(t.x, -t.z, t.y);
+        if (this.aholoCoordinateSystem === "y-up") {
+          this.aholoLodCamera.position.set(p.x, p.y, p.z);
+          this.aholoLodCamera.up.set(0, 1, 0);
+          this.aholoLodTarget.set(t.x, t.y, t.z);
+        } else {
+          this.aholoLodCamera.position.set(p.x, -p.z, p.y);
+          this.aholoLodCamera.up.set(0, 0, 1);
+          this.aholoLodTarget.set(t.x, -t.z, t.y);
+        }
         this.aholoLodCamera.lookAt(this.aholoLodTarget);
         this.aholoLodCamera.fov = this.aholoCamera.fov;
         this.aholoLodCamera.aspect = this.aholoCamera.aspect;
@@ -1212,6 +1366,7 @@ export class SceneManager {
   dispose() {
     this.disposed = true;
     this.resizeObserver.disconnect();
+    this.destroyAholoRenderer();
     this.renderer.dispose();
     this.renderer.domElement.remove();
   }

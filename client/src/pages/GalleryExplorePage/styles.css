@@ -1,0 +1,26 @@
+/* 室内艺术展厅 · 线下导览场景 —— 在 scene-experience.css 之上的展厅专属微调 */
+
+/* 展厅深空底色上保留一点馆内暖光，替代外景的绿色氛围 */
+.gallery-explore {
+  background: #0b1020;
+}
+
+/* 讲解播放中的主操作钮：金色呼吸提示正在出声，覆盖 disabled 的压暗 */
+.gallery-explore .main-action.is-playing {
+  opacity: 1;
+  filter: none;
+  cursor: default;
+  border-color: var(--gold);
+  animation: galleryPlayPulse 1.8s ease-in-out infinite;
+}
+
+.gallery-explore .main-action.is-playing:hover {
+  transform: translate(-50%, 0);
+  border-color: var(--gold);
+  box-shadow: none;
+}
+
+@keyframes galleryPlayPulse {
+  0%, 100% { box-shadow: 0 16px 32px -16px rgb(15 39 33 / 75%), 0 0 0 4px rgb(232 167 101 / 12%), 0 0 16px rgb(232 167 101 / 30%); }
+  50% { box-shadow: 0 16px 32px -16px rgb(15 39 33 / 75%), 0 0 0 9px rgb(232 167 101 / 22%), 0 0 30px rgb(232 167 101 / 56%); }
+}

@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router";
 import { EntrancePage } from "../pages/EntrancePage";
 import { ExhibitionDetailPage } from "../pages/ExhibitionDetailPage";
 import { ExplorePage } from "../pages/ExplorePage";
+import { GalleryExplorePage } from "../pages/GalleryExplorePage";
 import { GuidePage } from "../pages/GuidePage";
 import { HomePage } from "../pages/HomePage";
 import { PersonalSpacePage } from "../pages/PersonalSpacePage";
@@ -21,6 +22,7 @@ export function AppRouter() {
       <Route path="/exhibition/:venueId" element={<ExhibitionDetailPage />} />
       <Route path="/scene/:sceneId/loading" element={<SceneLoadingPage />} />
       <Route path="/scene/:sceneId/explore" element={<ExplorePage />} />
+      <Route path="/scene/:sceneId/gallery" element={<GalleryExplorePage />} />
       <Route path="/guide" element={<GuidePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

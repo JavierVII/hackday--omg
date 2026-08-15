@@ -292,7 +292,20 @@ function RestroomIcon() {
   );
 }
 
+function ArtworkIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="4" y="5.5" width="16" height="13" rx="1.5" />
+      <path d="m7 16.5 3.4-4.4 2.9 3.1 2.2-2.3 3.5 3.6" />
+      <circle cx="9" cy="9" r="1.3" />
+    </svg>
+  );
+}
+
 function pointVisual(point: InteractionPoint): { label: string; eyebrow: string; icon: ReactNode; kind: string } {
+  if (point.name.startsWith("《")) {
+    return { label: point.name, eyebrow: "展馆藏品", icon: <ArtworkIcon />, kind: "artwork" };
+  }
   if (point.name.includes("卫生间")) {
     return { label: "公共卫生间", eyebrow: "便民设施", icon: <RestroomIcon />, kind: "restroom" };
   }
@@ -355,13 +368,24 @@ const ACTION_LABELS: Record<string, string> = {
 export function MainActionButton({
   point,
   onAction,
+  label,
+  disabled = false,
+  className = "",
 }: {
   point: InteractionPoint;
   onAction: (point: InteractionPoint) => void;
+  /** 覆盖按类型默认的主操作文案，如展厅的「聆听讲解」 */
+  label?: string;
+  disabled?: boolean;
+  className?: string;
 }) {
   return (
-    <button className="hud main-action" onClick={() => onAction(point)}>
-      <span>{ACTION_LABELS[point.type] ?? "互动"}</span>
+    <button
+      className={`hud main-action${className ? ` ${className}` : ""}`}
+      onClick={() => onAction(point)}
+      disabled={disabled}
+    >
+      <span>{label ?? ACTION_LABELS[point.type] ?? "互动"}</span>
       <i aria-hidden="true">→</i>
     </button>
   );

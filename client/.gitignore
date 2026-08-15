@@ -5,3 +5,5 @@ dist/
 *.local
 *.tsbuildinfo
 *.log
+# 室内艺术展厅 LOD（843MB，仅 Demo 本地用，不上传）
+public/assets/indoor-art-gallery-lod-yup-v2/
