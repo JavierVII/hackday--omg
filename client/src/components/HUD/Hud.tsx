@@ -166,26 +166,28 @@ export function AiAssistantPanel({
   hint,
   onClose,
   onNavigateToRestroom,
+  suggestions = [
+    ["附近哪里有卫生间？", "和泽三春有什么故事？", "附近有什么游园体验？"],
+    ["猜灯谜怎么玩？", "投壶体验在哪里？", "帮我介绍一下乌龟潭"],
+  ],
 }: {
   taskTitle: string;
   hint: string;
   onClose: () => void;
-  onNavigateToRestroom: () => void;
+  /** 仅西湖场景提供卫生间快捷路线；其它场景不传则「卫生间」当作普通提问 */
+  onNavigateToRestroom?: () => void;
+  suggestions?: string[][];
 }) {
   const [questionSet, setQuestionSet] = useState(0);
   const [message, setMessage] = useState("");
   const [conversation, setConversation] = useState<string | null>(null);
-  const suggestions = [
-    ["附近哪里有卫生间？", "和泽三春有什么故事？", "附近有什么游园体验？"],
-    ["猜灯谜怎么玩？", "投壶体验在哪里？", "帮我介绍一下乌龟潭"],
-  ];
   const ask = (question: string) => {
     if (!question.trim()) return;
-    if (question.includes("卫生间")) {
+    if (onNavigateToRestroom && question.includes("卫生间")) {
       onNavigateToRestroom();
       return;
     }
-    setConversation(question.includes("当前任务") ? hint : `关于“${question}”，我会结合当前游线为你讲解。`);
+    setConversation(/任务|导览/.test(question) ? hint : `关于“${question}”，我会结合当前游线为你讲解。`);
     setMessage("");
   };
 

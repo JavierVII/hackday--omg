@@ -4,6 +4,10 @@ import type { InteractionPoint } from "../../mocks/contracts";
 import { SceneManager, type FrameState } from "../../three/SceneManager";
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
 import {
+  AiAssistantButton,
+  AiAssistantPanel,
+  BackpackButton,
+  BackpackPanel,
   Compass,
   ExitButton,
   HotspotLabels,
@@ -38,6 +42,12 @@ const ARTWORK: InteractionPoint = {
   enabled: true,
 };
 
+/* AI 助手快捷提问：内容贴合展厅（作品 / 导览 / 留影），不复用西湖的游园话题 */
+const GALLERY_ASSISTANT_SUGGESTIONS: string[][] = [
+  ["《未同步》讲了什么？", "导览任务怎么做？", "这间展厅有什么看点？"],
+  ["讲解音频在哪播放？", "可以拍照留影吗？", "帮我说说这个展馆"],
+];
+
 export function GalleryExplorePage() {
   const { sceneId: routeSceneId } = useParams<{ sceneId: string }>();
   const navigate = useNavigate();
@@ -54,6 +64,8 @@ export function GalleryExplorePage() {
   const [completed, setCompleted] = useState(false);
   const [photoFlash, setPhotoFlash] = useState(false);
   const [photoNotice, setPhotoNotice] = useState("");
+  const [backpackOpen, setBackpackOpen] = useState(false);
+  const [assistantOpen, setAssistantOpen] = useState(false);
 
   useEffect(() => {
     if (routeSceneId && routeSceneId !== GALLERY_SCENE_ID) {
@@ -216,8 +228,19 @@ export function GalleryExplorePage() {
           onAction={() => playGuide()}
         />
       )}
+      <AiAssistantButton active={assistantOpen} onClick={() => setAssistantOpen((open) => !open)} />
+      <BackpackButton count={0} onClick={() => setBackpackOpen(true)} />
       <PhotoButton onClick={takePhoto} />
       <ExitButton onClick={() => navigate(`/exhibition/${GALLERY_VENUE_ID}`, { replace: true })} />
+      {assistantOpen && (
+        <AiAssistantPanel
+          taskTitle={task.title}
+          hint={task.hint}
+          suggestions={GALLERY_ASSISTANT_SUGGESTIONS}
+          onClose={() => setAssistantOpen(false)}
+        />
+      )}
+      {backpackOpen && <BackpackPanel rewards={[]} onClose={() => setBackpackOpen(false)} />}
       {status && <div className="aholo-loading">{status}</div>}
       {photoFlash && <div className="photo-flash" />}
       {photoNotice && <div className="photo-notice">{photoNotice}</div>}
