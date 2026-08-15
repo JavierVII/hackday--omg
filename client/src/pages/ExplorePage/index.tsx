@@ -251,7 +251,13 @@ export function ExplorePage() {
           }))
       );
       setAholoStatus("准备加载实景…");
-      void manager.enableAholo(AHOLO_LOD_URL, setAholoStatus);
+      // 乌龟潭高清：minLevel=0 允许细化到全细节层（默认下限如果等于 levels-1 会锁死最粗层）、
+      // 常驻点数预算从 4M 提到 6M、亚像素剔除阈值降到 0.5 保留草叶/枝桠细节。
+      void manager.enableAholo(AHOLO_LOD_URL, setAholoStatus, {
+        minLevel: 0,
+        maxBudget: 6_000_000,
+        detailCullingThreshold: 0.5,
+      });
     } else {
       manager.disableAholo();
       const spawn =

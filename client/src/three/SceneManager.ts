@@ -575,6 +575,8 @@ export class SceneManager {
       galleryPriority?: boolean;
       coordinateSystem?: "z-up" | "y-up";
       frustumCullingEnabled?: boolean;
+      // 亚像素剔除阈值：越小保留的高频小点越多（更清晰），1 = 剔除 <1px 斑点（省性能）。
+      detailCullingThreshold?: number;
     } = {}
   ) {
     if (
@@ -622,8 +624,9 @@ export class SceneManager {
               sortedLayoutEnabled: true,
             },
             raster: {
-              // 展厅保留高频小斑点（画框边缘、木条墙），不按亚像素噪点剔除。
-              detailCullingThreshold: options.galleryPriority ? 0.35 : 1,
+              // 展厅保留高频小斑点（画框边缘、木条墙）；乌龟潭高清也下调阈值保留草叶/枝桠细节。
+              detailCullingThreshold:
+                options.detailCullingThreshold ?? (options.galleryPriority ? 0.35 : 1),
               maxStdDev: Math.sqrt(8),
             },
             sort: {
@@ -659,8 +662,10 @@ export class SceneManager {
       const lod = new aholo.SplatUtils.LodSplat(
         meta,
         {
-          // 最后一层只是粗预览。乌龟潭沿用原 minLevel（粗起再细化），展厅显式传 0 保持画作细节。
-          minLevel: options.minLevel ?? meta.levels - 1,
+          // minLevel 是细化下限（越低越细，0 = 全细节）。调度器从 maxLevel（最粗）起步逐级向下细化，
+          // 若把下限设成 levels-1 会把场景锁在最粗层——上一版乌龟潭因此整场景发糊。
+          minLevel: options.minLevel ?? 0,
+          // 常驻点数预算：越高画面越密，也越吃 GPU。乌龟潭全细节约 13.7M 点，默认 4M 够用，高清再上调。
           maxBudget: options.maxBudget ?? 4_000_000,
           // 展厅 manifest 是 lossless SPZ 合并而来，forwardBox 只盖首块；不要按背景内容把其余走廊质量砍半。
           backgroundPenalty: options.galleryPriority ? 1 : 0.5,
