@@ -48,19 +48,28 @@ class PreviewErrorBoundary extends Component<PreviewErrorBoundaryProps, { hasErr
   }
 }
 
+/* 自转：约 40 秒一圈。OrbitControls 的角速度公式是 (2π / 60 * autoRotateSpeed) * delta，
+   必须给 update() 传 delta，否则会退化成「每帧固定角度」，在 120Hz 屏上转速翻倍。 */
+const AUTO_ROTATE_SPEED = 1.5;
+
+/* 手动拖动后停一会儿再接回自转，免得刚松手镜头就自己跑 */
+const AUTO_ROTATE_RESUME_MS = 2400;
+
 function PreviewControls({ resetKey }: { resetKey: number }) {
   const { camera, gl, size } = useThree();
   const controlsRef = useRef<OrbitControls | null>(null);
+  const resumeAtRef = useRef(0);
   const aspectRatio = size.width / Math.max(size.height, 1);
   const defaultDistance = 4.2 * Math.max(1, 0.95 / aspectRatio);
 
   useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const controls = new OrbitControls(camera, gl.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.enablePan = false;
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.65;
+    controls.autoRotate = !reducedMotion.matches;
+    controls.autoRotateSpeed = AUTO_ROTATE_SPEED;
     controls.minDistance = 2.1;
     controls.maxDistance = 12;
     controls.minPolarAngle = Math.PI * 0.14;
@@ -69,19 +78,60 @@ function PreviewControls({ resetKey }: { resetKey: number }) {
     controls.update();
     controlsRef.current = controls;
 
+    const handleInteractionStart = () => {
+      controls.autoRotate = false;
+      resumeAtRef.current = 0;
+    };
+
+    const handleInteractionEnd = () => {
+      resumeAtRef.current = reducedMotion.matches
+        ? 0
+        : performance.now() + AUTO_ROTATE_RESUME_MS;
+    };
+
+    const handleMotionPreferenceChange = () => {
+      controls.autoRotate = !reducedMotion.matches;
+      resumeAtRef.current = 0;
+    };
+
+    controls.addEventListener("start", handleInteractionStart);
+    controls.addEventListener("end", handleInteractionEnd);
+    reducedMotion.addEventListener("change", handleMotionPreferenceChange);
+
     return () => {
+      controls.removeEventListener("start", handleInteractionStart);
+      controls.removeEventListener("end", handleInteractionEnd);
+      reducedMotion.removeEventListener("change", handleMotionPreferenceChange);
       controls.dispose();
       controlsRef.current = null;
     };
   }, [camera, gl]);
 
   useEffect(() => {
+    const controls = controlsRef.current;
+
     camera.position.set(0, 0.35, defaultDistance);
-    controlsRef.current?.target.set(0, 0, 0);
-    controlsRef.current?.update();
+    controls?.target.set(0, 0, 0);
+    controls?.update();
+
+    // 重置视角同时把自转接回来
+    if (controls && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      controls.autoRotate = true;
+      resumeAtRef.current = 0;
+    }
   }, [camera, defaultDistance, resetKey]);
 
-  useFrame(() => controlsRef.current?.update());
+  useFrame((_, delta) => {
+    const controls = controlsRef.current;
+    if (!controls) return;
+
+    if (resumeAtRef.current !== 0 && performance.now() >= resumeAtRef.current) {
+      controls.autoRotate = true;
+      resumeAtRef.current = 0;
+    }
+
+    controls.update(delta);
+  });
 
   return null;
 }

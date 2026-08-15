@@ -164,24 +164,24 @@ const assetCollection = getAssetCollectionStatus(digitalAssets.length);
 
 const demoTravelMoments = [
   {
-    title: "断桥的第一缕月光",
-    location: "杭州西湖 · 断桥残雪",
+    title: "三潭收下最后一缕月光",
+    location: "杭州西湖 · 三潭印月",
     date: "8月14日 19:32",
-    note: "晚风从湖面吹来，和云游搭档一起等到了月亮。",
+    note: "晚风掠过湖面，两座石塔把最后一缕霞光留在水里。",
     photo: westLakePortraits.threePools,
   },
   {
-    title: "灯谜答对啦",
-    location: "杭州西湖 · 中秋雅集",
+    title: "集贤亭亮灯了",
+    location: "杭州西湖 · 集贤亭",
     date: "8月14日 20:06",
-    note: "解开最后一道灯谜，也把“月映断桥”带回了背包。",
+    note: "暮色落下来，亭灯和湖上的倒影同时亮起。",
     photo: westLakePortraits.jixianPavilionDusk,
   },
   {
-    title: "雷峰塔下的金色时刻",
+    title: "雷峰塔与一叶归舟",
     location: "杭州西湖 · 雷峰塔",
     date: "8月12日 17:48",
-    note: "光落在塔影与湖面之间，刚好按下了快门。",
+    note: "游船从塔下的金色湖面缓缓驶过，正好按下快门。",
     photo: westLakePortraits.leifengSunset,
   },
 ] as const;
@@ -192,38 +192,38 @@ const travelMomentPosters = [
   {
     src: "/assets/travel_moments/moon-over-water-zine.png",
     alt: "三潭印月石塔与湖面被重绘成暖色撕纸旅行纪念画",
-    focus: "50% 50%",
+    focus: "50% 68%",
   },
   {
     src: "/assets/travel_moments/lanterns-after-dusk-zine.png",
     alt: "暮色集贤亭与荷叶被重绘成黄色光线贯穿的撕纸旅行纪念画",
-    focus: "50% 50%",
+    focus: "50% 40%",
   },
   {
     src: "/assets/travel_moments/golden-hour-drifts-zine.png",
     alt: "雷峰塔与湖上游船被重绘成蓝色线条连接的撕纸旅行纪念画",
-    focus: "50% 50%",
+    focus: "50% 55%",
   },
 ] as const satisfies readonly Photo[];
 
 const travelMomentDetails = [
   {
     fullDate: "2026年8月14日 · 19:32",
-    mood: "今晚的西湖很安静，像把月光轻轻收进了口袋。",
+    mood: "湖面很静，连晚霞也慢了下来。",
     mediaType: "photo",
     mediaCount: 3,
     memoryNumber: "0814-01",
   },
   {
     fullDate: "2026年8月14日 · 20:06",
-    mood: "答对灯谜的那一刻，开心得想把月亮也一起带回家。",
+    mood: "亭灯亮起时，像有人替黄昏按下了暂停。",
     mediaType: "photo",
     mediaCount: 1,
     memoryNumber: "0814-02",
   },
   {
     fullDate: "2026年8月12日 · 17:48",
-    mood: "夕阳把整座塔染成金色，今天的好运刚好有了形状。",
+    mood: "塔影与归舟同框，今天的好运有了形状。",
     mediaType: "photo",
     mediaCount: 1,
     memoryNumber: "0812-01",
@@ -277,7 +277,12 @@ function MomentMemoryCard({ moment, onClose }: { moment: TravelMoment; onClose: 
           <X size={19} />
         </button>
 
-        <div className={`moment-memory-card__media${moment.isZine ? " is-zine" : ""}`}>
+        <div
+          className={`moment-memory-card__media${moment.isZine ? " is-zine" : ""}`}
+          style={moment.isZine ? {
+            backgroundImage: `linear-gradient(rgb(15 39 33 / 36%), rgb(15 39 33 / 60%)), url(${moment.poster.src})`,
+          } : undefined}
+        >
           {moment.mediaType === "video" && moment.videoSrc ? (
             <video controls playsInline poster={moment.poster.src}>
               <source src={moment.videoSrc} />
@@ -381,10 +386,8 @@ function AssetViewer({ asset, onClose }: { asset: DigitalAsset; onClose: () => v
 
             <div className="asset-viewer__frame" aria-hidden="true" />
             <div className="asset-viewer__grain" aria-hidden="true" />
-            <div className="asset-viewer__inscription" aria-hidden="true">
-              <p>{asset.verse}</p>
-              <span>灵境</span>
-            </div>
+            <p className="asset-viewer__inscription" aria-hidden="true">{asset.verse}</p>
+            <span className="asset-viewer__seal" aria-hidden="true">灵境</span>
 
             {!isLoaded && !hasError && (
               <div className="asset-viewer__loading" role="status">
