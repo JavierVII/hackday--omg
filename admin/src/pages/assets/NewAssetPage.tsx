@@ -1,0 +1,14 @@
+import { useRef, useState } from "react";
+import { Check, FileVideo, UploadCloud } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { AssetHeader } from "../../components/assets/AssetHeader";
+import { AssetStepper } from "../../components/assets/AssetStepper";
+import { Button, Card } from "../../components/ui";
+import { assetService } from "../../services/assets/assetService";
+import { useToast } from "../../store/ToastProvider";
+export function NewAssetPage() {
+  const navigate = useNavigate(), { showToast } = useToast(), inputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File>(), [name, setName] = useState(""), [spot, setSpot] = useState(""), [description, setDescription] = useState(""), [quality, setQuality] = useState<"normal" | "high">("normal"), [submitting, setSubmitting] = useState(false);
+  const start = async () => { if (!file) return showToast("请先选择 MP4 或 MOV 视频", "info"); if (!name.trim() || !spot.trim()) return showToast("请填写资产名称和所属景点", "info"); setSubmitting(true); try { const asset = await assetService.create({ name: name.trim(), scenicSpotName: spot.trim(), description: description.trim(), file, quality }); showToast("视频已上传，AI 重建任务已创建"); navigate(`/assets/${asset.id}/build`); } catch (error) { showToast(error instanceof Error ? error.message : "创建失败", "info"); } finally { setSubmitting(false); } };
+  return <div className="page detail-page"><AssetHeader title="新建 3D 资产"/><AssetStepper current={1}/><Card className={`upload-zone ${file ? "selected" : ""}`} onClick={() => inputRef.current?.click()}><input ref={inputRef} type="file" accept=".mp4,.mov,video/mp4,video/quicktime" hidden onChange={event => setFile(event.target.files?.[0])}/><span className="upload-icon">{file ? <Check/> : <FileVideo/>}</span><h2>{file ? "视频已准备" : "上传景区视频"}</h2><p>{file?.name ?? "选择 MP4 或 MOV；服务端会上传至 aHolo 并创建 3DGS 重建。"}</p><Button type="button">选择视频文件</Button><small>视频仅临时写入服务端磁盘，上传完成后自动删除。</small></Card><div className="form-section"><label>资产名称<input value={name} onChange={event => setName(event.target.value)}/></label><label>所属景点<input value={spot} onChange={event => setSpot(event.target.value)}/></label><label>重建质量<select value={quality} onChange={event => setQuality(event.target.value as "normal" | "high")}><option value="normal">normal（开发默认）</option><option value="high">high（正式演示）</option></select></label><label>资产描述<textarea value={description} onChange={event => setDescription(event.target.value)} rows={3}/></label></div><section className="shoot-guide"><h2>拍摄指南（效果最佳）</h2>{["缓慢移动拍摄，保持主体在画面中央", "覆盖正面、侧面、背面等不同角度", "光线充足，避免逆光和强阴影"].map(text => <p key={text}><Check size={14}/>{text}</p>)}</section><Button className="full-button sticky-action" disabled={submitting} onClick={start}>{submitting ? <><UploadCloud size={18}/>正在上传并创建任务…</> : "开始 AI 重建"}</Button></div>;
+}
