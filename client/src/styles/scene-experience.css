@@ -27,14 +27,20 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.explore-page *,
+/* 通配重置只作用于本页自己的 HUD／浮层，必须绕开 .minigame-host-overlay
+   子树：小游戏是自带完整样式的独立模块，且它们的 CSS 在打包顺序里排在本文件
+   之前——同为 0,1,0 特异度时后来者胜，这条重置会把游戏自己的 padding／margin
+   全部清零（按钮变窄、棋盘轴标重叠都是这么来的）。
+   排除条件写在 :where() 里，特异度贡献为 0，因此选择器仍是 0,1,0，
+   不会反过来盖住页面里其它单类选择器。 */
+.explore-page *:not(:where(.minigame-host-overlay, .minigame-host-overlay *)),
 .loading-page * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-.explore-page button,
+.explore-page button:not(:where(.minigame-host-overlay button)),
 .loading-page button {
   font: inherit;
 }
@@ -1278,47 +1284,6 @@
 
 .main-action:hover i {
   transform: translateX(4px);
-}
-
-.coord-readout,
-.coord-chip {
-  bottom: 12px;
-  left: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 7px;
-  border: 1px solid rgb(250 246 238 / 40%);
-  border-radius: 7px;
-  color: var(--ink-strong);
-  background: rgb(250 246 238 / 82%);
-  font: 8px ui-monospace, Menlo, Consolas, monospace;
-  pointer-events: auto;
-}
-
-.coord-readout button {
-  border: 0;
-  border-radius: 4px;
-  color: var(--paper);
-  background: var(--ink-muted);
-  padding: 2px 5px;
-  cursor: pointer;
-  font-size: 8px;
-}
-
-.coord-readout-right {
-  right: 12px;
-  bottom: 18px;
-  left: auto;
-  z-index: 17;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 3px;
-}
-
-.coord-chip {
-  right: 12px;
-  left: auto;
 }
 
 .overlay-mask {

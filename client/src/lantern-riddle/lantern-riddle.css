@@ -1,1 +1,560 @@
-.lantern-page,.lantern-page *{box-sizing:border-box}.lantern-page{width:100%;height:100%;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 25%,#25483b,#061512 70%);color:#f9f4e7}.lantern-card{width:100%;height:100%;padding:20px;background:radial-gradient(circle at 50% 10%,#44573b,#15342d 36%,#071d1a 77%)}.lantern-card header{display:grid;grid-template-columns:40px minmax(0,1fr) 40px;align-items:center;text-align:center;color:#f0d982}.lantern-card header span{justify-self:end;white-space:nowrap}.lantern-card header button{border:1px solid #e8d37f4d;border-radius:50%;background:#16372f99;font-size:22px}.lantern-center{height:calc(100% - 44px);display:grid;place-content:center;gap:15px;text-align:center}.lantern-icon{font-size:72px;filter:drop-shadow(0 0 19px #f1b953)}.lantern-center h1{font-size:42px}.lantern-question{display:grid;gap:12px;padding-top:50px}.lantern-question h2{padding:20px;border:1px solid #e8d37f55;border-radius:16px;background:#0d2a23bb}.lantern-question>button:not(.lantern-primary){padding:13px;text-align:left;border:1px solid #cad7bd33;border-radius:13px;background:#17372ecc}.lantern-question>button.selected{border-color:#f4d56b;background:#4a5530}.lantern-primary{margin-top:10px;padding:15px;border:0;border-radius:14px;background:linear-gradient(115deg,#e2bf63,#fff0a9);color:#183124;font-weight:700}.lantern-primary:disabled{opacity:.42}.lantern-summary{place-content:start center;padding-top:38px}.lantern-summary h1{font-size:34px}.lantern-ranking{display:grid;width:min(100%,330px);margin:6px 0;padding:0;overflow:hidden;border:1px solid #e8d37f55;border-radius:14px;list-style:none}.lantern-ranking li{display:grid;grid-template-columns:32px 1fr auto;gap:8px;padding:10px 12px;border-bottom:1px solid #e8d37f2b;text-align:left}.lantern-ranking li:last-child{border:0}.lantern-ranking .mine{background:#d4ad4740}.lantern-ranking em{color:#f0d982;font-style:normal}.lantern-restart{border:0;background:transparent;color:#f0d982;text-decoration:underline}
+/**
+ * 中秋猜灯谜浮层。
+ *
+ * 按 docs/DESIGN.md §12「3D 内的 HUD 与浮层」执行：墨绿玻璃底 + 纸白文字 +
+ * 金橘强调，阴影改用发丝高光。整体是压在 3D 画面上的一张居中卡片，
+ * 四周留出边距露出场景，而不是铺满整块手机屏。
+ *
+ * 注意：本组件挂在 .explore-page 内，而那份样式带 `.explore-page *{margin:0;padding:0}`
+ * 通配重置。因此这里所有选择器都以 .lantern-page 起头（特异度 ≥ 0,2,0），
+ * 且需要的 margin / padding 一律显式写出，不依赖浏览器默认值。
+ */
+
+.lantern-page,
+.lantern-page * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.lantern-page {
+  --lantern-paper: #faf6ee;
+  --lantern-paper-dim: rgb(250 246 238 / 72%);
+  --lantern-gold: #f0cf7e;
+  --lantern-gold-deep: #d08c46;
+  --lantern-hairline: rgb(240 207 126 / 34%);
+  --lantern-highlight: inset 0 0 0 1px rgb(250 246 238 / 14%);
+  --lantern-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  display: grid;
+  width: 100%;
+  height: 100%;
+  padding: clamp(16px, 4.5vw, 26px);
+  overflow: hidden;
+  place-items: center;
+  color: var(--lantern-paper);
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  /* 顶部一处月光，其余压深，让卡片浮在 3D 画面之上 */
+  background:
+    radial-gradient(120% 60% at 50% -8%, rgb(240 207 126 / 16%), transparent 62%),
+    rgb(9 26 22 / 62%);
+  backdrop-filter: blur(10px);
+}
+
+/* 浮层不再继承宿主的 .explore-page button{font:inherit}，按钮字体自己声明。 */
+.lantern-page button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* —— 卡片 —— */
+
+.lantern-page .lantern-card {
+  display: flex;
+  width: min(100%, 352px);
+  max-height: 100%;
+  flex-direction: column;
+  padding: 18px 20px 20px;
+  border: 1px solid var(--lantern-hairline);
+  border-radius: 26px;
+  background:
+    radial-gradient(88% 44% at 50% 0%, rgb(240 207 126 / 15%), transparent 66%),
+    linear-gradient(168deg, #16382f 0%, #0f2a24 52%, #0b1f1b 100%);
+  box-shadow: var(--lantern-highlight);
+}
+
+.lantern-page .lantern-card header {
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: 34px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 0;
+}
+
+.lantern-page .lantern-card header strong {
+  font-family: STKaiti, KaiTi, "Kaiti SC", "Noto Serif SC", serif;
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-align: center;
+  color: var(--lantern-gold);
+}
+
+.lantern-page .lantern-card header span {
+  justify-self: end;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  color: var(--lantern-paper-dim);
+}
+
+.lantern-page .lantern-card header button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--lantern-hairline);
+  border-radius: 50%;
+  background: rgb(250 246 238 / 8%);
+  color: var(--lantern-paper);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.28s var(--lantern-ease), border-color 0.28s var(--lantern-ease);
+}
+
+.lantern-page .lantern-card header button:hover {
+  border-color: var(--lantern-gold-deep);
+  background: rgb(250 246 238 / 16%);
+}
+
+/* —— 封面 / 结算共用的居中列 —— */
+
+.lantern-page .lantern-center {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow-y: auto;
+  text-align: center;
+}
+
+.lantern-page .lantern-icon {
+  margin: 0 0 2px;
+  font-size: 64px;
+  line-height: 1;
+  filter: drop-shadow(0 0 22px rgb(241 185 83 / 62%));
+  animation: lantern-sway 7s ease-in-out infinite;
+}
+
+.lantern-page .lantern-center > p {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  color: var(--lantern-gold);
+}
+
+.lantern-page .lantern-center h1 {
+  margin: 0;
+  font-family: STKaiti, KaiTi, "Kaiti SC", "Noto Serif SC", serif;
+  font-size: 38px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1.15;
+  color: var(--lantern-paper);
+}
+
+.lantern-page .lantern-center > small {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--lantern-paper-dim);
+}
+
+/* —— 答题 —— */
+
+.lantern-page .lantern-question {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  padding: 2px 0 0;
+}
+
+.lantern-page .lantern-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--lantern-gold);
+}
+
+.lantern-page .lantern-meta time {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  color: var(--lantern-paper-dim);
+}
+
+.lantern-page .lantern-dots {
+  display: flex;
+  gap: 5px;
+  margin: 0 0 2px;
+  padding: 0;
+  list-style: none;
+}
+
+.lantern-page .lantern-dots li {
+  height: 3px;
+  flex: 1 1 0;
+  border-radius: 999px;
+  background: rgb(250 246 238 / 16%);
+  transition: background 0.28s var(--lantern-ease);
+}
+
+.lantern-page .lantern-dots li.done {
+  background: var(--lantern-gold);
+}
+
+.lantern-page .lantern-question h2 {
+  margin: 0;
+  padding: 18px 18px 19px;
+  border: 1px solid var(--lantern-hairline);
+  border-radius: 16px;
+  background: rgb(6 22 18 / 62%);
+  font-family: STKaiti, KaiTi, "Kaiti SC", "Noto Serif SC", serif;
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.65;
+  text-align: center;
+  color: var(--lantern-paper);
+}
+
+/* 选项：整卡宽 + 足够高的点击区，左侧字母徽标标出 A/B/C/D */
+.lantern-page .lantern-option {
+  display: flex;
+  width: 100%;
+  min-height: 54px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid rgb(250 246 238 / 14%);
+  border-radius: 14px;
+  background: rgb(22 56 47 / 78%);
+  color: var(--lantern-paper);
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.28s var(--lantern-ease),
+    background 0.28s var(--lantern-ease),
+    transform 0.28s var(--lantern-ease);
+}
+
+.lantern-page .lantern-option b {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  place-items: center;
+  border: 1px solid var(--lantern-hairline);
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--lantern-gold);
+  transition: background 0.28s var(--lantern-ease), color 0.28s var(--lantern-ease);
+}
+
+.lantern-page .lantern-option:hover {
+  border-color: var(--lantern-hairline);
+  transform: translateY(-2px);
+}
+
+.lantern-page .lantern-option.selected {
+  border-color: var(--lantern-gold);
+  background: linear-gradient(120deg, rgb(240 207 126 / 22%), rgb(240 207 126 / 10%));
+}
+
+.lantern-page .lantern-option.selected b {
+  border-color: transparent;
+  background: var(--lantern-gold);
+  color: #14342c;
+}
+
+/* —— 按钮 —— */
+
+.lantern-page .lantern-primary {
+  display: flex;
+  width: 100%;
+  min-height: 52px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 14px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(112deg, var(--lantern-gold-deep), #f4dc9b 52%, var(--lantern-gold-deep));
+  color: #14342c;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  box-shadow: 0 12px 24px -14px rgb(15 39 33 / 88%);
+  transition: transform 0.28s var(--lantern-ease), box-shadow 0.28s var(--lantern-ease);
+}
+
+.lantern-page .lantern-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 30px -14px rgb(15 39 33 / 92%);
+}
+
+.lantern-page .lantern-primary:disabled {
+  opacity: 0.36;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.lantern-page .lantern-primary i {
+  font-size: 17px;
+  font-style: normal;
+  transition: transform 0.28s var(--lantern-ease);
+}
+
+.lantern-page .lantern-primary:hover:not(:disabled) i {
+  transform: translateX(4px);
+}
+
+.lantern-page .lantern-restart {
+  flex: 0 0 auto;
+  margin: 2px 0 0;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--lantern-gold);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.lantern-page .lantern-restart:hover {
+  color: var(--lantern-paper);
+}
+
+/* —— 结算 —— */
+
+.lantern-page .lantern-summary {
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 2px 0 0;
+}
+
+.lantern-page .lantern-summary h1 {
+  font-size: 30px;
+}
+
+/* 正确率环：conic-gradient 走 --pct，中心留出答对题数 */
+.lantern-page .lantern-ring {
+  display: grid;
+  width: 116px;
+  height: 116px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      var(--lantern-gold) calc(var(--pct, 0) * 1%),
+      rgb(250 246 238 / 12%) calc(var(--pct, 0) * 1%)
+    );
+  filter: drop-shadow(0 0 18px rgb(240 207 126 / 34%));
+}
+
+.lantern-page .lantern-ring > span {
+  display: grid;
+  width: 96px;
+  height: 96px;
+  place-items: center;
+  align-content: center;
+  gap: 1px;
+  border-radius: 50%;
+  background: linear-gradient(168deg, #16382f, #0b1f1b);
+}
+
+.lantern-page .lantern-ring b {
+  font-family: STKaiti, KaiTi, "Kaiti SC", "Noto Serif SC", serif;
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--lantern-gold);
+}
+
+/* 环心「4/5」：分母压小压淡，突出答对题数本身 */
+.lantern-page .lantern-ring b small {
+  font-size: 15px;
+  letter-spacing: 0;
+  color: var(--lantern-paper-dim);
+}
+
+.lantern-page .lantern-ring small {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--lantern-paper-dim);
+}
+
+.lantern-page .lantern-stats {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 2px 0 0;
+  padding: 10px 4px;
+  border: 1px solid rgb(250 246 238 / 12%);
+  border-radius: 14px;
+  background: rgb(6 22 18 / 48%);
+}
+
+.lantern-page .lantern-stats div {
+  display: grid;
+  gap: 3px;
+  border-left: 1px solid rgb(250 246 238 / 10%);
+}
+
+.lantern-page .lantern-stats div:first-child {
+  border-left: 0;
+}
+
+.lantern-page .lantern-stats b {
+  font-size: 17px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--lantern-paper);
+}
+
+.lantern-page .lantern-stats small {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--lantern-paper-dim);
+}
+
+.lantern-page .lantern-ranking {
+  display: grid;
+  width: 100%;
+  margin: 4px 0 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgb(250 246 238 / 12%);
+  border-radius: 14px;
+  list-style: none;
+}
+
+.lantern-page .lantern-ranking li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 13px;
+  border-bottom: 1px solid rgb(250 246 238 / 8%);
+  font-size: 13px;
+  text-align: left;
+}
+
+.lantern-page .lantern-ranking li:last-child {
+  border-bottom: 0;
+}
+
+.lantern-page .lantern-ranking li > span {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--lantern-paper-dim);
+}
+
+.lantern-page .lantern-ranking li > b {
+  font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.lantern-page .lantern-ranking em {
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  color: var(--lantern-gold);
+}
+
+.lantern-page .lantern-ranking .mine {
+  background: rgb(240 207 126 / 15%);
+}
+
+.lantern-page .lantern-ranking .mine > span {
+  color: var(--lantern-gold);
+}
+
+/* —— 焦点与动效 —— */
+
+.lantern-page :focus-visible {
+  outline: 2px solid var(--lantern-gold-deep);
+  outline-offset: 3px;
+}
+
+@keyframes lantern-sway {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2.5deg);
+  }
+
+  50% {
+    transform: translateY(-5px) rotate(2.5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lantern-page .lantern-icon {
+    animation: none;
+  }
+
+  .lantern-page .lantern-option,
+  .lantern-page .lantern-primary {
+    transition: none;
+  }
+
+  .lantern-page .lantern-option:hover,
+  .lantern-page .lantern-primary:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* 极矮的手机框（.explore-page 最小高 540px）下压缩展示尺寸，避免出现滚动 */
+@media (max-height: 660px) {
+  .lantern-page .lantern-icon {
+    font-size: 46px;
+  }
+
+  .lantern-page .lantern-center h1 {
+    font-size: 30px;
+  }
+
+  .lantern-page .lantern-question h2 {
+    padding: 13px 14px;
+    font-size: 17px;
+  }
+
+  .lantern-page .lantern-option {
+    min-height: 46px;
+    padding: 10px 13px;
+    font-size: 15px;
+  }
+
+  .lantern-page .lantern-ring {
+    width: 92px;
+    height: 92px;
+  }
+
+  .lantern-page .lantern-ring > span {
+    width: 76px;
+    height: 76px;
+  }
+
+  .lantern-page .lantern-ring b {
+    font-size: 27px;
+  }
+}

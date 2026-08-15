@@ -915,8 +915,12 @@ export class SceneManager {
       const faceYaw = this.camYaw + Math.PI;
       const fx = Math.sin(faceYaw);
       const fz = Math.cos(faceYaw);
-      const rx = Math.cos(faceYaw);
-      const rz = -Math.sin(faceYaw);
+
+      // 屏幕右方向。朝向 yaw 对应 (sin yaw, cos yaw)，相机在角色正后方沿 -forward
+      // 看过来，因此画面右手边是 (-cos yaw, sin yaw)。写成 (cos, -sin) 会让 A/D、
+      // ←/→ 整体反向。
+      const rx = -Math.cos(faceYaw);
+      const rz = Math.sin(faceYaw);
       let dx = fx * input.forward + rx * input.strafe;
       let dz = fz * input.forward + rz * input.strafe;
       const len = Math.hypot(dx, dz);
@@ -1155,8 +1159,10 @@ export class SceneManager {
           .project(this.camera);
         const behindCamera = temp.z >= 1;
         const faceYaw = this.camYaw + Math.PI;
-        const rightX = Math.cos(faceYaw);
-        const rightZ = -Math.sin(faceYaw);
+
+        // 与移动同一套右方向定义，否则相机背后的热点会被钉到反方向的屏幕边缘。
+        const rightX = -Math.cos(faceYaw);
+        const rightZ = Math.sin(faceYaw);
         const side = dx * rightX + dz * rightZ;
         const rawX = behindCamera
           ? side >= 0 ? w : 0

@@ -21,7 +21,6 @@ import {
   AiAssistantPanel,
   BackpackButton,
   BackpackPanel,
-  CoordReadout,
   HotspotLabels,
   MainActionButton,
   PhotoButton,
@@ -423,7 +422,6 @@ export function ExplorePage() {
       <div ref={containerRef} className="scene-container" />
       <MiniGameHost onClose={() => closeMiniGame()} onComplete={handleMiniGameComplete} />
       <TopBar areaName={config.scenicArea.name} sceneName={sceneName} />
-      <CoordReadout x={frame?.x ?? 0} y={frame?.y ?? 0} z={frame?.z ?? 0} />
       <Compass
         heading={frame?.heading ?? 0}
         targetName={nearestPoint?.name ?? null}

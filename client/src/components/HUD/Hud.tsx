@@ -48,16 +48,6 @@ export function Compass({
   );
 }
 
-export function CoordReadout({ x, y, z }: { x: number; y: number; z: number }) {
-  const text = `x ${x.toFixed(2)}  z ${z.toFixed(2)}  y ${y.toFixed(2)}`;
-  return (
-    <div className="hud coord-readout coord-readout-right">
-      <span>{text}</span>
-      <button onClick={() => void navigator.clipboard?.writeText(text)}>复制</button>
-    </div>
-  );
-}
-
 function BackpackIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
