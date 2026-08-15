@@ -1,4 +1,4 @@
-import { Box, ChevronLeft, ChevronRight, CircleDot, Gamepad2, LayoutDashboard, Moon, Palette, Rocket, Sparkles, Sun, UserRound } from "lucide-react";
+import { Box, ChevronLeft, ChevronRight, CircleDot, Gamepad2, LayoutDashboard, LogOut, Moon, Palette, Rocket, Sparkles, Sun, UserRound } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { useTheme } from "../theme/ThemeProvider";
@@ -29,7 +29,7 @@ export function AdminChrome({ children }: { children: ReactNode }) {
     <div className="desktop-workspace">
       <header className="desktop-header">
         <div className="header-scenic"><small>当前景区</small><strong>杭州西湖景区</strong></div>
-        <div className="header-actions"><div className="online-theme"><span/><div><small>当前线上主题</small><strong>{onlineTheme}</strong></div></div><span className="publish-state">{hasChanges ? "有待发布配置" : "配置已发布"}</span><button className="icon-button" onClick={toggleMode} aria-label="切换深浅色模式">{mode === "dark" ? <Sun size={18}/> : <Moon size={18}/>}</button><button className="admin-entry"><UserRound size={17}/><span>景区管理员</span></button></div>
+        <div className="header-actions"><div className="online-theme"><span/><div><small>当前线上主题</small><strong>{onlineTheme}</strong></div></div><span className="publish-state">{hasChanges ? "有待发布配置" : "配置已发布"}</span><button className="icon-button" onClick={toggleMode} aria-label="切换深浅色模式">{mode === "dark" ? <Sun size={18}/> : <Moon size={18}/>}</button><button className="admin-entry"><UserRound size={17}/><span>景区管理员</span></button><a className="exit-entry" href="/" aria-label="返回进入页"><LogOut size={16} strokeWidth={1.9}/><span>返回进入页</span></a></div>
       </header>
       <main className="desktop-content">{children}</main>
     </div>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import type {
   InteractionPoint,
   MiniGame,
@@ -21,6 +21,7 @@ import {
   AiAssistantPanel,
   BackpackButton,
   BackpackPanel,
+  ExitButton,
   HotspotLabels,
   MainActionButton,
   PhotoButton,
@@ -60,6 +61,7 @@ type Overlay =
 
 export function ExplorePage() {
   const { sceneId: routeSceneId } = useParams<{ sceneId: string }>();
+  const navigate = useNavigate();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const managerRef = useRef<SceneManager | null>(null);
@@ -441,6 +443,7 @@ export function ExplorePage() {
       )}
       <AiAssistantButton active={assistantOpen} onClick={() => setAssistantOpen((open) => !open)} />
       <PhotoButton onClick={takePhoto} />
+      <ExitButton onClick={() => navigate(`/scenic/${WEST_LAKE_IDS.scenicArea}`, { replace: true })} />
       {assistantOpen && (
         <AiAssistantPanel
           taskTitle={task.title}

@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from "react";
+import { LogOut } from "lucide-react";
 import type { InteractionPoint, Reward } from "../../mocks/contracts";
 import type { HotspotViewState } from "../../three/SceneManager";
 
@@ -107,6 +108,15 @@ export function PhotoButton({ onClick }: { onClick: () => void }) {
     <button className="hud photo-button" onClick={onClick} aria-label="拍摄当前场景">
       <span><CameraIcon /></span>
       <small>留影</small>
+    </button>
+  );
+}
+
+export function ExitButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button className="hud exit-button" onClick={onClick} aria-label="退出场景，返回景区详情">
+      <span><LogOut size={20} strokeWidth={1.8} /></span>
+      <small>退出</small>
     </button>
   );
 }
