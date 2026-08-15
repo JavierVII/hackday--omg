@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import type { InteractionPoint, Theme, Vec3 } from "../mocks/contracts";
+import { assetUrl } from "../lib/assets";
 import { VoxelGrid } from "./voxelCollision";
 
 export type HotspotStage = "far" | "sense" | "interactive";
@@ -73,7 +74,7 @@ export class SceneManager {
     Record<"idle" | "walk" | "run", THREE.AnimationAction>
   > = {};
   private charAnimState: "idle" | "walk" | "run" = "idle";
-  private characterModelUrl = "/assets/models/rogue_hooded.glb";
+  private characterModelUrl = assetUrl("/assets/models/rogue_hooded.glb");
   private characterLoadVersion = 0;
   private npcs: Array<{
     group: THREE.Group;
@@ -253,7 +254,7 @@ export class SceneManager {
       const entry = {
         group,
         anchor: item.position,
-        modelUrl: item.modelUrl,
+        modelUrl: assetUrl(item.modelUrl),
         mixer: null as THREE.AnimationMixer | null,
         actions: {} as Partial<Record<"idle" | "interact", THREE.AnimationAction>>,
         animState: "idle" as "idle" | "interact",
@@ -594,6 +595,8 @@ export class SceneManager {
       this.aholoLoading
     )
       return;
+    // GitHub Pages 子路径部署：LOD 与分块 URL 统一补基路径前缀（dev 下 base="/" 原样不变）。
+    url = assetUrl(url);
     this.aholoLoading = true;
     try {
       const aholo = await import("@manycore/aholo-viewer");
@@ -739,7 +742,7 @@ export class SceneManager {
 
       onProgress?.("加载碰撞体素…");
       this.voxel = await VoxelGrid.load(
-        options.voxelUrl ?? "/assets/wuguitan-voxel/wuguitan"
+        assetUrl(options.voxelUrl ?? "/assets/wuguitan-voxel/wuguitan")
       );
       this.voxelActive = this.aholoActive;
       const initialGround = this.voxelGroundHeight(

@@ -1,9 +1,10 @@
 import { Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { assetUrl } from "../../../lib/assets";
 import "./styles.css";
 
-const BACKGROUND_MUSIC_SRC = "/assets/audio/Easter%20Day%20in%20Asia.mp3";
+const BACKGROUND_MUSIC_SRC = assetUrl("/assets/audio/Easter%20Day%20in%20Asia.mp3");
 
 export function BackgroundMusic() {
   const audioRef = useRef<HTMLAudioElement>(null);

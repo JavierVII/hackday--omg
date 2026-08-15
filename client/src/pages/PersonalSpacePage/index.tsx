@@ -22,7 +22,7 @@ import { createPortal } from "react-dom";
 
 import { AppBottomNav } from "../../components/common/AppBottomNav";
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
-import { westLakePortraits, type Photo } from "../../lib/assets";
+import { assetUrl, westLakePortraits, type Photo } from "../../lib/assets";
 
 import "./styles.css";
 
@@ -280,16 +280,16 @@ function MomentMemoryCard({ moment, onClose }: { moment: TravelMoment; onClose: 
         <div
           className={`moment-memory-card__media${moment.isZine ? " is-zine" : ""}`}
           style={moment.isZine ? {
-            backgroundImage: `linear-gradient(rgb(15 39 33 / 36%), rgb(15 39 33 / 60%)), url(${moment.poster.src})`,
+            backgroundImage: `linear-gradient(rgb(15 39 33 / 36%), rgb(15 39 33 / 60%)), url(${assetUrl(moment.poster.src)})`,
           } : undefined}
         >
           {moment.mediaType === "video" && moment.videoSrc ? (
-            <video controls playsInline poster={moment.poster.src}>
+            <video controls playsInline poster={assetUrl(moment.poster.src)}>
               <source src={moment.videoSrc} />
             </video>
           ) : (
             <img
-              src={moment.poster.src}
+              src={assetUrl(moment.poster.src)}
               alt={moment.poster.alt}
               style={{ objectPosition: moment.poster.focus }}
             />
@@ -374,7 +374,7 @@ function AssetViewer({ asset, onClose }: { asset: DigitalAsset; onClose: () => v
             <div className="asset-viewer__canvas">
               <Suspense fallback={null}>
                 <AssetPreviewCanvas
-                  modelUrl={asset.modelUrl}
+                  modelUrl={assetUrl(asset.modelUrl)}
                   resetKey={resetKey}
                   modelScale={"previewScale" in asset ? asset.previewScale : 1}
                   brightness={"brightness" in asset ? asset.brightness : 1}
@@ -501,7 +501,7 @@ function DigitalAssets() {
           <small><MapPin size={12} /> {featuredAsset.source}</small>
         </div>
         <div className="space-featured-asset__art" aria-hidden="true">
-          <img src={featuredAsset.thumbnailUrl} alt="" />
+          <img src={assetUrl(featuredAsset.thumbnailUrl)} alt="" />
         </div>
         <Maximize2 className="space-featured-asset__open" size={15} aria-hidden="true" />
       </button>
@@ -517,7 +517,7 @@ function DigitalAssets() {
               onClick={() => setSelectedAsset(asset)}
             >
               <span className="space-asset-card__art">
-                <img src={asset.thumbnailUrl} alt="" loading="lazy" decoding="async" />
+                <img src={assetUrl(asset.thumbnailUrl)} alt="" loading="lazy" decoding="async" />
                 <BadgeCheck className="space-asset-card__verified" size={16} fill="currentColor" />
                 <span className="space-asset-card__view"><Maximize2 size={11} /> 查看 3D</span>
               </span>
@@ -544,7 +544,7 @@ function TravelMoments() {
     <div className="space-view" role="tabpanel" aria-label="游玩瞬间">
       <section className="space-moment-summary" aria-label="西湖旅途回忆">
         <img
-          src={momentCoverPhoto.src}
+          src={assetUrl(momentCoverPhoto.src)}
           alt={momentCoverPhoto.alt}
           style={{ objectPosition: momentCoverPhoto.focus }}
         />
@@ -576,7 +576,7 @@ function TravelMoments() {
           >
             <div className="space-moment-card__media">
               <img
-                src={moment.photo.src}
+                src={assetUrl(moment.photo.src)}
                 alt={moment.photo.alt}
                 loading="lazy"
                 decoding="async"

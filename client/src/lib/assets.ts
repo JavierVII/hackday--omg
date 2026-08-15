@@ -20,13 +20,23 @@ export type Photo = {
   readonly watermark?: true;
 };
 
-const WEST_LAKE = "/assets/west_lake";
-const WEST_LAKE_SUPP = "/assets/westlake_supp_imgs";
-const PALACE = "/assets/palace_museum";
-const PINGYAO = "/assets/pingyao_ancient_city";
-const EXHIBITION = "/assets/Exhibition";
+/**
+ * 部署基路径前缀。GitHub Pages 下应用跑在 /<repo>/ 子路径，静态资源不能写死根绝对路径。
+ * dev 时 BASE_URL 为 "/"，原样返回；构建 base="./" 时为 "./assets/..."。
+ * 所有运行时取资源的路径都应经过它，替换脚本里裸写的 "/assets/..."。
+ */
+export function assetUrl(path: string): string {
+  const base = import.meta.env.BASE_URL;
+  return path.startsWith("/") ? `${base}${path.slice(1)}` : `${base}${path}`;
+}
+
+const WEST_LAKE = assetUrl("/assets/west_lake");
+const WEST_LAKE_SUPP = assetUrl("/assets/westlake_supp_imgs");
+const PALACE = assetUrl("/assets/palace_museum");
+const PINGYAO = assetUrl("/assets/pingyao_ancient_city");
+const EXHIBITION = assetUrl("/assets/Exhibition");
 /** 尚未归组的单图直接放在 assets 根目录，补齐分组后再迁移 */
-const ROOT = "/assets";
+const ROOT = assetUrl("/assets");
 
 /** 西湖实景 · 竖图（1080×1440，可用于全屏/大图） */
 export const westLakePortraits = {
@@ -229,7 +239,7 @@ export const pingyaoPhotos = {
  * 目前唯一的高分辨率横图，因此保留给需要满幅铺开的封面位。
  */
 export const westLakeHero: Photo = {
-  src: "/assets/west-lake-hero.png",
+  src: assetUrl("/assets/west-lake-hero.png"),
   alt: "西湖全景，湖面、长堤与远处群山层层铺开",
   focus: "50% 42%",
 };

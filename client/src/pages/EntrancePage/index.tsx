@@ -3,11 +3,12 @@ import { Link } from "react-router";
 
 import { useUiStore } from "../../app/stores/uiStore";
 import ImageTrail from "../../components/common/ImageTrail";
+import { assetUrl } from "../../lib/assets";
 import { prefersReducedMotion } from "../../lib/motion";
 
 import "./styles.css";
 
-const ASSET_DIR = "/assets/west_lake";
+const ASSET_DIR = assetUrl("/assets/west_lake");
 
 /** 西湖实景照片。新增图片只需在此追加文件名，其余无需改动。 */
 const SCENERY_FILES = [
@@ -185,13 +186,16 @@ export function EntrancePage() {
               →
             </span>
           </Link>
-          <a
-            className="entrance__button entrance__button--secondary"
-            href="/admin/"
-            aria-label="进入管理端"
-          >
-            进入管理端
-          </a>
+          {/* 管理端是独立 dev 应用，GitHub Pages 静态部署下没有 /admin/，正式构建里隐藏 */}
+          {!import.meta.env.PROD && (
+            <a
+              className="entrance__button entrance__button--secondary"
+              href="/admin/"
+              aria-label="进入管理端"
+            >
+              进入管理端
+            </a>
+          )}
         </div>
 
         <div className="entrance__scenes">

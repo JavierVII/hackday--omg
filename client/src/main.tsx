@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router";
+import { HashRouter } from "react-router";
 
 import { App } from "./App";
 import { ConfigProvider } from "./app/providers/ConfigProvider";
@@ -18,9 +18,10 @@ createRoot(root).render(
   <StrictMode>
     <ConfigProvider>
       <UserProgressProvider>
-        <BrowserRouter>
+        {/* GitHub Pages 无服务端重写，用 hash 路由保证任意深链都能加载 index.html */}
+        <HashRouter>
           <App />
-        </BrowserRouter>
+        </HashRouter>
       </UserProgressProvider>
     </ConfigProvider>
   </StrictMode>,

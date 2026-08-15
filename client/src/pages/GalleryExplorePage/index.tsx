@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { assetUrl } from "../../lib/assets";
 import type { InteractionPoint } from "../../mocks/contracts";
 import { SceneManager, type FrameState } from "../../three/SceneManager";
 import { MobileStatusBar } from "../../components/common/MobileStatusBar";
@@ -27,7 +28,8 @@ import "./styles.css";
 export const GALLERY_SCENE_ID = "scene-indoor-art-gallery";
 const GALLERY_LOD_URL = "/assets/indoor-art-gallery-lod-yup-v2";
 const GALLERY_VOXEL_URL = "/assets/indoor-art-gallery-voxel-yup-v2/gallery";
-const GALLERY_AUDIO_URL = "/assets/audio/indoor-gallery-unsynced.mp3";
+// 展厅 LOD 在 enableAholo 内自动补基路径；音频由页面直接 new Audio，需手动 base-aware。
+const GALLERY_AUDIO_URL = assetUrl("/assets/audio/indoor-gallery-unsynced.mp3");
 const GALLERY_VENUE_ID = "art-gallery";
 
 const SPAWN = { x: 0, y: 2.4, z: 0 };

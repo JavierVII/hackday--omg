@@ -1,3 +1,5 @@
+import { assetUrl } from '../lib/assets'
+
 export type TargetOutcome = 'PERFECT' | 'GOOD' | 'NICE' | 'MISS'
 
 /** Visual boundary: swap this MockTouhuTarget for AHoloTouhuTarget later. */
@@ -9,7 +11,7 @@ export function MockTouhuTarget({ outcome, glowing }: { outcome?: TargetOutcome;
   const missed = outcome === 'MISS'
   return <div className={`touhu-target ${glowing ? 'target-glow' : ''}`} aria-label="远处投壶">
     <div className="target-moon">☾</div><div className="target-label">月影投壶</div>
-    <img className="target-asset" src="/assets/touhu/touhu-target.png" alt="投壶" style={{ left: '50%', transform: 'translateX(-50%)' }} onError={event => { event.currentTarget.hidden = true }} />
+    <img className="target-asset" src={assetUrl("/assets/touhu/touhu-target.png")} alt="投壶" style={{ left: '50%', transform: 'translateX(-50%)' }} onError={event => { event.currentTarget.hidden = true }} />
     {glowing && <div className="mouth-light">✦</div>}
     {outcome && <div className={missed ? 'landing miss-landing' : 'landing'}>{missed ? '◇' : '✦'}</div>}
   </div>

@@ -10,7 +10,8 @@ const devAssetStrongCache: Plugin = {
   apply: "serve",
   configureServer(server) {
     server.middlewares.use((req, res, next) => {
-      if (req.url && req.url.startsWith("/assets/")) {
+      const url = (req as { url?: string }).url ?? "";
+      if (url.indexOf("/assets/") === 0) {
         res.setHeader("Cache-Control", "public, max-age=86400");
       }
       next();
@@ -19,6 +20,9 @@ const devAssetStrongCache: Plugin = {
 };
 
 export default defineConfig({
+  // GitHub Pages 部署在 /<repo>/ 子路径，构建产物全部用相对引用（assets、index.html、worker）。
+  // 代码里的运行时资源路径统一走 lib/assets.ts 的 assetUrl()（基于 BASE_URL 加 ./ 前缀）。
+  base: "./",
   plugins: [react(), devAssetStrongCache],
   server: {
     host: "127.0.0.1",
